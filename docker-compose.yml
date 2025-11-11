@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  csv-processor:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: csv-processor:latest
+    container_name: csv-processor
+    env_file:
+      - container.env
+    environment:
+      # AWS Configuration
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+      
+      # Oracle Database Configuration
+      - DB_USER=${DB_USER:-OAX_USER}
+      - DB_PASSWORD=${DB_PASSWORD:-NSAWDemo2025}
+      - DB_DSN=${DB_DSN:-oax5007253621_low}
+      
+      # S3 Configuration
+      - S3_BUCKET=${S3_BUCKET:-cnxtestbucket}
+      - S3_KEY=${S3_KEY:-test-csv.zip}
+      - S3_REGION=${S3_REGION:-us-east-1}
+      
+      # Application Configuration
+      - PYTHONUNBUFFERED=1
+      - TNS_ADMIN=/app/wallet_demo
+    
+    volumes:
+      # Mount wallet directory if you want to use external wallet
+      # - ./wallet_demo:/app/wallet_demo:ro
+      
+      # Mount logs directory for persistent logging
+      - ./logs:/app/logs
+    
+    # Resource limits for OCI compliance
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Network mode (can be customized for OCI)
+    network_mode: bridge
+    
+    # Command to run (override default)
+    command: [
+      "--bucket", "${S3_BUCKET:-cnxtestbucket}",
+      "--key", "${S3_KEY:-test-csv.zip}",
+      "--region", "${S3_REGION:-us-east-1}",
+      "--db-user", "${DB_USER:-OAX_USER}",
+      "--db-password", "${DB_PASSWORD:-NSAWDemo2025}",
+      "--db-dsn", "${DB_DSN:-oax5007253621_low}",
+      "--db-only"
+    ]
+
+networks:
+  default:
+    driver: bridge

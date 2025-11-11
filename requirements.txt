@@ -1,0 +1,6 @@
+boto3
+python-dotenv
+oracledb
+oci
+pytest
+moto[s3]

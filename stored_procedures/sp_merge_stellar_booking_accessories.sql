@@ -1,0 +1,45 @@
+
+-- ============================================================================
+-- Merge STG_STELLAR_BOOKING_ACCESSORIES to DW_STELLAR_BOOKING_ACCESSORIES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_BOOKING_ACCESSORIES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_BOOKING_ACCESSORIES tgt
+    USING STG_STELLAR_BOOKING_ACCESSORIES src
+    ON (tgt.BOOKING_ID = src.BOOKING_ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.ACCESSORY_ID = src.ACCESSORY_ID,
+            tgt.QTY = src.QTY,
+            tgt.PRICE = src.PRICE,
+            tgt.PRICE_OVERRIDE = src.PRICE_OVERRIDE,
+            tgt.ACCESSORY_OPTION_ID = src.ACCESSORY_OPTION_ID,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            BOOKING_ID, ACCESSORY_ID, QTY, PRICE, PRICE_OVERRIDE, ACCESSORY_OPTION_ID, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.BOOKING_ID, src.ACCESSORY_ID, src.QTY, src.PRICE, src.PRICE_OVERRIDE, src.ACCESSORY_OPTION_ID, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_BOOKING_ACCESSORIES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_BOOKING_ACCESSORIES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_BOOKING_ACCESSORIES;
+/

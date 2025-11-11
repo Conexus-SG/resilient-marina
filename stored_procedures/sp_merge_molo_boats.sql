@@ -1,0 +1,76 @@
+
+-- ============================================================================
+-- Merge STG_MOLO_BOATS to DW_MOLO_BOATS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_BOATS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_BOATS tgt
+    USING STG_MOLO_BOATS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.PHOTO = src.PHOTO,
+            tgt.MAKE = src.MAKE,
+            tgt.MODEL = src.MODEL,
+            tgt.NAME = src.NAME,
+            tgt.LOA = src.LOA,
+            tgt.BEAM = src.BEAM,
+            tgt.DRAFT = src.DRAFT,
+            tgt.AIR_DRAFT = src.AIR_DRAFT,
+            tgt.REGISTRATION_NUMBER = src.REGISTRATION_NUMBER,
+            tgt.REGISTRATION_STATE = src.REGISTRATION_STATE,
+            tgt.CREATION_TIME = src.CREATION_TIME,
+            tgt.BOAT_TYPE_ID = src.BOAT_TYPE_ID,
+            tgt.MARINA_LOCATION_ID = src.MARINA_LOCATION_ID,
+            tgt.POWER_NEED_ID = src.POWER_NEED_ID,
+            tgt.NOTES = src.NOTES,
+            tgt.RECORD_STATUS_ID = src.RECORD_STATUS_ID,
+            tgt.ASPNET_USER_ID = src.ASPNET_USER_ID,
+            tgt.MAST_LENGTH = src.MAST_LENGTH,
+            tgt.WEIGHT = src.WEIGHT,
+            tgt.COLOR = src.COLOR,
+            tgt.HULL_ID = src.HULL_ID,
+            tgt.KEY_LOCATION_CODE = src.KEY_LOCATION_CODE,
+            tgt.YEAR = src.YEAR,
+            tgt.HASH_ID = src.HASH_ID,
+            tgt.MOLO_API_PARTNER_ID = src.MOLO_API_PARTNER_ID,
+            tgt.POWER_NEED1_ID = src.POWER_NEED1_ID,
+            tgt.LAST_EDITED_DATE_TIME = src.LAST_EDITED_DATE_TIME,
+            tgt.LAST_EDITED_USER_ID = src.LAST_EDITED_USER_ID,
+            tgt.LAST_EDITED_MOLO_API_PARTNER_ID = src.LAST_EDITED_MOLO_API_PARTNER_ID,
+            tgt.FILESTACK_ID = src.FILESTACK_ID,
+            tgt.TONNAGE = src.TONNAGE,
+            tgt.GALLON_CAPACITY = src.GALLON_CAPACITY,
+            tgt.IS_ACTIVE = src.IS_ACTIVE,
+            tgt.BOOKING_MERGING_DONE = src.BOOKING_MERGING_DONE,
+            tgt.DECAL_NUMBER = src.DECAL_NUMBER,
+            tgt.MANUFACTURER = src.MANUFACTURER,
+            tgt.SERIAL_NUMBER = src.SERIAL_NUMBER,
+            tgt.REGISTRATION_EXPIRATION = src.REGISTRATION_EXPIRATION,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, PHOTO, MAKE, MODEL, NAME, LOA, BEAM, DRAFT, AIR_DRAFT, REGISTRATION_NUMBER, REGISTRATION_STATE, CREATION_TIME, BOAT_TYPE_ID, MARINA_LOCATION_ID, POWER_NEED_ID, NOTES, RECORD_STATUS_ID, ASPNET_USER_ID, MAST_LENGTH, WEIGHT, COLOR, HULL_ID, KEY_LOCATION_CODE, YEAR, HASH_ID, MOLO_API_PARTNER_ID, POWER_NEED1_ID, LAST_EDITED_DATE_TIME, LAST_EDITED_USER_ID, LAST_EDITED_MOLO_API_PARTNER_ID, FILESTACK_ID, TONNAGE, GALLON_CAPACITY, IS_ACTIVE, BOOKING_MERGING_DONE, DECAL_NUMBER, MANUFACTURER, SERIAL_NUMBER, REGISTRATION_EXPIRATION,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.PHOTO, src.MAKE, src.MODEL, src.NAME, src.LOA, src.BEAM, src.DRAFT, src.AIR_DRAFT, src.REGISTRATION_NUMBER, src.REGISTRATION_STATE, src.CREATION_TIME, src.BOAT_TYPE_ID, src.MARINA_LOCATION_ID, src.POWER_NEED_ID, src.NOTES, src.RECORD_STATUS_ID, src.ASPNET_USER_ID, src.MAST_LENGTH, src.WEIGHT, src.COLOR, src.HULL_ID, src.KEY_LOCATION_CODE, src.YEAR, src.HASH_ID, src.MOLO_API_PARTNER_ID, src.POWER_NEED1_ID, src.LAST_EDITED_DATE_TIME, src.LAST_EDITED_USER_ID, src.LAST_EDITED_MOLO_API_PARTNER_ID, src.FILESTACK_ID, src.TONNAGE, src.GALLON_CAPACITY, src.IS_ACTIVE, src.BOOKING_MERGING_DONE, src.DECAL_NUMBER, src.MANUFACTURER, src.SERIAL_NUMBER, src.REGISTRATION_EXPIRATION,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_BOATS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_BOATS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_BOATS;
+/

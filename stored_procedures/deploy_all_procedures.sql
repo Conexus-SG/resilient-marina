@@ -1,0 +1,3816 @@
+-- ============================================================================
+-- Merge STG_MOLO_ACCOUNTS to DW_MOLO_ACCOUNTS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_ACCOUNTS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_ACCOUNTS tgt
+    USING STG_MOLO_ACCOUNTS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.ACCOUNT_STATUS_ID = src.ACCOUNT_STATUS_ID,
+            tgt.MARINA_LOCATION_ID = src.MARINA_LOCATION_ID,
+            tgt.CONTACT_ID = src.CONTACT_ID,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, ACCOUNT_STATUS_ID, MARINA_LOCATION_ID, CONTACT_ID,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.ACCOUNT_STATUS_ID, src.MARINA_LOCATION_ID, src.CONTACT_ID,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_ACCOUNTS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_ACCOUNTS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_ACCOUNTS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_BOAT_TYPES to DW_MOLO_BOAT_TYPES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_BOAT_TYPES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_BOAT_TYPES tgt
+    USING STG_MOLO_BOAT_TYPES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_BOAT_TYPES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_BOAT_TYPES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_BOAT_TYPES;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_BOATS to DW_MOLO_BOATS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_BOATS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_BOATS tgt
+    USING STG_MOLO_BOATS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.PHOTO = src.PHOTO,
+            tgt.MAKE = src.MAKE,
+            tgt.MODEL = src.MODEL,
+            tgt.NAME = src.NAME,
+            tgt.LOA = src.LOA,
+            tgt.BEAM = src.BEAM,
+            tgt.DRAFT = src.DRAFT,
+            tgt.AIR_DRAFT = src.AIR_DRAFT,
+            tgt.REGISTRATION_NUMBER = src.REGISTRATION_NUMBER,
+            tgt.REGISTRATION_STATE = src.REGISTRATION_STATE,
+            tgt.CREATION_TIME = src.CREATION_TIME,
+            tgt.BOAT_TYPE_ID = src.BOAT_TYPE_ID,
+            tgt.MARINA_LOCATION_ID = src.MARINA_LOCATION_ID,
+            tgt.POWER_NEED_ID = src.POWER_NEED_ID,
+            tgt.NOTES = src.NOTES,
+            tgt.RECORD_STATUS_ID = src.RECORD_STATUS_ID,
+            tgt.ASPNET_USER_ID = src.ASPNET_USER_ID,
+            tgt.MAST_LENGTH = src.MAST_LENGTH,
+            tgt.WEIGHT = src.WEIGHT,
+            tgt.COLOR = src.COLOR,
+            tgt.HULL_ID = src.HULL_ID,
+            tgt.KEY_LOCATION_CODE = src.KEY_LOCATION_CODE,
+            tgt.YEAR = src.YEAR,
+            tgt.HASH_ID = src.HASH_ID,
+            tgt.MOLO_API_PARTNER_ID = src.MOLO_API_PARTNER_ID,
+            tgt.POWER_NEED1_ID = src.POWER_NEED1_ID,
+            tgt.LAST_EDITED_DATE_TIME = src.LAST_EDITED_DATE_TIME,
+            tgt.LAST_EDITED_USER_ID = src.LAST_EDITED_USER_ID,
+            tgt.LAST_EDITED_MOLO_API_PARTNER_ID = src.LAST_EDITED_MOLO_API_PARTNER_ID,
+            tgt.FILESTACK_ID = src.FILESTACK_ID,
+            tgt.TONNAGE = src.TONNAGE,
+            tgt.GALLON_CAPACITY = src.GALLON_CAPACITY,
+            tgt.IS_ACTIVE = src.IS_ACTIVE,
+            tgt.BOOKING_MERGING_DONE = src.BOOKING_MERGING_DONE,
+            tgt.DECAL_NUMBER = src.DECAL_NUMBER,
+            tgt.MANUFACTURER = src.MANUFACTURER,
+            tgt.SERIAL_NUMBER = src.SERIAL_NUMBER,
+            tgt.REGISTRATION_EXPIRATION = src.REGISTRATION_EXPIRATION,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, PHOTO, MAKE, MODEL, NAME, LOA, BEAM, DRAFT, AIR_DRAFT, REGISTRATION_NUMBER, REGISTRATION_STATE, CREATION_TIME, BOAT_TYPE_ID, MARINA_LOCATION_ID, POWER_NEED_ID, NOTES, RECORD_STATUS_ID, ASPNET_USER_ID, MAST_LENGTH, WEIGHT, COLOR, HULL_ID, KEY_LOCATION_CODE, YEAR, HASH_ID, MOLO_API_PARTNER_ID, POWER_NEED1_ID, LAST_EDITED_DATE_TIME, LAST_EDITED_USER_ID, LAST_EDITED_MOLO_API_PARTNER_ID, FILESTACK_ID, TONNAGE, GALLON_CAPACITY, IS_ACTIVE, BOOKING_MERGING_DONE, DECAL_NUMBER, MANUFACTURER, SERIAL_NUMBER, REGISTRATION_EXPIRATION,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.PHOTO, src.MAKE, src.MODEL, src.NAME, src.LOA, src.BEAM, src.DRAFT, src.AIR_DRAFT, src.REGISTRATION_NUMBER, src.REGISTRATION_STATE, src.CREATION_TIME, src.BOAT_TYPE_ID, src.MARINA_LOCATION_ID, src.POWER_NEED_ID, src.NOTES, src.RECORD_STATUS_ID, src.ASPNET_USER_ID, src.MAST_LENGTH, src.WEIGHT, src.COLOR, src.HULL_ID, src.KEY_LOCATION_CODE, src.YEAR, src.HASH_ID, src.MOLO_API_PARTNER_ID, src.POWER_NEED1_ID, src.LAST_EDITED_DATE_TIME, src.LAST_EDITED_USER_ID, src.LAST_EDITED_MOLO_API_PARTNER_ID, src.FILESTACK_ID, src.TONNAGE, src.GALLON_CAPACITY, src.IS_ACTIVE, src.BOOKING_MERGING_DONE, src.DECAL_NUMBER, src.MANUFACTURER, src.SERIAL_NUMBER, src.REGISTRATION_EXPIRATION,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_BOATS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_BOATS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_BOATS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_CITIES to DW_MOLO_CITIES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_CITIES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_CITIES tgt
+    USING STG_MOLO_CITIES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.STATE = src.STATE,
+            tgt.COUNTRY = src.COUNTRY,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME, STATE, COUNTRY,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME, src.STATE, src.COUNTRY,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_CITIES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_CITIES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_CITIES;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_COMPANIES to DW_MOLO_COMPANIES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_COMPANIES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_COMPANIES tgt
+    USING STG_MOLO_COMPANIES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.OWNER = src.OWNER,
+            tgt.PRIMARY_FAX_NUMBER = src.PRIMARY_FAX_NUMBER,
+            tgt.PRIMARY_PHONE_NUMBER = src.PRIMARY_PHONE_NUMBER,
+            tgt.CITY_ID = src.CITY_ID,
+            tgt.IMAGE = src.IMAGE,
+            tgt.DESCRIPTION = src.DESCRIPTION,
+            tgt.PARTNER_ID = src.PARTNER_ID,
+            tgt.MOLO_API_PARTNER_ID = src.MOLO_API_PARTNER_ID,
+            tgt.COMPANY_MOLO_API_PARTNER_COMPANY_ID = src.COMPANY_MOLO_API_PARTNER_COMPANY_ID,
+            tgt.INVOICE_AT_COMPANY_LEVEL = src.INVOICE_AT_COMPANY_LEVEL,
+            tgt.MOLO_CONTACT_ID = src.MOLO_CONTACT_ID,
+            tgt.STRIPE_CUSTOMER_ID = src.STRIPE_CUSTOMER_ID,
+            tgt.LOGIN_PROVIDER_ID = src.LOGIN_PROVIDER_ID,
+            tgt.DEFAULT_CC_FEE = src.DEFAULT_CC_FEE,
+            tgt.TIER1_PERCENT_ACH_FEE = src.TIER1_PERCENT_ACH_FEE,
+            tgt.TIER2_PERCENT_ACH_FEE = src.TIER2_PERCENT_ACH_FEE,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME, OWNER, PRIMARY_FAX_NUMBER, PRIMARY_PHONE_NUMBER, CITY_ID, IMAGE, DESCRIPTION, PARTNER_ID, MOLO_API_PARTNER_ID, COMPANY_MOLO_API_PARTNER_COMPANY_ID, INVOICE_AT_COMPANY_LEVEL, MOLO_CONTACT_ID, STRIPE_CUSTOMER_ID, LOGIN_PROVIDER_ID, DEFAULT_CC_FEE, TIER1_PERCENT_ACH_FEE, TIER2_PERCENT_ACH_FEE,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME, src.OWNER, src.PRIMARY_FAX_NUMBER, src.PRIMARY_PHONE_NUMBER, src.CITY_ID, src.IMAGE, src.DESCRIPTION, src.PARTNER_ID, src.MOLO_API_PARTNER_ID, src.COMPANY_MOLO_API_PARTNER_COMPANY_ID, src.INVOICE_AT_COMPANY_LEVEL, src.MOLO_CONTACT_ID, src.STRIPE_CUSTOMER_ID, src.LOGIN_PROVIDER_ID, src.DEFAULT_CC_FEE, src.TIER1_PERCENT_ACH_FEE, src.TIER2_PERCENT_ACH_FEE,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_COMPANIES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_COMPANIES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_COMPANIES;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_CONTACT_AUTO_CHARGE to DW_MOLO_CONTACT_AUTO_CHARGE
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_CONTACT_AUTO_CHARGE
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_CONTACT_AUTO_CHARGE tgt
+    USING STG_MOLO_CONTACT_AUTO_CHARGE src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_CONTACT_AUTO_CHARGE: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_CONTACT_AUTO_CHARGE: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_CONTACT_AUTO_CHARGE;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_CONTACT_TYPES to DW_MOLO_CONTACT_TYPES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_CONTACT_TYPES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_CONTACT_TYPES tgt
+    USING STG_MOLO_CONTACT_TYPES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_CONTACT_TYPES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_CONTACT_TYPES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_CONTACT_TYPES;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_CONTACTS to DW_MOLO_CONTACTS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_CONTACTS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_CONTACTS tgt
+    USING STG_MOLO_CONTACTS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.EMAILS = src.EMAILS,
+            tgt.FIRST_NAME = src.FIRST_NAME,
+            tgt.MIDDLE_NAME = src.MIDDLE_NAME,
+            tgt.LAST_NAME = src.LAST_NAME,
+            tgt.MARINA_LOCATION_ID = src.MARINA_LOCATION_ID,
+            tgt.NOTES = src.NOTES,
+            tgt.RECORD_STATUS_ID = src.RECORD_STATUS_ID,
+            tgt.IS_SUPPLIER = src.IS_SUPPLIER,
+            tgt.IS_CUSTOMER = src.IS_CUSTOMER,
+            tgt.XERO_ID = src.XERO_ID,
+            tgt.COMPANY_CONTACT_NAME = src.COMPANY_CONTACT_NAME,
+            tgt.CREATION_USER = src.CREATION_USER,
+            tgt.CREATION_DATE_TIME = src.CREATION_DATE_TIME,
+            tgt.CIM_ID = src.CIM_ID,
+            tgt.MARINA_LOCATION1_ID = src.MARINA_LOCATION1_ID,
+            tgt.QB_CUSTOMER_ID = src.QB_CUSTOMER_ID,
+            tgt.STATEMENTS_PREFERENCE_ID = src.STATEMENTS_PREFERENCE_ID,
+            tgt.HASH_ID = src.HASH_ID,
+            tgt.MOLO_API_PARTNER_ID = src.MOLO_API_PARTNER_ID,
+            tgt.TAX_EXEMPT_STATUS = src.TAX_EXEMPT_STATUS,
+            tgt.AUTOMATIC_DISCOUNT_PERCENT = src.AUTOMATIC_DISCOUNT_PERCENT,
+            tgt.COST_PLUS_DISCOUNT = src.COST_PLUS_DISCOUNT,
+            tgt.LINKED_PARENT_CONTACT = src.LINKED_PARENT_CONTACT,
+            tgt.CONTACT_AUTO_CHARGE_ID = src.CONTACT_AUTO_CHARGE_ID,
+            tgt.LAST_EDITED_DATE_TIME = src.LAST_EDITED_DATE_TIME,
+            tgt.LAST_EDITED_USER_ID = src.LAST_EDITED_USER_ID,
+            tgt.LAST_EDITED_MOLO_API_PARTNER_ID = src.LAST_EDITED_MOLO_API_PARTNER_ID,
+            tgt.STRIPE_CUSTOMER_ID = src.STRIPE_CUSTOMER_ID,
+            tgt.ACCOUNT_LIMIT = src.ACCOUNT_LIMIT,
+            tgt.FILESTACK_ID = src.FILESTACK_ID,
+            tgt.SHOW_COMPANY_NAME_PRINTED = src.SHOW_COMPANY_NAME_PRINTED,
+            tgt.BOOKING_MERGING_DONE = src.BOOKING_MERGING_DONE,
+            tgt.DATE_OF_BIRTH = src.DATE_OF_BIRTH,
+            tgt.IDS_CUSTOMER_ID = src.IDS_CUSTOMER_ID,
+            tgt.DO_NOT_LAUNCH = src.DO_NOT_LAUNCH,
+            tgt.DO_NOT_LAUNCH_REASON = src.DO_NOT_LAUNCH_REASON,
+            tgt.DRIVER_LICENSE_ID = src.DRIVER_LICENSE_ID,
+            tgt.QUICKBOOKS_ID = src.QUICKBOOKS_ID,
+            tgt.QUICKBOOKS_NAME = src.QUICKBOOKS_NAME,
+            tgt.QBO_VENDOR_ID = src.QBO_VENDOR_ID,
+            tgt.SKIP_FOR_FINANCE_CHARGES = src.SKIP_FOR_FINANCE_CHARGES,
+            tgt.MAIN_CONTACT_ID = src.MAIN_CONTACT_ID,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, EMAILS, FIRST_NAME, MIDDLE_NAME, LAST_NAME, MARINA_LOCATION_ID, NOTES, RECORD_STATUS_ID, IS_SUPPLIER, IS_CUSTOMER, XERO_ID, COMPANY_CONTACT_NAME, CREATION_USER, CREATION_DATE_TIME, CIM_ID, MARINA_LOCATION1_ID, QB_CUSTOMER_ID, STATEMENTS_PREFERENCE_ID, HASH_ID, MOLO_API_PARTNER_ID, TAX_EXEMPT_STATUS, AUTOMATIC_DISCOUNT_PERCENT, COST_PLUS_DISCOUNT, LINKED_PARENT_CONTACT, CONTACT_AUTO_CHARGE_ID, LAST_EDITED_DATE_TIME, LAST_EDITED_USER_ID, LAST_EDITED_MOLO_API_PARTNER_ID, STRIPE_CUSTOMER_ID, ACCOUNT_LIMIT, FILESTACK_ID, SHOW_COMPANY_NAME_PRINTED, BOOKING_MERGING_DONE, DATE_OF_BIRTH, IDS_CUSTOMER_ID, DO_NOT_LAUNCH, DO_NOT_LAUNCH_REASON, DRIVER_LICENSE_ID, QUICKBOOKS_ID, QUICKBOOKS_NAME, QBO_VENDOR_ID, SKIP_FOR_FINANCE_CHARGES, MAIN_CONTACT_ID,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.EMAILS, src.FIRST_NAME, src.MIDDLE_NAME, src.LAST_NAME, src.MARINA_LOCATION_ID, src.NOTES, src.RECORD_STATUS_ID, src.IS_SUPPLIER, src.IS_CUSTOMER, src.XERO_ID, src.COMPANY_CONTACT_NAME, src.CREATION_USER, src.CREATION_DATE_TIME, src.CIM_ID, src.MARINA_LOCATION1_ID, src.QB_CUSTOMER_ID, src.STATEMENTS_PREFERENCE_ID, src.HASH_ID, src.MOLO_API_PARTNER_ID, src.TAX_EXEMPT_STATUS, src.AUTOMATIC_DISCOUNT_PERCENT, src.COST_PLUS_DISCOUNT, src.LINKED_PARENT_CONTACT, src.CONTACT_AUTO_CHARGE_ID, src.LAST_EDITED_DATE_TIME, src.LAST_EDITED_USER_ID, src.LAST_EDITED_MOLO_API_PARTNER_ID, src.STRIPE_CUSTOMER_ID, src.ACCOUNT_LIMIT, src.FILESTACK_ID, src.SHOW_COMPANY_NAME_PRINTED, src.BOOKING_MERGING_DONE, src.DATE_OF_BIRTH, src.IDS_CUSTOMER_ID, src.DO_NOT_LAUNCH, src.DO_NOT_LAUNCH_REASON, src.DRIVER_LICENSE_ID, src.QUICKBOOKS_ID, src.QUICKBOOKS_NAME, src.QBO_VENDOR_ID, src.SKIP_FOR_FINANCE_CHARGES, src.MAIN_CONTACT_ID,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_CONTACTS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_CONTACTS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_CONTACTS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_COUNTRIES to DW_MOLO_COUNTRIES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_COUNTRIES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_COUNTRIES tgt
+    USING STG_MOLO_COUNTRIES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.CODE = src.CODE,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME, CODE,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME, src.CODE,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_COUNTRIES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_COUNTRIES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_COUNTRIES;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_INSURANCE_STATUS to DW_MOLO_INSURANCE_STATUS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_INSURANCE_STATUS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_INSURANCE_STATUS tgt
+    USING STG_MOLO_INSURANCE_STATUS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_INSURANCE_STATUS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_INSURANCE_STATUS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_INSURANCE_STATUS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_INVOICE_ITEMS to DW_MOLO_INVOICE_ITEMS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_INVOICE_ITEMS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_INVOICE_ITEMS tgt
+    USING STG_MOLO_INVOICE_ITEMS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.PREFIX = src.PREFIX,
+            tgt.QUANTITY = src.QUANTITY,
+            tgt.TITLE = src.TITLE,
+            tgt.TYPE_FIELD = src.TYPE_FIELD,
+            tgt.VALUE_FIELD = src.VALUE_FIELD,
+            tgt.DISCOUNT = src.DISCOUNT,
+            tgt.DISCOUNT_TYPE = src.DISCOUNT_TYPE,
+            tgt.TAXABLE = src.TAXABLE,
+            tgt.TAX = src.TAX,
+            tgt.MISC = src.MISC,
+            tgt.DISCOUNT_TOTAL = src.DISCOUNT_TOTAL,
+            tgt.PRICE_SUFFIX = src.PRICE_SUFFIX,
+            tgt.SUB_TOTAL = src.SUB_TOTAL,
+            tgt.SUBTOTAL_WO_DISCOUNT = src.SUBTOTAL_WO_DISCOUNT,
+            tgt.TAX_TOTAL = src.TAX_TOTAL,
+            tgt.TOTAL = src.TOTAL,
+            tgt.INVOICE_ID = src.INVOICE_ID,
+            tgt.CHARGE_GROUP = src.CHARGE_GROUP,
+            tgt.PAYMENT_ACCOUNT = src.PAYMENT_ACCOUNT,
+            tgt.PRICE_STR = src.PRICE_STR,
+            tgt.IS_VOID = src.IS_VOID,
+            tgt.DATE_FIELD = src.DATE_FIELD,
+            tgt.TEXT_AUX = src.TEXT_AUX,
+            tgt.TEXT_AUX2 = src.TEXT_AUX2,
+            tgt.DISCOUNT_DATE_TIME = src.DISCOUNT_DATE_TIME,
+            tgt.DISCOUNT_USER_ID = src.DISCOUNT_USER_ID,
+            tgt.NOTES = src.NOTES,
+            tgt.PR_TYPE = src.PR_TYPE,
+            tgt.STATUS_FIELD = src.STATUS_FIELD,
+            tgt.DELETION_USER_ID = src.DELETION_USER_ID,
+            tgt.DELETION_DATE_TIME = src.DELETION_DATE_TIME,
+            tgt.OVERPAYMENT_ID = src.OVERPAYMENT_ID,
+            tgt.VOID_USER = src.VOID_USER,
+            tgt.VOID_DATE_TIME = src.VOID_DATE_TIME,
+            tgt.MISC2 = src.MISC2,
+            tgt.PREPAYMENT_ID = src.PREPAYMENT_ID,
+            tgt.CREDIT_INVOICE_ID = src.CREDIT_INVOICE_ID,
+            tgt.ALLOCATION_TYPE = src.ALLOCATION_TYPE,
+            tgt.RESERVATION_ID = src.RESERVATION_ID,
+            tgt.ITEM_MASTER_ID = src.ITEM_MASTER_ID,
+            tgt.ASPNET_USER_ID = src.ASPNET_USER_ID,
+            tgt.INVOICE_ITEM_TYPE_ID = src.INVOICE_ITEM_TYPE_ID,
+            tgt.SEASONAL_PRICE_ID = src.SEASONAL_PRICE_ID,
+            tgt.TRANSIENT_PRICE_ID = src.TRANSIENT_PRICE_ID,
+            tgt.SV_JOB_ID = src.SV_JOB_ID,
+            tgt.ORIGINAL_CREDIT_ITEM = src.ORIGINAL_CREDIT_ITEM,
+            tgt.TAX_EXEMPT = src.TAX_EXEMPT,
+            tgt.LAST_MODIFIED_DATE_TIME = src.LAST_MODIFIED_DATE_TIME,
+            tgt.LAST_MODIFIED_ASPNET_USER = src.LAST_MODIFIED_ASPNET_USER,
+            tgt.DELETION_REASON = src.DELETION_REASON,
+            tgt.VOID_REASON = src.VOID_REASON,
+            tgt.START_DATE_TIME = src.START_DATE_TIME,
+            tgt.END_DATE_TIME = src.END_DATE_TIME,
+            tgt.CREATION_PARTNER_ID = src.CREATION_PARTNER_ID,
+            tgt.DELETE_PARTNER_ID = src.DELETE_PARTNER_ID,
+            tgt.VOID_PARTNER_ID = src.VOID_PARTNER_ID,
+            tgt.ORIGINAL_PRICE = src.ORIGINAL_PRICE,
+            tgt.OVERRIDE_XERO_TAX_RATE = src.OVERRIDE_XERO_TAX_RATE,
+            tgt.OVERRIDE_XERO_SALES_ACCOUNT = src.OVERRIDE_XERO_SALES_ACCOUNT,
+            tgt.ORIGINAL_RESERVATION_PRICE = src.ORIGINAL_RESERVATION_PRICE,
+            tgt.NUMBER_OF_DECIMALS = src.NUMBER_OF_DECIMALS,
+            tgt.STRIPE_TRANSACTION_DATA_ID = src.STRIPE_TRANSACTION_DATA_ID,
+            tgt.VALUE_ALTERNATIVE = src.VALUE_ALTERNATIVE,
+            tgt.STRIPE_TERMINAL_ID = src.STRIPE_TERMINAL_ID,
+            tgt.STRIPE_APPLICATION_NAME = src.STRIPE_APPLICATION_NAME,
+            tgt.STRIPE_AID = src.STRIPE_AID,
+            tgt.ENTERED_AMOUNT = src.ENTERED_AMOUNT,
+            tgt.EXCHANGE_RATE = src.EXCHANGE_RATE,
+            tgt.CURRENCIES_ID = src.CURRENCIES_ID,
+            tgt.SV_CHARGE_INSTANCE_ID = src.SV_CHARGE_INSTANCE_ID,
+            tgt.SV_LABOR_INSTANCE_ID = src.SV_LABOR_INSTANCE_ID,
+            tgt.SV_PART_INSTANCE_ID = src.SV_PART_INSTANCE_ID,
+            tgt.REVENUE_GL_CODE = src.REVENUE_GL_CODE,
+            tgt.AR_GL_CODE = src.AR_GL_CODE,
+            tgt.PAYMENT_GL_CODE = src.PAYMENT_GL_CODE,
+            tgt.COGS_GL_CODE = src.COGS_GL_CODE,
+            tgt.INVENTORY_GL_CODE = src.INVENTORY_GL_CODE,
+            tgt.SALES_TAX_GL_CODE = src.SALES_TAX_GL_CODE,
+            tgt.PREPAYMENT_GL_CODE = src.PREPAYMENT_GL_CODE,
+            tgt.ACCOUNT_TYPE = src.ACCOUNT_TYPE,
+            tgt.APPLICATION_CRYPTOGRAM = src.APPLICATION_CRYPTOGRAM,
+            tgt.AUTHORIZATION_CODE = src.AUTHORIZATION_CODE,
+            tgt.AUTHORIZATION_RESPONSE_CODE = src.AUTHORIZATION_RESPONSE_CODE,
+            tgt.CARDHOLDER_VERIFICATION_METHOD = src.CARDHOLDER_VERIFICATION_METHOD,
+            tgt.TERMINAL_VERIFICATION_RESULTS = src.TERMINAL_VERIFICATION_RESULTS,
+            tgt.TRANSACTION_STATUS_INFORMATION = src.TRANSACTION_STATUS_INFORMATION,
+            tgt.TRACKING_CODE = src.TRACKING_CODE,
+            tgt.DISCOUNT_GL_CODE = src.DISCOUNT_GL_CODE,
+            tgt.OVERRIDE_TRACKING_CATEGORY1 = src.OVERRIDE_TRACKING_CATEGORY1,
+            tgt.OVERRIDE_TRACKING_CATEGORY2 = src.OVERRIDE_TRACKING_CATEGORY2,
+            tgt.QUICKBOOKS_PAYMENT_ID = src.QUICKBOOKS_PAYMENT_ID,
+            tgt.ALLOW_TOTAL_PRICE_ENTRY = src.ALLOW_TOTAL_PRICE_ENTRY,
+            tgt.ADDED_AUTOMATICALLY = src.ADDED_AUTOMATICALLY,
+            tgt.ALLOCATION_PERFORMED_DATE = src.ALLOCATION_PERFORMED_DATE,
+            tgt.CREATED_DATE = src.CREATED_DATE,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, PREFIX, QUANTITY, TITLE, TYPE_FIELD, VALUE_FIELD, DISCOUNT, DISCOUNT_TYPE, TAXABLE, TAX, MISC, DISCOUNT_TOTAL, PRICE_SUFFIX, SUB_TOTAL, SUBTOTAL_WO_DISCOUNT, TAX_TOTAL, TOTAL, INVOICE_ID, CHARGE_GROUP, PAYMENT_ACCOUNT, PRICE_STR, IS_VOID, DATE_FIELD, TEXT_AUX, TEXT_AUX2, DISCOUNT_DATE_TIME, DISCOUNT_USER_ID, NOTES, PR_TYPE, STATUS_FIELD, DELETION_USER_ID, DELETION_DATE_TIME, OVERPAYMENT_ID, VOID_USER, VOID_DATE_TIME, MISC2, PREPAYMENT_ID, CREDIT_INVOICE_ID, ALLOCATION_TYPE, RESERVATION_ID, ITEM_MASTER_ID, ASPNET_USER_ID, INVOICE_ITEM_TYPE_ID, SEASONAL_PRICE_ID, TRANSIENT_PRICE_ID, SV_JOB_ID, ORIGINAL_CREDIT_ITEM, TAX_EXEMPT, LAST_MODIFIED_DATE_TIME, LAST_MODIFIED_ASPNET_USER, DELETION_REASON, VOID_REASON, START_DATE_TIME, END_DATE_TIME, CREATION_PARTNER_ID, DELETE_PARTNER_ID, VOID_PARTNER_ID, ORIGINAL_PRICE, OVERRIDE_XERO_TAX_RATE, OVERRIDE_XERO_SALES_ACCOUNT, ORIGINAL_RESERVATION_PRICE, NUMBER_OF_DECIMALS, STRIPE_TRANSACTION_DATA_ID, VALUE_ALTERNATIVE, STRIPE_TERMINAL_ID, STRIPE_APPLICATION_NAME, STRIPE_AID, ENTERED_AMOUNT, EXCHANGE_RATE, CURRENCIES_ID, SV_CHARGE_INSTANCE_ID, SV_LABOR_INSTANCE_ID, SV_PART_INSTANCE_ID, REVENUE_GL_CODE, AR_GL_CODE, PAYMENT_GL_CODE, COGS_GL_CODE, INVENTORY_GL_CODE, SALES_TAX_GL_CODE, PREPAYMENT_GL_CODE, ACCOUNT_TYPE, APPLICATION_CRYPTOGRAM, AUTHORIZATION_CODE, AUTHORIZATION_RESPONSE_CODE, CARDHOLDER_VERIFICATION_METHOD, TERMINAL_VERIFICATION_RESULTS, TRANSACTION_STATUS_INFORMATION, TRACKING_CODE, DISCOUNT_GL_CODE, OVERRIDE_TRACKING_CATEGORY1, OVERRIDE_TRACKING_CATEGORY2, QUICKBOOKS_PAYMENT_ID, ALLOW_TOTAL_PRICE_ENTRY, ADDED_AUTOMATICALLY, ALLOCATION_PERFORMED_DATE, CREATED_DATE,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.PREFIX, src.QUANTITY, src.TITLE, src.TYPE_FIELD, src.VALUE_FIELD, src.DISCOUNT, src.DISCOUNT_TYPE, src.TAXABLE, src.TAX, src.MISC, src.DISCOUNT_TOTAL, src.PRICE_SUFFIX, src.SUB_TOTAL, src.SUBTOTAL_WO_DISCOUNT, src.TAX_TOTAL, src.TOTAL, src.INVOICE_ID, src.CHARGE_GROUP, src.PAYMENT_ACCOUNT, src.PRICE_STR, src.IS_VOID, src.DATE_FIELD, src.TEXT_AUX, src.TEXT_AUX2, src.DISCOUNT_DATE_TIME, src.DISCOUNT_USER_ID, src.NOTES, src.PR_TYPE, src.STATUS_FIELD, src.DELETION_USER_ID, src.DELETION_DATE_TIME, src.OVERPAYMENT_ID, src.VOID_USER, src.VOID_DATE_TIME, src.MISC2, src.PREPAYMENT_ID, src.CREDIT_INVOICE_ID, src.ALLOCATION_TYPE, src.RESERVATION_ID, src.ITEM_MASTER_ID, src.ASPNET_USER_ID, src.INVOICE_ITEM_TYPE_ID, src.SEASONAL_PRICE_ID, src.TRANSIENT_PRICE_ID, src.SV_JOB_ID, src.ORIGINAL_CREDIT_ITEM, src.TAX_EXEMPT, src.LAST_MODIFIED_DATE_TIME, src.LAST_MODIFIED_ASPNET_USER, src.DELETION_REASON, src.VOID_REASON, src.START_DATE_TIME, src.END_DATE_TIME, src.CREATION_PARTNER_ID, src.DELETE_PARTNER_ID, src.VOID_PARTNER_ID, src.ORIGINAL_PRICE, src.OVERRIDE_XERO_TAX_RATE, src.OVERRIDE_XERO_SALES_ACCOUNT, src.ORIGINAL_RESERVATION_PRICE, src.NUMBER_OF_DECIMALS, src.STRIPE_TRANSACTION_DATA_ID, src.VALUE_ALTERNATIVE, src.STRIPE_TERMINAL_ID, src.STRIPE_APPLICATION_NAME, src.STRIPE_AID, src.ENTERED_AMOUNT, src.EXCHANGE_RATE, src.CURRENCIES_ID, src.SV_CHARGE_INSTANCE_ID, src.SV_LABOR_INSTANCE_ID, src.SV_PART_INSTANCE_ID, src.REVENUE_GL_CODE, src.AR_GL_CODE, src.PAYMENT_GL_CODE, src.COGS_GL_CODE, src.INVENTORY_GL_CODE, src.SALES_TAX_GL_CODE, src.PREPAYMENT_GL_CODE, src.ACCOUNT_TYPE, src.APPLICATION_CRYPTOGRAM, src.AUTHORIZATION_CODE, src.AUTHORIZATION_RESPONSE_CODE, src.CARDHOLDER_VERIFICATION_METHOD, src.TERMINAL_VERIFICATION_RESULTS, src.TRANSACTION_STATUS_INFORMATION, src.TRACKING_CODE, src.DISCOUNT_GL_CODE, src.OVERRIDE_TRACKING_CATEGORY1, src.OVERRIDE_TRACKING_CATEGORY2, src.QUICKBOOKS_PAYMENT_ID, src.ALLOW_TOTAL_PRICE_ENTRY, src.ADDED_AUTOMATICALLY, src.ALLOCATION_PERFORMED_DATE, src.CREATED_DATE,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_INVOICE_ITEMS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_INVOICE_ITEMS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_INVOICE_ITEMS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_INVOICE_STATUS to DW_MOLO_INVOICE_STATUS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_INVOICE_STATUS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_INVOICE_STATUS tgt
+    USING STG_MOLO_INVOICE_STATUS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_INVOICE_STATUS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_INVOICE_STATUS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_INVOICE_STATUS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_INVOICE_TYPES to DW_MOLO_INVOICE_TYPES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_INVOICE_TYPES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_INVOICE_TYPES tgt
+    USING STG_MOLO_INVOICE_TYPES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_INVOICE_TYPES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_INVOICE_TYPES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_INVOICE_TYPES;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_INVOICES to DW_MOLO_INVOICES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_INVOICES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_INVOICES tgt
+    USING STG_MOLO_INVOICES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.DATE_FIELD = src.DATE_FIELD,
+            tgt.DOLLAR_DISCOUNT = src.DOLLAR_DISCOUNT,
+            tgt.PERCENT_DISCOUNT = src.PERCENT_DISCOUNT,
+            tgt.ACTIVE = src.ACTIVE,
+            tgt.CLOSING_DATE = src.CLOSING_DATE,
+            tgt.DISCOUNT_TOTAL = src.DISCOUNT_TOTAL,
+            tgt.OPENED = src.OPENED,
+            tgt.PAYED = src.PAYED,
+            tgt.SUBTOTAL = src.SUBTOTAL,
+            tgt.SUBTOTAL_WO_DISCOUNT = src.SUBTOTAL_WO_DISCOUNT,
+            tgt.TAX_TOTAL = src.TAX_TOTAL,
+            tgt.TITLE = src.TITLE,
+            tgt.TOTAL = src.TOTAL,
+            tgt.RESERVATION_ID = src.RESERVATION_ID,
+            tgt.ACCOUNT_ID = src.ACCOUNT_ID,
+            tgt.SERVICE_PAID_AMOUNT = src.SERVICE_PAID_AMOUNT,
+            tgt.MARINA_PAID_AMOUNT = src.MARINA_PAID_AMOUNT,
+            tgt.GAS_PAID_AMOUNT = src.GAS_PAID_AMOUNT,
+            tgt.INVOICE_STATUS_ID = src.INVOICE_STATUS_ID,
+            tgt.START_DATE = src.START_DATE,
+            tgt.INSTALLMENTS_PAYMENT_METHOD_ID = src.INSTALLMENTS_PAYMENT_METHOD_ID,
+            tgt.SCHEDULED_FOR_CRON = src.SCHEDULED_FOR_CRON,
+            tgt.ORIGINAL_INVOICE = src.ORIGINAL_INVOICE,
+            tgt.PAYMENTS_SENT_TO_XERO = src.PAYMENTS_SENT_TO_XERO,
+            tgt.WORK_ORDER_ID = src.WORK_ORDER_ID,
+            tgt.IS_INSTALLMENT_INVOICE = src.IS_INSTALLMENT_INVOICE,
+            tgt.VOID_USER = src.VOID_USER,
+            tgt.VOID_DATE_TIME = src.VOID_DATE_TIME,
+            tgt.CREATION_USER = src.CREATION_USER,
+            tgt.PAYMENT_ID = src.PAYMENT_ID,
+            tgt.QB_INVOICE_ID = src.QB_INVOICE_ID,
+            tgt.INVOICE_TYPE_ID = src.INVOICE_TYPE_ID,
+            tgt.INVOICE_DATE = src.INVOICE_DATE,
+            tgt.DUE_DATE = src.DUE_DATE,
+            tgt.CURRENCY_CODE = src.CURRENCY_CODE,
+            tgt.LAST_MODIFIED_DATE_TIME = src.LAST_MODIFIED_DATE_TIME,
+            tgt.LAST_MODIFIED_ASPNET_USER = src.LAST_MODIFIED_ASPNET_USER,
+            tgt.VOID_REASON = src.VOID_REASON,
+            tgt.CREATE_PARTNER_ID = src.CREATE_PARTNER_ID,
+            tgt.VOID_PARTNER_ID = src.VOID_PARTNER_ID,
+            tgt.UPDATE_HASH = src.UPDATE_HASH,
+            tgt.SCHEDULED_FOR_INVENTORY_CRON = src.SCHEDULED_FOR_INVENTORY_CRON,
+            tgt.SCHEDULED_FOR_SUBLET_CRON = src.SCHEDULED_FOR_SUBLET_CRON,
+            tgt.SCHEDULED_FOR_LABOR_CRON = src.SCHEDULED_FOR_LABOR_CRON,
+            tgt.CREATED_ON_MOBILE = src.CREATED_ON_MOBILE,
+            tgt.STRIPE_INVOICE_ID = src.STRIPE_INVOICE_ID,
+            tgt.SENT_TO_STRIPE = src.SENT_TO_STRIPE,
+            tgt.RESOURCE_BOOKING_ID = src.RESOURCE_BOOKING_ID,
+            tgt.MODIFIED_ON_MOBILE = src.MODIFIED_ON_MOBILE,
+            tgt.NOTE = src.NOTE,
+            tgt.QUICKBOOKS_INVOICE_ID = src.QUICKBOOKS_INVOICE_ID,
+            tgt.TAX_CAP = src.TAX_CAP,
+            tgt.IS_SURCHARGE = src.IS_SURCHARGE,
+            tgt.HASH_CHECK = src.HASH_CHECK,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, DATE_FIELD, DOLLAR_DISCOUNT, PERCENT_DISCOUNT, ACTIVE, CLOSING_DATE, DISCOUNT_TOTAL, OPENED, PAYED, SUBTOTAL, SUBTOTAL_WO_DISCOUNT, TAX_TOTAL, TITLE, TOTAL, RESERVATION_ID, ACCOUNT_ID, SERVICE_PAID_AMOUNT, MARINA_PAID_AMOUNT, GAS_PAID_AMOUNT, INVOICE_STATUS_ID, START_DATE, INSTALLMENTS_PAYMENT_METHOD_ID, SCHEDULED_FOR_CRON, ORIGINAL_INVOICE, PAYMENTS_SENT_TO_XERO, WORK_ORDER_ID, IS_INSTALLMENT_INVOICE, VOID_USER, VOID_DATE_TIME, CREATION_USER, PAYMENT_ID, QB_INVOICE_ID, INVOICE_TYPE_ID, INVOICE_DATE, DUE_DATE, CURRENCY_CODE, LAST_MODIFIED_DATE_TIME, LAST_MODIFIED_ASPNET_USER, VOID_REASON, CREATE_PARTNER_ID, VOID_PARTNER_ID, UPDATE_HASH, SCHEDULED_FOR_INVENTORY_CRON, SCHEDULED_FOR_SUBLET_CRON, SCHEDULED_FOR_LABOR_CRON, CREATED_ON_MOBILE, STRIPE_INVOICE_ID, SENT_TO_STRIPE, RESOURCE_BOOKING_ID, MODIFIED_ON_MOBILE, NOTE, QUICKBOOKS_INVOICE_ID, TAX_CAP, IS_SURCHARGE, HASH_CHECK,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.DATE_FIELD, src.DOLLAR_DISCOUNT, src.PERCENT_DISCOUNT, src.ACTIVE, src.CLOSING_DATE, src.DISCOUNT_TOTAL, src.OPENED, src.PAYED, src.SUBTOTAL, src.SUBTOTAL_WO_DISCOUNT, src.TAX_TOTAL, src.TITLE, src.TOTAL, src.RESERVATION_ID, src.ACCOUNT_ID, src.SERVICE_PAID_AMOUNT, src.MARINA_PAID_AMOUNT, src.GAS_PAID_AMOUNT, src.INVOICE_STATUS_ID, src.START_DATE, src.INSTALLMENTS_PAYMENT_METHOD_ID, src.SCHEDULED_FOR_CRON, src.ORIGINAL_INVOICE, src.PAYMENTS_SENT_TO_XERO, src.WORK_ORDER_ID, src.IS_INSTALLMENT_INVOICE, src.VOID_USER, src.VOID_DATE_TIME, src.CREATION_USER, src.PAYMENT_ID, src.QB_INVOICE_ID, src.INVOICE_TYPE_ID, src.INVOICE_DATE, src.DUE_DATE, src.CURRENCY_CODE, src.LAST_MODIFIED_DATE_TIME, src.LAST_MODIFIED_ASPNET_USER, src.VOID_REASON, src.CREATE_PARTNER_ID, src.VOID_PARTNER_ID, src.UPDATE_HASH, src.SCHEDULED_FOR_INVENTORY_CRON, src.SCHEDULED_FOR_SUBLET_CRON, src.SCHEDULED_FOR_LABOR_CRON, src.CREATED_ON_MOBILE, src.STRIPE_INVOICE_ID, src.SENT_TO_STRIPE, src.RESOURCE_BOOKING_ID, src.MODIFIED_ON_MOBILE, src.NOTE, src.QUICKBOOKS_INVOICE_ID, src.TAX_CAP, src.IS_SURCHARGE, src.HASH_CHECK,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_INVOICES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_INVOICES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_INVOICES;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_ITEM_CHARGE_METHODS to DW_MOLO_ITEM_CHARGE_METHODS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_ITEM_CHARGE_METHODS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_ITEM_CHARGE_METHODS tgt
+    USING STG_MOLO_ITEM_CHARGE_METHODS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_ITEM_CHARGE_METHODS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_ITEM_CHARGE_METHODS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_ITEM_CHARGE_METHODS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_ITEM_MASTERS to DW_MOLO_ITEM_MASTERS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_ITEM_MASTERS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_ITEM_MASTERS tgt
+    USING STG_MOLO_ITEM_MASTERS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.AMOUNT = src.AMOUNT,
+            tgt.ITEM_CHARGE_METHOD_ID = src.ITEM_CHARGE_METHOD_ID,
+            tgt.TAXABLE = src.TAXABLE,
+            tgt.AVAILABLE_AS_ADD_ON = src.AVAILABLE_AS_ADD_ON,
+            tgt.MARINA_LOCATION_ID = src.MARINA_LOCATION_ID,
+            tgt.PRICE = src.PRICE,
+            tgt.TAX = src.TAX,
+            tgt.SINGLE = src.SINGLE,
+            tgt.CHARGE_CATEGORY = src.CHARGE_CATEGORY,
+            tgt.AMOUNT_IS_DECIMAL = src.AMOUNT_IS_DECIMAL,
+            tgt.NUMBER_OF_DECIMALS = src.NUMBER_OF_DECIMALS,
+            tgt.ITEM_SHORT_NAME = src.ITEM_SHORT_NAME,
+            tgt.ITEM_CODE = src.ITEM_CODE,
+            tgt.TRACKED_INVENTORY = src.TRACKED_INVENTORY,
+            tgt.QUANTITY_ON_HAND = src.QUANTITY_ON_HAND,
+            tgt.PURCHASE_PRICE = src.PURCHASE_PRICE,
+            tgt.FIRST_TRACKING_CATEGORY = src.FIRST_TRACKING_CATEGORY,
+            tgt.SECOND_TRACKING_CATEGORY = src.SECOND_TRACKING_CATEGORY,
+            tgt.XERO_ID = src.XERO_ID,
+            tgt.SALE_FREQUENCY = src.SALE_FREQUENCY,
+            tgt.LOW_QUANTITY_WARNING = src.LOW_QUANTITY_WARNING,
+            tgt.MARINA_LOCATION1_ID = src.MARINA_LOCATION1_ID,
+            tgt.MARINA_LOCATION2_ID = src.MARINA_LOCATION2_ID,
+            tgt.PEDESTAL_ID = src.PEDESTAL_ID,
+            tgt.PEDESTAL1_ID = src.PEDESTAL1_ID,
+            tgt.QB_ITEM_ID = src.QB_ITEM_ID,
+            tgt.XERO_ITEM_ID = src.XERO_ITEM_ID,
+            tgt.BARCODE = src.BARCODE,
+            tgt.DISTRIBUTE_TO_OWNERS = src.DISTRIBUTE_TO_OWNERS,
+            tgt.FUEL_CLOUD_PRODUCT_ID = src.FUEL_CLOUD_PRODUCT_ID,
+            tgt.HASH_ID = src.HASH_ID,
+            tgt.REQUIRES_AGE_VERIFICATION = src.REQUIRES_AGE_VERIFICATION,
+            tgt.MINIMUM_AGE = src.MINIMUM_AGE,
+            tgt.CREATION_DATE_TIME = src.CREATION_DATE_TIME,
+            tgt.CREATION_ASPNET_USER_ID = src.CREATION_ASPNET_USER_ID,
+            tgt.RECORD_STATUS_ID = src.RECORD_STATUS_ID,
+            tgt.UPDATE_HASH = src.UPDATE_HASH,
+            tgt.SUBLET_ITEM = src.SUBLET_ITEM,
+            tgt.INTERNAL_REVENUE_XERO_ACCOUNT_ID = src.INTERNAL_REVENUE_XERO_ACCOUNT_ID,
+            tgt.INTERNAL_COGS_XERO_ACCOUNT_ID = src.INTERNAL_COGS_XERO_ACCOUNT_ID,
+            tgt.WIP_XERO_ACCOUNT_ID = src.WIP_XERO_ACCOUNT_ID,
+            tgt.INVENTORY_REVALUATION_ID = src.INVENTORY_REVALUATION_ID,
+            tgt.MARINA_LOCATION6_ID = src.MARINA_LOCATION6_ID,
+            tgt.FINALE_PRODUCT_URL = src.FINALE_PRODUCT_URL,
+            tgt.REVENUE_GL_CODE = src.REVENUE_GL_CODE,
+            tgt.COGS_GL_CODE = src.COGS_GL_CODE,
+            tgt.INVENTORY_GL_CODE = src.INVENTORY_GL_CODE,
+            tgt.AR_GL_CODE = src.AR_GL_CODE,
+            tgt.SALES_TAX_GL_CODE = src.SALES_TAX_GL_CODE,
+            tgt.ONLY_USE_LAST2_AVERAGE = src.ONLY_USE_LAST2_AVERAGE,
+            tgt.DEFERRED_REVENUE_RECOGNITION = src.DEFERRED_REVENUE_RECOGNITION,
+            tgt.DEFERRED_RECOGNITION_GL_CODE = src.DEFERRED_RECOGNITION_GL_CODE,
+            tgt.TRACKING_CODE = src.TRACKING_CODE,
+            tgt.ADD_DESCRIPTION_TO_INVOICE_NOTE = src.ADD_DESCRIPTION_TO_INVOICE_NOTE,
+            tgt.MARINA_LOCATION7_ID = src.MARINA_LOCATION7_ID,
+            tgt.IGNORE_INVENTORY_QOH = src.IGNORE_INVENTORY_QOH,
+            tgt.QOH_COMMITTED = src.QOH_COMMITTED,
+            tgt.QOH_ON_ORDER = src.QOH_ON_ORDER,
+            tgt.ALLOW_TOTAL_PRICE_ENTRY = src.ALLOW_TOTAL_PRICE_ENTRY,
+            tgt.MARINA_LOCATION9_ID = src.MARINA_LOCATION9_ID,
+            tgt.ALLOW_POSTING_TO_NON_INCOME_ACCOUNTS = src.ALLOW_POSTING_TO_NON_INCOME_ACCOUNTS,
+            tgt.ORDER_COLUMN = src.ORDER_COLUMN,
+            tgt.ENABLE_NEGATIVE_INVENTORY = src.ENABLE_NEGATIVE_INVENTORY,
+            tgt.WIP = src.WIP,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME, AMOUNT, ITEM_CHARGE_METHOD_ID, TAXABLE, AVAILABLE_AS_ADD_ON, MARINA_LOCATION_ID, PRICE, TAX, SINGLE, CHARGE_CATEGORY, AMOUNT_IS_DECIMAL, NUMBER_OF_DECIMALS, ITEM_SHORT_NAME, ITEM_CODE, TRACKED_INVENTORY, QUANTITY_ON_HAND, PURCHASE_PRICE, FIRST_TRACKING_CATEGORY, SECOND_TRACKING_CATEGORY, XERO_ID, SALE_FREQUENCY, LOW_QUANTITY_WARNING, MARINA_LOCATION1_ID, MARINA_LOCATION2_ID, PEDESTAL_ID, PEDESTAL1_ID, QB_ITEM_ID, XERO_ITEM_ID, BARCODE, DISTRIBUTE_TO_OWNERS, FUEL_CLOUD_PRODUCT_ID, HASH_ID, REQUIRES_AGE_VERIFICATION, MINIMUM_AGE, CREATION_DATE_TIME, CREATION_ASPNET_USER_ID, RECORD_STATUS_ID, UPDATE_HASH, SUBLET_ITEM, INTERNAL_REVENUE_XERO_ACCOUNT_ID, INTERNAL_COGS_XERO_ACCOUNT_ID, WIP_XERO_ACCOUNT_ID, INVENTORY_REVALUATION_ID, MARINA_LOCATION6_ID, FINALE_PRODUCT_URL, REVENUE_GL_CODE, COGS_GL_CODE, INVENTORY_GL_CODE, AR_GL_CODE, SALES_TAX_GL_CODE, ONLY_USE_LAST2_AVERAGE, DEFERRED_REVENUE_RECOGNITION, DEFERRED_RECOGNITION_GL_CODE, TRACKING_CODE, ADD_DESCRIPTION_TO_INVOICE_NOTE, MARINA_LOCATION7_ID, IGNORE_INVENTORY_QOH, QOH_COMMITTED, QOH_ON_ORDER, ALLOW_TOTAL_PRICE_ENTRY, MARINA_LOCATION9_ID, ALLOW_POSTING_TO_NON_INCOME_ACCOUNTS, ORDER_COLUMN, ENABLE_NEGATIVE_INVENTORY, WIP,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME, src.AMOUNT, src.ITEM_CHARGE_METHOD_ID, src.TAXABLE, src.AVAILABLE_AS_ADD_ON, src.MARINA_LOCATION_ID, src.PRICE, src.TAX, src.SINGLE, src.CHARGE_CATEGORY, src.AMOUNT_IS_DECIMAL, src.NUMBER_OF_DECIMALS, src.ITEM_SHORT_NAME, src.ITEM_CODE, src.TRACKED_INVENTORY, src.QUANTITY_ON_HAND, src.PURCHASE_PRICE, src.FIRST_TRACKING_CATEGORY, src.SECOND_TRACKING_CATEGORY, src.XERO_ID, src.SALE_FREQUENCY, src.LOW_QUANTITY_WARNING, src.MARINA_LOCATION1_ID, src.MARINA_LOCATION2_ID, src.PEDESTAL_ID, src.PEDESTAL1_ID, src.QB_ITEM_ID, src.XERO_ITEM_ID, src.BARCODE, src.DISTRIBUTE_TO_OWNERS, src.FUEL_CLOUD_PRODUCT_ID, src.HASH_ID, src.REQUIRES_AGE_VERIFICATION, src.MINIMUM_AGE, src.CREATION_DATE_TIME, src.CREATION_ASPNET_USER_ID, src.RECORD_STATUS_ID, src.UPDATE_HASH, src.SUBLET_ITEM, src.INTERNAL_REVENUE_XERO_ACCOUNT_ID, src.INTERNAL_COGS_XERO_ACCOUNT_ID, src.WIP_XERO_ACCOUNT_ID, src.INVENTORY_REVALUATION_ID, src.MARINA_LOCATION6_ID, src.FINALE_PRODUCT_URL, src.REVENUE_GL_CODE, src.COGS_GL_CODE, src.INVENTORY_GL_CODE, src.AR_GL_CODE, src.SALES_TAX_GL_CODE, src.ONLY_USE_LAST2_AVERAGE, src.DEFERRED_REVENUE_RECOGNITION, src.DEFERRED_RECOGNITION_GL_CODE, src.TRACKING_CODE, src.ADD_DESCRIPTION_TO_INVOICE_NOTE, src.MARINA_LOCATION7_ID, src.IGNORE_INVENTORY_QOH, src.QOH_COMMITTED, src.QOH_ON_ORDER, src.ALLOW_TOTAL_PRICE_ENTRY, src.MARINA_LOCATION9_ID, src.ALLOW_POSTING_TO_NON_INCOME_ACCOUNTS, src.ORDER_COLUMN, src.ENABLE_NEGATIVE_INVENTORY, src.WIP,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_ITEM_MASTERS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_ITEM_MASTERS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_ITEM_MASTERS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_MARINA_LOCATIONS to DW_MOLO_MARINA_LOCATIONS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_MARINA_LOCATIONS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_MARINA_LOCATIONS tgt
+    USING STG_MOLO_MARINA_LOCATIONS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.PRIMARY_PHONE_NUMBER = src.PRIMARY_PHONE_NUMBER,
+            tgt.PRIMARY_FAX_NUMBER = src.PRIMARY_FAX_NUMBER,
+            tgt.RULES = src.RULES,
+            tgt.ARRIVAL_GUIDE = src.ARRIVAL_GUIDE,
+            tgt.DEPOSIT_PERCENTAGE = src.DEPOSIT_PERCENTAGE,
+            tgt.CITY_ID = src.CITY_ID,
+            tgt.ORGANIZATION_ID = src.ORGANIZATION_ID,
+            tgt.MARINA_HASH = src.MARINA_HASH,
+            tgt.UNIT_SYSTEM = src.UNIT_SYSTEM,
+            tgt.SAFETY_DISTANCE_W = src.SAFETY_DISTANCE_W,
+            tgt.SAFETY_DISTANCE_L = src.SAFETY_DISTANCE_L,
+            tgt.DEFAULT_ARRIVAL_TIME = src.DEFAULT_ARRIVAL_TIME,
+            tgt.DEFAULT_DEPARTURE_TIME = src.DEFAULT_DEPARTURE_TIME,
+            tgt.POLICY = src.POLICY,
+            tgt.MAP = src.MAP,
+            tgt.RETURNS_REFUNDS_POLICY = src.RETURNS_REFUNDS_POLICY,
+            tgt.DEFAULT_TAX_RATE = src.DEFAULT_TAX_RATE,
+            tgt.EMAIL_ADDRESS = src.EMAIL_ADDRESS,
+            tgt.INVOICE_WARNING_DAY_COUNT = src.INVOICE_WARNING_DAY_COUNT,
+            tgt.MARINA_WEBSITE = src.MARINA_WEBSITE,
+            tgt.VESSEL_DIMENSIONS_OPTIONS = src.VESSEL_DIMENSIONS_OPTIONS,
+            tgt.ALLOW_MOLO_ONLINE_PAYMENT = src.ALLOW_MOLO_ONLINE_PAYMENT,
+            tgt.TIME_ZONE = src.TIME_ZONE,
+            tgt.CURRENCIES_ID = src.CURRENCIES_ID,
+            tgt.HASH_ID = src.HASH_ID,
+            tgt.COUNTRY_ID = src.COUNTRY_ID,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME, PRIMARY_PHONE_NUMBER, PRIMARY_FAX_NUMBER, RULES, ARRIVAL_GUIDE, DEPOSIT_PERCENTAGE, CITY_ID, ORGANIZATION_ID, MARINA_HASH, UNIT_SYSTEM, SAFETY_DISTANCE_W, SAFETY_DISTANCE_L, DEFAULT_ARRIVAL_TIME, DEFAULT_DEPARTURE_TIME, POLICY, MAP, RETURNS_REFUNDS_POLICY, DEFAULT_TAX_RATE, EMAIL_ADDRESS, INVOICE_WARNING_DAY_COUNT, MARINA_WEBSITE, VESSEL_DIMENSIONS_OPTIONS, ALLOW_MOLO_ONLINE_PAYMENT, TIME_ZONE, CURRENCIES_ID, HASH_ID, COUNTRY_ID,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME, src.PRIMARY_PHONE_NUMBER, src.PRIMARY_FAX_NUMBER, src.RULES, src.ARRIVAL_GUIDE, src.DEPOSIT_PERCENTAGE, src.CITY_ID, src.ORGANIZATION_ID, src.MARINA_HASH, src.UNIT_SYSTEM, src.SAFETY_DISTANCE_W, src.SAFETY_DISTANCE_L, src.DEFAULT_ARRIVAL_TIME, src.DEFAULT_DEPARTURE_TIME, src.POLICY, src.MAP, src.RETURNS_REFUNDS_POLICY, src.DEFAULT_TAX_RATE, src.EMAIL_ADDRESS, src.INVOICE_WARNING_DAY_COUNT, src.MARINA_WEBSITE, src.VESSEL_DIMENSIONS_OPTIONS, src.ALLOW_MOLO_ONLINE_PAYMENT, src.TIME_ZONE, src.CURRENCIES_ID, src.HASH_ID, src.COUNTRY_ID,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_MARINA_LOCATIONS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_MARINA_LOCATIONS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_MARINA_LOCATIONS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_PAYMENT_METHODS to DW_MOLO_PAYMENT_METHODS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_PAYMENT_METHODS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_PAYMENT_METHODS tgt
+    USING STG_MOLO_PAYMENT_METHODS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_PAYMENT_METHODS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_PAYMENT_METHODS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_PAYMENT_METHODS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_PHONE_TYPES to DW_MOLO_PHONE_TYPES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_PHONE_TYPES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_PHONE_TYPES tgt
+    USING STG_MOLO_PHONE_TYPES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_PHONE_TYPES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_PHONE_TYPES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_PHONE_TYPES;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_PIERS to DW_MOLO_PIERS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_PIERS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_PIERS tgt
+    USING STG_MOLO_PIERS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.MARINA_LOCATION_ID = src.MARINA_LOCATION_ID,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME, MARINA_LOCATION_ID,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME, src.MARINA_LOCATION_ID,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_PIERS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_PIERS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_PIERS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_POWER_NEEDS to DW_MOLO_POWER_NEEDS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_POWER_NEEDS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_POWER_NEEDS tgt
+    USING STG_MOLO_POWER_NEEDS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_POWER_NEEDS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_POWER_NEEDS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_POWER_NEEDS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_RECORD_STATUS to DW_MOLO_RECORD_STATUS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_RECORD_STATUS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_RECORD_STATUS tgt
+    USING STG_MOLO_RECORD_STATUS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_RECORD_STATUS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_RECORD_STATUS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_RECORD_STATUS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_RESERVATION_STATUS to DW_MOLO_RESERVATION_STATUS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_RESERVATION_STATUS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_RESERVATION_STATUS tgt
+    USING STG_MOLO_RESERVATION_STATUS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_RESERVATION_STATUS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_RESERVATION_STATUS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_RESERVATION_STATUS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_RESERVATION_TYPES to DW_MOLO_RESERVATION_TYPES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_RESERVATION_TYPES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_RESERVATION_TYPES tgt
+    USING STG_MOLO_RESERVATION_TYPES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_RESERVATION_TYPES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_RESERVATION_TYPES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_RESERVATION_TYPES;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_RESERVATIONS to DW_MOLO_RESERVATIONS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_RESERVATIONS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_RESERVATIONS tgt
+    USING STG_MOLO_RESERVATIONS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.MARINA_LOCATION_ID = src.MARINA_LOCATION_ID,
+            tgt.CREATION_TIME = src.CREATION_TIME,
+            tgt.RESERVATION_STATUS_ID = src.RESERVATION_STATUS_ID,
+            tgt.RESERVATION_TYPE_ID = src.RESERVATION_TYPE_ID,
+            tgt.ASPNET_USER_ID = src.ASPNET_USER_ID,
+            tgt.CONTACT_ID = src.CONTACT_ID,
+            tgt.BOAT_ID = src.BOAT_ID,
+            tgt.SCHEDULED_ARRIVAL_TIME = src.SCHEDULED_ARRIVAL_TIME,
+            tgt.SCHEDULED_DEPARTURE_TIME = src.SCHEDULED_DEPARTURE_TIME,
+            tgt.CANCELLATION_TIME = src.CANCELLATION_TIME,
+            tgt.ACCOUNT_ID = src.ACCOUNT_ID,
+            tgt.SLIP_ID = src.SLIP_ID,
+            tgt.SLIP_SLOT_INDEX = src.SLIP_SLOT_INDEX,
+            tgt.DISTANCE_FROM_THE_START = src.DISTANCE_FROM_THE_START,
+            tgt.RATE = src.RATE,
+            tgt.NAME = src.NAME,
+            tgt.HAS_INSTALLMENTS = src.HAS_INSTALLMENTS,
+            tgt.INSTALLMENT_FREQUENCY = src.INSTALLMENT_FREQUENCY,
+            tgt.INSTALLMENT_NUMBER = src.INSTALLMENT_NUMBER,
+            tgt.INSTALLMENT_PAYMENT_METHOD = src.INSTALLMENT_PAYMENT_METHOD,
+            tgt.ONLY_RESERVATION_INSTALLMENTS = src.ONLY_RESERVATION_INSTALLMENTS,
+            tgt.NOTES = src.NOTES,
+            tgt.ACTUAL_ARRIVAL_DATE_TIME = src.ACTUAL_ARRIVAL_DATE_TIME,
+            tgt.ACTUAL_DEPARTURE_DATE_TIME = src.ACTUAL_DEPARTURE_DATE_TIME,
+            tgt.CONFIRMATION_EMAIL_DATE_TIME = src.CONFIRMATION_EMAIL_DATE_TIME,
+            tgt.TERMS_ACCEPTED_DATE_TIME = src.TERMS_ACCEPTED_DATE_TIME,
+            tgt.TERMS_ACCEPTED_LOCATION = src.TERMS_ACCEPTED_LOCATION,
+            tgt.CUSTOMER_IP_ADDRESS = src.CUSTOMER_IP_ADDRESS,
+            tgt.CUSTOMER_DEVICE = src.CUSTOMER_DEVICE,
+            tgt.CONFIRMATION_EMAIL_ASP_USER_ID = src.CONFIRMATION_EMAIL_ASP_USER_ID,
+            tgt.RATE_PRICE_OVERRIDE = src.RATE_PRICE_OVERRIDE,
+            tgt.HASH_ID = src.HASH_ID,
+            tgt.RESERVATION_SOURCE = src.RESERVATION_SOURCE,
+            tgt.RESERVATION_MEDIUM_ID = src.RESERVATION_MEDIUM_ID,
+            tgt.RESERVATION_CAMPAIGN_ID = src.RESERVATION_CAMPAIGN_ID,
+            tgt.MOLO_API_PARTNER_ID = src.MOLO_API_PARTNER_ID,
+            tgt.CANCELATION_USER_ID = src.CANCELATION_USER_ID,
+            tgt.CONTACT_MERGED = src.CONTACT_MERGED,
+            tgt.TRANSIENT_PRICE_ID = src.TRANSIENT_PRICE_ID,
+            tgt.SEASONAL_PRICE_ID = src.SEASONAL_PRICE_ID,
+            tgt.PRINTED_TERMS = src.PRINTED_TERMS,
+            tgt.ONLINE_TERMS = src.ONLINE_TERMS,
+            tgt.CHECK_IN_TERMS = src.CHECK_IN_TERMS,
+            tgt.CHECK_OUT_TERMS = src.CHECK_OUT_TERMS,
+            tgt.ONLINE_PAYMENT_COMPLETION = src.ONLINE_PAYMENT_COMPLETION,
+            tgt.MOLO_ONLINE_BOOKING = src.MOLO_ONLINE_BOOKING,
+            tgt.BOOKING_CONTACT_MERGED = src.BOOKING_CONTACT_MERGED,
+            tgt.SLIP_BLOCK_SET_ID = src.SLIP_BLOCK_SET_ID,
+            tgt.OFFERS_ID = src.OFFERS_ID,
+            tgt.RECURRING_INVOICE_DAY = src.RECURRING_INVOICE_DAY,
+            tgt.ALTERNATE_RESERVATION_NAME = src.ALTERNATE_RESERVATION_NAME,
+            tgt.RECURRING_DISCOUNT_PERCENT = src.RECURRING_DISCOUNT_PERCENT,
+            tgt.RECURRING_RATE_OVERRIDE = src.RECURRING_RATE_OVERRIDE,
+            tgt.ONLINE_BOOKING_NOTES = src.ONLINE_BOOKING_NOTES,
+            tgt.ORIGINAL_OFFER_HOLD_ID = src.ORIGINAL_OFFER_HOLD_ID,
+            tgt.SCHEDULED_FOR_STATUS_CHANGE = src.SCHEDULED_FOR_STATUS_CHANGE,
+            tgt.TERMS_OFFLINE = src.TERMS_OFFLINE,
+            tgt.TERMS_USER = src.TERMS_USER,
+            tgt.ORIGINAL_START_DATE = src.ORIGINAL_START_DATE,
+            tgt.ORIGINAL_END_DATE = src.ORIGINAL_END_DATE,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, MARINA_LOCATION_ID, CREATION_TIME, RESERVATION_STATUS_ID, RESERVATION_TYPE_ID, ASPNET_USER_ID, CONTACT_ID, BOAT_ID, SCHEDULED_ARRIVAL_TIME, SCHEDULED_DEPARTURE_TIME, CANCELLATION_TIME, ACCOUNT_ID, SLIP_ID, SLIP_SLOT_INDEX, DISTANCE_FROM_THE_START, RATE, NAME, HAS_INSTALLMENTS, INSTALLMENT_FREQUENCY, INSTALLMENT_NUMBER, INSTALLMENT_PAYMENT_METHOD, ONLY_RESERVATION_INSTALLMENTS, NOTES, ACTUAL_ARRIVAL_DATE_TIME, ACTUAL_DEPARTURE_DATE_TIME, CONFIRMATION_EMAIL_DATE_TIME, TERMS_ACCEPTED_DATE_TIME, TERMS_ACCEPTED_LOCATION, CUSTOMER_IP_ADDRESS, CUSTOMER_DEVICE, CONFIRMATION_EMAIL_ASP_USER_ID, RATE_PRICE_OVERRIDE, HASH_ID, RESERVATION_SOURCE, RESERVATION_MEDIUM_ID, RESERVATION_CAMPAIGN_ID, MOLO_API_PARTNER_ID, CANCELATION_USER_ID, CONTACT_MERGED, TRANSIENT_PRICE_ID, SEASONAL_PRICE_ID, PRINTED_TERMS, ONLINE_TERMS, CHECK_IN_TERMS, CHECK_OUT_TERMS, ONLINE_PAYMENT_COMPLETION, MOLO_ONLINE_BOOKING, BOOKING_CONTACT_MERGED, SLIP_BLOCK_SET_ID, OFFERS_ID, RECURRING_INVOICE_DAY, ALTERNATE_RESERVATION_NAME, RECURRING_DISCOUNT_PERCENT, RECURRING_RATE_OVERRIDE, ONLINE_BOOKING_NOTES, ORIGINAL_OFFER_HOLD_ID, SCHEDULED_FOR_STATUS_CHANGE, TERMS_OFFLINE, TERMS_USER, ORIGINAL_START_DATE, ORIGINAL_END_DATE,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.MARINA_LOCATION_ID, src.CREATION_TIME, src.RESERVATION_STATUS_ID, src.RESERVATION_TYPE_ID, src.ASPNET_USER_ID, src.CONTACT_ID, src.BOAT_ID, src.SCHEDULED_ARRIVAL_TIME, src.SCHEDULED_DEPARTURE_TIME, src.CANCELLATION_TIME, src.ACCOUNT_ID, src.SLIP_ID, src.SLIP_SLOT_INDEX, src.DISTANCE_FROM_THE_START, src.RATE, src.NAME, src.HAS_INSTALLMENTS, src.INSTALLMENT_FREQUENCY, src.INSTALLMENT_NUMBER, src.INSTALLMENT_PAYMENT_METHOD, src.ONLY_RESERVATION_INSTALLMENTS, src.NOTES, src.ACTUAL_ARRIVAL_DATE_TIME, src.ACTUAL_DEPARTURE_DATE_TIME, src.CONFIRMATION_EMAIL_DATE_TIME, src.TERMS_ACCEPTED_DATE_TIME, src.TERMS_ACCEPTED_LOCATION, src.CUSTOMER_IP_ADDRESS, src.CUSTOMER_DEVICE, src.CONFIRMATION_EMAIL_ASP_USER_ID, src.RATE_PRICE_OVERRIDE, src.HASH_ID, src.RESERVATION_SOURCE, src.RESERVATION_MEDIUM_ID, src.RESERVATION_CAMPAIGN_ID, src.MOLO_API_PARTNER_ID, src.CANCELATION_USER_ID, src.CONTACT_MERGED, src.TRANSIENT_PRICE_ID, src.SEASONAL_PRICE_ID, src.PRINTED_TERMS, src.ONLINE_TERMS, src.CHECK_IN_TERMS, src.CHECK_OUT_TERMS, src.ONLINE_PAYMENT_COMPLETION, src.MOLO_ONLINE_BOOKING, src.BOOKING_CONTACT_MERGED, src.SLIP_BLOCK_SET_ID, src.OFFERS_ID, src.RECURRING_INVOICE_DAY, src.ALTERNATE_RESERVATION_NAME, src.RECURRING_DISCOUNT_PERCENT, src.RECURRING_RATE_OVERRIDE, src.ONLINE_BOOKING_NOTES, src.ORIGINAL_OFFER_HOLD_ID, src.SCHEDULED_FOR_STATUS_CHANGE, src.TERMS_OFFLINE, src.TERMS_USER, src.ORIGINAL_START_DATE, src.ORIGINAL_END_DATE,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_RESERVATIONS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_RESERVATIONS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_RESERVATIONS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_SEASONAL_CHARGE_METHODS to DW_MOLO_SEASONAL_CHARGE_METHODS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_SEASONAL_CHARGE_METHODS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_SEASONAL_CHARGE_METHODS tgt
+    USING STG_MOLO_SEASONAL_CHARGE_METHODS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_SEASONAL_CHARGE_METHODS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_SEASONAL_CHARGE_METHODS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_SEASONAL_CHARGE_METHODS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_SEASONAL_PRICES to DW_MOLO_SEASONAL_PRICES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_SEASONAL_PRICES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_SEASONAL_PRICES tgt
+    USING STG_MOLO_SEASONAL_PRICES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.SEASON_NAME = src.SEASON_NAME,
+            tgt.START_DATE = src.START_DATE,
+            tgt.END_DATE = src.END_DATE,
+            tgt.SEASONAL_CHARGE_METHOD_ID = src.SEASONAL_CHARGE_METHOD_ID,
+            tgt.PRICE_PER_FOOT = src.PRICE_PER_FOOT,
+            tgt.FLAT_RATE = src.FLAT_RATE,
+            tgt.TAXABLE = src.TAXABLE,
+            tgt.MARINA_LOCATION_ID = src.MARINA_LOCATION_ID,
+            tgt.ACTIVE = src.ACTIVE,
+            tgt.TAX = src.TAX,
+            tgt.RATE_DETAILS = src.RATE_DETAILS,
+            tgt.RATE_SHORT_NAME = src.RATE_SHORT_NAME,
+            tgt.ONLINE_PAYMENT_PLACEHOLDER = src.ONLINE_PAYMENT_PLACEHOLDER,
+            tgt.XERO_ITEM_CODE = src.XERO_ITEM_CODE,
+            tgt.XERO_ID = src.XERO_ID,
+            tgt.FIRST_TRACKING_CATEGORY = src.FIRST_TRACKING_CATEGORY,
+            tgt.SECOND_TRACKING_CATEGORY = src.SECOND_TRACKING_CATEGORY,
+            tgt.SEASONAL_INVOICING_METHOD_ID = src.SEASONAL_INVOICING_METHOD_ID,
+            tgt.SV_INVENTORY_CATEGORY_ID = src.SV_INVENTORY_CATEGORY_ID,
+            tgt.SV_INVENTORY_SUB_CATEGORY_ID = src.SV_INVENTORY_SUB_CATEGORY_ID,
+            tgt.CREATION_DATE_TIME = src.CREATION_DATE_TIME,
+            tgt.ASPNET_USER_ID = src.ASPNET_USER_ID,
+            tgt.CHECK_IN_TERMS = src.CHECK_IN_TERMS,
+            tgt.CHECK_OUT_TERMS = src.CHECK_OUT_TERMS,
+            tgt.ONLINE_PAYMENT_COMPLETION = src.ONLINE_PAYMENT_COMPLETION,
+            tgt.DUE_DATE_DAYS = src.DUE_DATE_DAYS,
+            tgt.DUE_DATE_SETTINGS_ID = src.DUE_DATE_SETTINGS_ID,
+            tgt.CHARGE_CATEGORY = src.CHARGE_CATEGORY,
+            tgt.INTRO_TEXT = src.INTRO_TEXT,
+            tgt.REVENUE_GL_CODE = src.REVENUE_GL_CODE,
+            tgt.AR_GL_CODE = src.AR_GL_CODE,
+            tgt.SALES_TAX_GL_CODE = src.SALES_TAX_GL_CODE,
+            tgt.DELETION_DATETIME = src.DELETION_DATETIME,
+            tgt.DELETION_ASPNET_USER_ID = src.DELETION_ASPNET_USER_ID,
+            tgt.RECORD_STATUS_ID = src.RECORD_STATUS_ID,
+            tgt.DEFERRED_REVENUE_RECOGNITION = src.DEFERRED_REVENUE_RECOGNITION,
+            tgt.DEFERRED_RECOGNITION_GL_CODE = src.DEFERRED_RECOGNITION_GL_CODE,
+            tgt.TRACKING_CODE = src.TRACKING_CODE,
+            tgt.XERO_RECOGNITION_ACCOUNT_ID = src.XERO_RECOGNITION_ACCOUNT_ID,
+            tgt.REVENUE_XERO_ACCOUNT_ID = src.REVENUE_XERO_ACCOUNT_ID,
+            tgt.ALLOW_POSTING_TO_NON_INCOME_ACCOUNTS = src.ALLOW_POSTING_TO_NON_INCOME_ACCOUNTS,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, SEASON_NAME, START_DATE, END_DATE, SEASONAL_CHARGE_METHOD_ID, PRICE_PER_FOOT, FLAT_RATE, TAXABLE, MARINA_LOCATION_ID, ACTIVE, TAX, RATE_DETAILS, RATE_SHORT_NAME, ONLINE_PAYMENT_PLACEHOLDER, XERO_ITEM_CODE, XERO_ID, FIRST_TRACKING_CATEGORY, SECOND_TRACKING_CATEGORY, SEASONAL_INVOICING_METHOD_ID, SV_INVENTORY_CATEGORY_ID, SV_INVENTORY_SUB_CATEGORY_ID, CREATION_DATE_TIME, ASPNET_USER_ID, CHECK_IN_TERMS, CHECK_OUT_TERMS, ONLINE_PAYMENT_COMPLETION, DUE_DATE_DAYS, DUE_DATE_SETTINGS_ID, CHARGE_CATEGORY, INTRO_TEXT, REVENUE_GL_CODE, AR_GL_CODE, SALES_TAX_GL_CODE, DELETION_DATETIME, DELETION_ASPNET_USER_ID, RECORD_STATUS_ID, DEFERRED_REVENUE_RECOGNITION, DEFERRED_RECOGNITION_GL_CODE, TRACKING_CODE, XERO_RECOGNITION_ACCOUNT_ID, REVENUE_XERO_ACCOUNT_ID, ALLOW_POSTING_TO_NON_INCOME_ACCOUNTS,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.SEASON_NAME, src.START_DATE, src.END_DATE, src.SEASONAL_CHARGE_METHOD_ID, src.PRICE_PER_FOOT, src.FLAT_RATE, src.TAXABLE, src.MARINA_LOCATION_ID, src.ACTIVE, src.TAX, src.RATE_DETAILS, src.RATE_SHORT_NAME, src.ONLINE_PAYMENT_PLACEHOLDER, src.XERO_ITEM_CODE, src.XERO_ID, src.FIRST_TRACKING_CATEGORY, src.SECOND_TRACKING_CATEGORY, src.SEASONAL_INVOICING_METHOD_ID, src.SV_INVENTORY_CATEGORY_ID, src.SV_INVENTORY_SUB_CATEGORY_ID, src.CREATION_DATE_TIME, src.ASPNET_USER_ID, src.CHECK_IN_TERMS, src.CHECK_OUT_TERMS, src.ONLINE_PAYMENT_COMPLETION, src.DUE_DATE_DAYS, src.DUE_DATE_SETTINGS_ID, src.CHARGE_CATEGORY, src.INTRO_TEXT, src.REVENUE_GL_CODE, src.AR_GL_CODE, src.SALES_TAX_GL_CODE, src.DELETION_DATETIME, src.DELETION_ASPNET_USER_ID, src.RECORD_STATUS_ID, src.DEFERRED_REVENUE_RECOGNITION, src.DEFERRED_RECOGNITION_GL_CODE, src.TRACKING_CODE, src.XERO_RECOGNITION_ACCOUNT_ID, src.REVENUE_XERO_ACCOUNT_ID, src.ALLOW_POSTING_TO_NON_INCOME_ACCOUNTS,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_SEASONAL_PRICES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_SEASONAL_PRICES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_SEASONAL_PRICES;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_SLIP_TYPES to DW_MOLO_SLIP_TYPES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_SLIP_TYPES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_SLIP_TYPES tgt
+    USING STG_MOLO_SLIP_TYPES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_SLIP_TYPES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_SLIP_TYPES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_SLIP_TYPES;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_SLIPS to DW_MOLO_SLIPS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_SLIPS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_SLIPS tgt
+    USING STG_MOLO_SLIPS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.TYPE = src.TYPE,
+            tgt.RECOMMENDED_LOA = src.RECOMMENDED_LOA,
+            tgt.RECOMMENDED_BEAM = src.RECOMMENDED_BEAM,
+            tgt.RECOMMENDED_DRAFT = src.RECOMMENDED_DRAFT,
+            tgt.RECOMMENDED_AIR_DRAFT = src.RECOMMENDED_AIR_DRAFT,
+            tgt.MAXIMUM_LOA = src.MAXIMUM_LOA,
+            tgt.MAXIMUM_BEAM = src.MAXIMUM_BEAM,
+            tgt.MAXIMUM_DRAFT = src.MAXIMUM_DRAFT,
+            tgt.MAXIMUM_AIR_DRAFT = src.MAXIMUM_AIR_DRAFT,
+            tgt.MARINA_LOCATION_ID = src.MARINA_LOCATION_ID,
+            tgt.PIER_ID = src.PIER_ID,
+            tgt.STATUS = src.STATUS,
+            tgt.START_DATE = src.START_DATE,
+            tgt.END_DATE = src.END_DATE,
+            tgt.DO_NOT_COUNT_IN_OCCUPANCY = src.DO_NOT_COUNT_IN_OCCUPANCY,
+            tgt.ACTIVE = src.ACTIVE,
+            tgt.CREATION_DATE_TIME = src.CREATION_DATE_TIME,
+            tgt.CREATION_USER = src.CREATION_USER,
+            tgt.SLIP_TYPE_ID = src.SLIP_TYPE_ID,
+            tgt.PAYMENT_PROCESSING_FEE = src.PAYMENT_PROCESSING_FEE,
+            tgt.MANAGEMENT_FEE = src.MANAGEMENT_FEE,
+            tgt.OWNER_ID = src.OWNER_ID,
+            tgt.PAYMENT_PROCESSING_FEE_TYPE_ID = src.PAYMENT_PROCESSING_FEE_TYPE_ID,
+            tgt.MANAGEMENT_FEE_TYPE_ID = src.MANAGEMENT_FEE_TYPE_ID,
+            tgt.OVERRIDE_OCCUPANCY_LOA = src.OVERRIDE_OCCUPANCY_LOA,
+            tgt.HASH_ID = src.HASH_ID,
+            tgt.MAINTENANCE_FEE = src.MAINTENANCE_FEE,
+            tgt.SVG_ID = src.SVG_ID,
+            tgt.ASSESSMENT = src.ASSESSMENT,
+            tgt.LOAN = src.LOAN,
+            tgt.ORDER_COLUMN = src.ORDER_COLUMN,
+            tgt.SIGN_NAME = src.SIGN_NAME,
+            tgt.MAX_WEIGHT = src.MAX_WEIGHT,
+            tgt.MAX_REVENUE = src.MAX_REVENUE,
+            tgt.TRANSIENT_PRICE_ID = src.TRANSIENT_PRICE_ID,
+            tgt.SEASONAL_PRICE_ID = src.SEASONAL_PRICE_ID,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME, TYPE, RECOMMENDED_LOA, RECOMMENDED_BEAM, RECOMMENDED_DRAFT, RECOMMENDED_AIR_DRAFT, MAXIMUM_LOA, MAXIMUM_BEAM, MAXIMUM_DRAFT, MAXIMUM_AIR_DRAFT, MARINA_LOCATION_ID, PIER_ID, STATUS, START_DATE, END_DATE, DO_NOT_COUNT_IN_OCCUPANCY, ACTIVE, CREATION_DATE_TIME, CREATION_USER, SLIP_TYPE_ID, PAYMENT_PROCESSING_FEE, MANAGEMENT_FEE, OWNER_ID, PAYMENT_PROCESSING_FEE_TYPE_ID, MANAGEMENT_FEE_TYPE_ID, OVERRIDE_OCCUPANCY_LOA, HASH_ID, MAINTENANCE_FEE, SVG_ID, ASSESSMENT, LOAN, ORDER_COLUMN, SIGN_NAME, MAX_WEIGHT, MAX_REVENUE, TRANSIENT_PRICE_ID, SEASONAL_PRICE_ID,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME, src.TYPE, src.RECOMMENDED_LOA, src.RECOMMENDED_BEAM, src.RECOMMENDED_DRAFT, src.RECOMMENDED_AIR_DRAFT, src.MAXIMUM_LOA, src.MAXIMUM_BEAM, src.MAXIMUM_DRAFT, src.MAXIMUM_AIR_DRAFT, src.MARINA_LOCATION_ID, src.PIER_ID, src.STATUS, src.START_DATE, src.END_DATE, src.DO_NOT_COUNT_IN_OCCUPANCY, src.ACTIVE, src.CREATION_DATE_TIME, src.CREATION_USER, src.SLIP_TYPE_ID, src.PAYMENT_PROCESSING_FEE, src.MANAGEMENT_FEE, src.OWNER_ID, src.PAYMENT_PROCESSING_FEE_TYPE_ID, src.MANAGEMENT_FEE_TYPE_ID, src.OVERRIDE_OCCUPANCY_LOA, src.HASH_ID, src.MAINTENANCE_FEE, src.SVG_ID, src.ASSESSMENT, src.LOAN, src.ORDER_COLUMN, src.SIGN_NAME, src.MAX_WEIGHT, src.MAX_REVENUE, src.TRANSIENT_PRICE_ID, src.SEASONAL_PRICE_ID,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_SLIPS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_SLIPS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_SLIPS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_STATEMENTS_PREFERENCE to DW_MOLO_STATEMENTS_PREFERENCE
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_STATEMENTS_PREFERENCE
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_STATEMENTS_PREFERENCE tgt
+    USING STG_MOLO_STATEMENTS_PREFERENCE src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_STATEMENTS_PREFERENCE: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_STATEMENTS_PREFERENCE: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_STATEMENTS_PREFERENCE;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_TRANSACTION_METHODS to DW_MOLO_TRANSACTION_METHODS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_TRANSACTION_METHODS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_TRANSACTION_METHODS tgt
+    USING STG_MOLO_TRANSACTION_METHODS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_TRANSACTION_METHODS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_TRANSACTION_METHODS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_TRANSACTION_METHODS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_TRANSACTION_TYPES to DW_MOLO_TRANSACTION_TYPES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_TRANSACTION_TYPES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_TRANSACTION_TYPES tgt
+    USING STG_MOLO_TRANSACTION_TYPES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_TRANSACTION_TYPES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_TRANSACTION_TYPES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_TRANSACTION_TYPES;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_TRANSACTIONS to DW_MOLO_TRANSACTIONS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_TRANSACTIONS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_TRANSACTIONS tgt
+    USING STG_MOLO_TRANSACTIONS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.MARINA_LOCATION_ID = src.MARINA_LOCATION_ID,
+            tgt.CREATION_TIME = src.CREATION_TIME,
+            tgt.INVOICE_ID = src.INVOICE_ID,
+            tgt.TRANSACTION_TYPE_ID = src.TRANSACTION_TYPE_ID,
+            tgt.TRANSACTION_METHOD_ID = src.TRANSACTION_METHOD_ID,
+            tgt.VALUE_FIELD = src.VALUE_FIELD,
+            tgt.IS_REFUNDED = src.IS_REFUNDED,
+            tgt.CUSTOMER_IP_ADDRESS = src.CUSTOMER_IP_ADDRESS,
+            tgt.CUSTOMER_DEVICE = src.CUSTOMER_DEVICE,
+            tgt.REFUND_REASON = src.REFUND_REASON,
+            tgt.AUX = src.AUX,
+            tgt.CHECK_NUMBER = src.CHECK_NUMBER,
+            tgt.CC_TYPE = src.CC_TYPE,
+            tgt.INVOICE_ITEM_ID = src.INVOICE_ITEM_ID,
+            tgt.SENT_TO_XERO = src.SENT_TO_XERO,
+            tgt.OVERPAYMENT_ID = src.OVERPAYMENT_ID,
+            tgt.PAYMENT_COLLECTED_OFFLINE = src.PAYMENT_COLLECTED_OFFLINE,
+            tgt.PART_OF_OVERPAYMENT = src.PART_OF_OVERPAYMENT,
+            tgt.PREPAYMENT_ID = src.PREPAYMENT_ID,
+            tgt.ACCOUNT_TRANSACTION_TRANSACTION_ID = src.ACCOUNT_TRANSACTION_TRANSACTION_ID,
+            tgt.PAYMENT_ID = src.PAYMENT_ID,
+            tgt.CREATION_DATE = src.CREATION_DATE,
+            tgt.ASPNET_USER_ID = src.ASPNET_USER_ID,
+            tgt.HASH_ID = src.HASH_ID,
+            tgt.CUSTOM_TRANSACTION_METHODS_ID = src.CUSTOM_TRANSACTION_METHODS_ID,
+            tgt.REFERENCE = src.REFERENCE,
+            tgt.IS_VOID = src.IS_VOID,
+            tgt.AMOUNT_REFUNDED = src.AMOUNT_REFUNDED,
+            tgt.STRIPE_TRANSACTION_DATA_ID = src.STRIPE_TRANSACTION_DATA_ID,
+            tgt.PAYMENT_INTENT_ID = src.PAYMENT_INTENT_ID,
+            tgt.SENT_TO_PAYOUT = src.SENT_TO_PAYOUT,
+            tgt.STRIPE_AUTHORIZATIONS_ID = src.STRIPE_AUTHORIZATIONS_ID,
+            tgt.STRIPE_RESPONSE_ID = src.STRIPE_RESPONSE_ID,
+            tgt.STRIPE_READER_SERIAL_NUMBER = src.STRIPE_READER_SERIAL_NUMBER,
+            tgt.STRIPE_TERMINAL_ID = src.STRIPE_TERMINAL_ID,
+            tgt.CREATED_ON_MOBILE = src.CREATED_ON_MOBILE,
+            tgt.ONLINE_PERCENT_FEE = src.ONLINE_PERCENT_FEE,
+            tgt.ONLINE_FEE_AMOUNT = src.ONLINE_FEE_AMOUNT,
+            tgt.SCHEDULED_FOR_ONLINE_FEE_CRON = src.SCHEDULED_FOR_ONLINE_FEE_CRON,
+            tgt.ONLINE_PAYMENT_FEE_ID = src.ONLINE_PAYMENT_FEE_ID,
+            tgt.BANK_NAME = src.BANK_NAME,
+            tgt.LAST4 = src.LAST4,
+            tgt.STRIPE_BANK_ACCOUNT_ID = src.STRIPE_BANK_ACCOUNT_ID,
+            tgt.STRIPE_BATCH_ID = src.STRIPE_BATCH_ID,
+            tgt.ROUTING_NUMBER = src.ROUTING_NUMBER,
+            tgt.FULLY_REFUNDED = src.FULLY_REFUNDED,
+            tgt.LAST_UPDATED = src.LAST_UPDATED,
+            tgt.PAYMENT_SOURCE = src.PAYMENT_SOURCE,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, MARINA_LOCATION_ID, CREATION_TIME, INVOICE_ID, TRANSACTION_TYPE_ID, TRANSACTION_METHOD_ID, VALUE_FIELD, IS_REFUNDED, CUSTOMER_IP_ADDRESS, CUSTOMER_DEVICE, REFUND_REASON, AUX, CHECK_NUMBER, CC_TYPE, INVOICE_ITEM_ID, SENT_TO_XERO, OVERPAYMENT_ID, PAYMENT_COLLECTED_OFFLINE, PART_OF_OVERPAYMENT, PREPAYMENT_ID, ACCOUNT_TRANSACTION_TRANSACTION_ID, PAYMENT_ID, CREATION_DATE, ASPNET_USER_ID, HASH_ID, CUSTOM_TRANSACTION_METHODS_ID, REFERENCE, IS_VOID, AMOUNT_REFUNDED, STRIPE_TRANSACTION_DATA_ID, PAYMENT_INTENT_ID, SENT_TO_PAYOUT, STRIPE_AUTHORIZATIONS_ID, STRIPE_RESPONSE_ID, STRIPE_READER_SERIAL_NUMBER, STRIPE_TERMINAL_ID, CREATED_ON_MOBILE, ONLINE_PERCENT_FEE, ONLINE_FEE_AMOUNT, SCHEDULED_FOR_ONLINE_FEE_CRON, ONLINE_PAYMENT_FEE_ID, BANK_NAME, LAST4, STRIPE_BANK_ACCOUNT_ID, STRIPE_BATCH_ID, ROUTING_NUMBER, FULLY_REFUNDED, LAST_UPDATED, PAYMENT_SOURCE,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.MARINA_LOCATION_ID, src.CREATION_TIME, src.INVOICE_ID, src.TRANSACTION_TYPE_ID, src.TRANSACTION_METHOD_ID, src.VALUE_FIELD, src.IS_REFUNDED, src.CUSTOMER_IP_ADDRESS, src.CUSTOMER_DEVICE, src.REFUND_REASON, src.AUX, src.CHECK_NUMBER, src.CC_TYPE, src.INVOICE_ITEM_ID, src.SENT_TO_XERO, src.OVERPAYMENT_ID, src.PAYMENT_COLLECTED_OFFLINE, src.PART_OF_OVERPAYMENT, src.PREPAYMENT_ID, src.ACCOUNT_TRANSACTION_TRANSACTION_ID, src.PAYMENT_ID, src.CREATION_DATE, src.ASPNET_USER_ID, src.HASH_ID, src.CUSTOM_TRANSACTION_METHODS_ID, src.REFERENCE, src.IS_VOID, src.AMOUNT_REFUNDED, src.STRIPE_TRANSACTION_DATA_ID, src.PAYMENT_INTENT_ID, src.SENT_TO_PAYOUT, src.STRIPE_AUTHORIZATIONS_ID, src.STRIPE_RESPONSE_ID, src.STRIPE_READER_SERIAL_NUMBER, src.STRIPE_TERMINAL_ID, src.CREATED_ON_MOBILE, src.ONLINE_PERCENT_FEE, src.ONLINE_FEE_AMOUNT, src.SCHEDULED_FOR_ONLINE_FEE_CRON, src.ONLINE_PAYMENT_FEE_ID, src.BANK_NAME, src.LAST4, src.STRIPE_BANK_ACCOUNT_ID, src.STRIPE_BATCH_ID, src.ROUTING_NUMBER, src.FULLY_REFUNDED, src.LAST_UPDATED, src.PAYMENT_SOURCE,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_TRANSACTIONS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_TRANSACTIONS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_TRANSACTIONS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_TRANSIENT_CHARGE_METHODS to DW_MOLO_TRANSIENT_CHARGE_METHODS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_TRANSIENT_CHARGE_METHODS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_TRANSIENT_CHARGE_METHODS tgt
+    USING STG_MOLO_TRANSIENT_CHARGE_METHODS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.NAME = src.NAME,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, NAME,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.NAME,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_TRANSIENT_CHARGE_METHODS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_TRANSIENT_CHARGE_METHODS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_TRANSIENT_CHARGE_METHODS;
+/
+
+-- ============================================================================
+-- Merge STG_MOLO_TRANSIENT_PRICES to DW_MOLO_TRANSIENT_PRICES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_TRANSIENT_PRICES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_MOLO_TRANSIENT_PRICES tgt
+    USING STG_MOLO_TRANSIENT_PRICES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.START_DATE = src.START_DATE,
+            tgt.END_DATE = src.END_DATE,
+            tgt.FEE = src.FEE,
+            tgt.RATE_NAME = src.RATE_NAME,
+            tgt.TRANSIENT_CHARGE_METHOD_ID = src.TRANSIENT_CHARGE_METHOD_ID,
+            tgt.MARINA_LOCATION_ID = src.MARINA_LOCATION_ID,
+            tgt.TAXABLE = src.TAXABLE,
+            tgt.TAX = src.TAX,
+            tgt.RATE_DETAILS = src.RATE_DETAILS,
+            tgt.RATE_SHORT_NAME = src.RATE_SHORT_NAME,
+            tgt.ONLINE_PAYMENT_PLACEHOLDER = src.ONLINE_PAYMENT_PLACEHOLDER,
+            tgt.XERO_ITEM_CODE = src.XERO_ITEM_CODE,
+            tgt.XERO_ID = src.XERO_ID,
+            tgt.FIRST_TRACKING_CATEGORY = src.FIRST_TRACKING_CATEGORY,
+            tgt.SECOND_TRACKING_CATEGORY = src.SECOND_TRACKING_CATEGORY,
+            tgt.TRANSIENT_INVOICING_METHOD_ID = src.TRANSIENT_INVOICING_METHOD_ID,
+            tgt.SV_INVENTORY_CATEGORY_ID = src.SV_INVENTORY_CATEGORY_ID,
+            tgt.SV_INVENTORY_SUB_CATEGORY_ID = src.SV_INVENTORY_SUB_CATEGORY_ID,
+            tgt.CREATION_DATE_TIME = src.CREATION_DATE_TIME,
+            tgt.ASPNET_USER_ID = src.ASPNET_USER_ID,
+            tgt.CHECK_IN_TERMS = src.CHECK_IN_TERMS,
+            tgt.CHECK_OUT_TERMS = src.CHECK_OUT_TERMS,
+            tgt.ONLINE_PAYMENT_COMPLETION = src.ONLINE_PAYMENT_COMPLETION,
+            tgt.DUE_DATE_DAYS = src.DUE_DATE_DAYS,
+            tgt.DUE_DATE_SETTINGS_ID = src.DUE_DATE_SETTINGS_ID,
+            tgt.HOURLY_CALCULATION = src.HOURLY_CALCULATION,
+            tgt.ROUND_MINUTES = src.ROUND_MINUTES,
+            tgt.MINIMUM_HOURS = src.MINIMUM_HOURS,
+            tgt.NUM_HOURS_BLOCK = src.NUM_HOURS_BLOCK,
+            tgt.CHARGE_CATEGORY = src.CHARGE_CATEGORY,
+            tgt.INTRO_TEXT = src.INTRO_TEXT,
+            tgt.REVENUE_GL_CODE = src.REVENUE_GL_CODE,
+            tgt.AR_GL_CODE = src.AR_GL_CODE,
+            tgt.SALES_TAX_GL_CODE = src.SALES_TAX_GL_CODE,
+            tgt.DELETION_DATETIME = src.DELETION_DATETIME,
+            tgt.DELETION_ASPNET_USER_ID = src.DELETION_ASPNET_USER_ID,
+            tgt.RECORD_STATUS_ID = src.RECORD_STATUS_ID,
+            tgt.RECURRING_INVOICE_OPTIONS_ID = src.RECURRING_INVOICE_OPTIONS_ID,
+            tgt.RECURRING = src.RECURRING,
+            tgt.TRACKING_CODE = src.TRACKING_CODE,
+            tgt.ALTERNATE_RESERVATION_NAME = src.ALTERNATE_RESERVATION_NAME,
+            tgt.RESOURCE_RATE = src.RESOURCE_RATE,
+            tgt.QUANTITY_CAP = src.QUANTITY_CAP,
+            tgt.ALLOW_POSTING_TO_NON_INCOME_ACCOUNTS = src.ALLOW_POSTING_TO_NON_INCOME_ACCOUNTS,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, START_DATE, END_DATE, FEE, RATE_NAME, TRANSIENT_CHARGE_METHOD_ID, MARINA_LOCATION_ID, TAXABLE, TAX, RATE_DETAILS, RATE_SHORT_NAME, ONLINE_PAYMENT_PLACEHOLDER, XERO_ITEM_CODE, XERO_ID, FIRST_TRACKING_CATEGORY, SECOND_TRACKING_CATEGORY, TRANSIENT_INVOICING_METHOD_ID, SV_INVENTORY_CATEGORY_ID, SV_INVENTORY_SUB_CATEGORY_ID, CREATION_DATE_TIME, ASPNET_USER_ID, CHECK_IN_TERMS, CHECK_OUT_TERMS, ONLINE_PAYMENT_COMPLETION, DUE_DATE_DAYS, DUE_DATE_SETTINGS_ID, HOURLY_CALCULATION, ROUND_MINUTES, MINIMUM_HOURS, NUM_HOURS_BLOCK, CHARGE_CATEGORY, INTRO_TEXT, REVENUE_GL_CODE, AR_GL_CODE, SALES_TAX_GL_CODE, DELETION_DATETIME, DELETION_ASPNET_USER_ID, RECORD_STATUS_ID, RECURRING_INVOICE_OPTIONS_ID, RECURRING, TRACKING_CODE, ALTERNATE_RESERVATION_NAME, RESOURCE_RATE, QUANTITY_CAP, ALLOW_POSTING_TO_NON_INCOME_ACCOUNTS,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.START_DATE, src.END_DATE, src.FEE, src.RATE_NAME, src.TRANSIENT_CHARGE_METHOD_ID, src.MARINA_LOCATION_ID, src.TAXABLE, src.TAX, src.RATE_DETAILS, src.RATE_SHORT_NAME, src.ONLINE_PAYMENT_PLACEHOLDER, src.XERO_ITEM_CODE, src.XERO_ID, src.FIRST_TRACKING_CATEGORY, src.SECOND_TRACKING_CATEGORY, src.TRANSIENT_INVOICING_METHOD_ID, src.SV_INVENTORY_CATEGORY_ID, src.SV_INVENTORY_SUB_CATEGORY_ID, src.CREATION_DATE_TIME, src.ASPNET_USER_ID, src.CHECK_IN_TERMS, src.CHECK_OUT_TERMS, src.ONLINE_PAYMENT_COMPLETION, src.DUE_DATE_DAYS, src.DUE_DATE_SETTINGS_ID, src.HOURLY_CALCULATION, src.ROUND_MINUTES, src.MINIMUM_HOURS, src.NUM_HOURS_BLOCK, src.CHARGE_CATEGORY, src.INTRO_TEXT, src.REVENUE_GL_CODE, src.AR_GL_CODE, src.SALES_TAX_GL_CODE, src.DELETION_DATETIME, src.DELETION_ASPNET_USER_ID, src.RECORD_STATUS_ID, src.RECURRING_INVOICE_OPTIONS_ID, src.RECURRING, src.TRACKING_CODE, src.ALTERNATE_RESERVATION_NAME, src.RESOURCE_RATE, src.QUANTITY_CAP, src.ALLOW_POSTING_TO_NON_INCOME_ACCOUNTS,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_TRANSIENT_PRICES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_TRANSIENT_PRICES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_MOLO_TRANSIENT_PRICES;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_ACCESSORIES to DW_STELLAR_ACCESSORIES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_ACCESSORIES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_ACCESSORIES tgt
+    USING STG_STELLAR_ACCESSORIES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.ACCESSORY_NAME = src.ACCESSORY_NAME,
+            tgt.POSITION_ORDER = src.POSITION_ORDER,
+            tgt.FRONTEND_POSITION = src.FRONTEND_POSITION,
+            tgt.SHORT_NAME = src.SHORT_NAME,
+            tgt.ABBREVIATION = src.ABBREVIATION,
+            tgt.IMAGE_URL = src.IMAGE_URL,
+            tgt.PRICE = src.PRICE,
+            tgt.DEPOSIT_AMOUNT = src.DEPOSIT_AMOUNT,
+            tgt.TAX_EXEMPT = src.TAX_EXEMPT,
+            tgt.MAX_OVERLAPPING_RENTALS = src.MAX_OVERLAPPING_RENTALS,
+            tgt.FRONTEND_QTY_LIMIT = src.FRONTEND_QTY_LIMIT,
+            tgt.USE_STRIPED_BACKGROUND = src.USE_STRIPED_BACKGROUND,
+            tgt.BACKEND_AVAILABLE_DAYS = src.BACKEND_AVAILABLE_DAYS,
+            tgt.FRONTEND_AVAILABLE_DAYS = src.FRONTEND_AVAILABLE_DAYS,
+            tgt.MAX_SAME_DEPARTURES = src.MAX_SAME_DEPARTURES,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, ACCESSORY_NAME, POSITION_ORDER, FRONTEND_POSITION, SHORT_NAME, ABBREVIATION, IMAGE_URL, PRICE, DEPOSIT_AMOUNT, TAX_EXEMPT, MAX_OVERLAPPING_RENTALS, FRONTEND_QTY_LIMIT, USE_STRIPED_BACKGROUND, BACKEND_AVAILABLE_DAYS, FRONTEND_AVAILABLE_DAYS, MAX_SAME_DEPARTURES, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.ACCESSORY_NAME, src.POSITION_ORDER, src.FRONTEND_POSITION, src.SHORT_NAME, src.ABBREVIATION, src.IMAGE_URL, src.PRICE, src.DEPOSIT_AMOUNT, src.TAX_EXEMPT, src.MAX_OVERLAPPING_RENTALS, src.FRONTEND_QTY_LIMIT, src.USE_STRIPED_BACKGROUND, src.BACKEND_AVAILABLE_DAYS, src.FRONTEND_AVAILABLE_DAYS, src.MAX_SAME_DEPARTURES, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_ACCESSORIES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_ACCESSORIES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_ACCESSORIES;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_ACCESSORY_OPTIONS to DW_STELLAR_ACCESSORY_OPTIONS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_ACCESSORY_OPTIONS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_ACCESSORY_OPTIONS tgt
+    USING STG_STELLAR_ACCESSORY_OPTIONS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.ACCESSORY_ID = src.ACCESSORY_ID,
+            tgt.VALUE_TEXT = src.VALUE_TEXT,
+            tgt.USE_STRIPED_BACKGROUND = src.USE_STRIPED_BACKGROUND,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, ACCESSORY_ID, VALUE_TEXT, USE_STRIPED_BACKGROUND, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.ACCESSORY_ID, src.VALUE_TEXT, src.USE_STRIPED_BACKGROUND, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_ACCESSORY_OPTIONS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_ACCESSORY_OPTIONS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_ACCESSORY_OPTIONS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_ACCESSORY_TIERS to DW_STELLAR_ACCESSORY_TIERS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_ACCESSORY_TIERS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_ACCESSORY_TIERS tgt
+    USING STG_STELLAR_ACCESSORY_TIERS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.ACCESSORY_ID = src.ACCESSORY_ID,
+            tgt.MIN_HOURS = src.MIN_HOURS,
+            tgt.MAX_HOURS = src.MAX_HOURS,
+            tgt.PRICE = src.PRICE,
+            tgt.ACCESSORY_OPTION_ID = src.ACCESSORY_OPTION_ID,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, ACCESSORY_ID, MIN_HOURS, MAX_HOURS, PRICE, ACCESSORY_OPTION_ID, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.ACCESSORY_ID, src.MIN_HOURS, src.MAX_HOURS, src.PRICE, src.ACCESSORY_OPTION_ID, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_ACCESSORY_TIERS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_ACCESSORY_TIERS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_ACCESSORY_TIERS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_AMENITIES to DW_STELLAR_AMENITIES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_AMENITIES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_AMENITIES tgt
+    USING STG_STELLAR_AMENITIES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.AMENITY_NAME = src.AMENITY_NAME,
+            tgt.FRONTEND_DISPLAY = src.FRONTEND_DISPLAY,
+            tgt.FRONTEND_NAME = src.FRONTEND_NAME,
+            tgt.FRONTEND_POSITION = src.FRONTEND_POSITION,
+            tgt.FEATURED = src.FEATURED,
+            tgt.FILTERABLE = src.FILTERABLE,
+            tgt.ICON = src.ICON,
+            tgt.AMENITY_TYPE = src.AMENITY_TYPE,
+            tgt.OPTIONS_TEXT = src.OPTIONS_TEXT,
+            tgt.PREFIX_TEXT = src.PREFIX_TEXT,
+            tgt.SUFFIX_TEXT = src.SUFFIX_TEXT,
+            tgt.DESCRIPTION_TEXT = src.DESCRIPTION_TEXT,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, AMENITY_NAME, FRONTEND_DISPLAY, FRONTEND_NAME, FRONTEND_POSITION, FEATURED, FILTERABLE, ICON, AMENITY_TYPE, OPTIONS_TEXT, PREFIX_TEXT, SUFFIX_TEXT, DESCRIPTION_TEXT, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.AMENITY_NAME, src.FRONTEND_DISPLAY, src.FRONTEND_NAME, src.FRONTEND_POSITION, src.FEATURED, src.FILTERABLE, src.ICON, src.AMENITY_TYPE, src.OPTIONS_TEXT, src.PREFIX_TEXT, src.SUFFIX_TEXT, src.DESCRIPTION_TEXT, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_AMENITIES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_AMENITIES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_AMENITIES;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_BLACKLISTS to DW_STELLAR_BLACKLISTS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_BLACKLISTS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_BLACKLISTS tgt
+    USING STG_STELLAR_BLACKLISTS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.FIRST_NAME = src.FIRST_NAME,
+            tgt.LAST_NAME = src.LAST_NAME,
+            tgt.PHONE = src.PHONE,
+            tgt.CELL = src.CELL,
+            tgt.EMAIL = src.EMAIL,
+            tgt.DL_NUMBER = src.DL_NUMBER,
+            tgt.NOTES = src.NOTES,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, FIRST_NAME, LAST_NAME, PHONE, CELL, EMAIL, DL_NUMBER, NOTES, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.FIRST_NAME, src.LAST_NAME, src.PHONE, src.CELL, src.EMAIL, src.DL_NUMBER, src.NOTES, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_BLACKLISTS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_BLACKLISTS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_BLACKLISTS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_BOOKING_ACCESSORIES to DW_STELLAR_BOOKING_ACCESSORIES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_BOOKING_ACCESSORIES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_BOOKING_ACCESSORIES tgt
+    USING STG_STELLAR_BOOKING_ACCESSORIES src
+    ON (tgt.BOOKING_ID = src.BOOKING_ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.ACCESSORY_ID = src.ACCESSORY_ID,
+            tgt.QTY = src.QTY,
+            tgt.PRICE = src.PRICE,
+            tgt.PRICE_OVERRIDE = src.PRICE_OVERRIDE,
+            tgt.ACCESSORY_OPTION_ID = src.ACCESSORY_OPTION_ID,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            BOOKING_ID, ACCESSORY_ID, QTY, PRICE, PRICE_OVERRIDE, ACCESSORY_OPTION_ID, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.BOOKING_ID, src.ACCESSORY_ID, src.QTY, src.PRICE, src.PRICE_OVERRIDE, src.ACCESSORY_OPTION_ID, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_BOOKING_ACCESSORIES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_BOOKING_ACCESSORIES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_BOOKING_ACCESSORIES;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_BOOKING_BOATS to DW_STELLAR_BOOKING_BOATS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_BOOKING_BOATS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_BOOKING_BOATS tgt
+    USING STG_STELLAR_BOOKING_BOATS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.BOOKING_ID = src.BOOKING_ID,
+            tgt.STYLE_ID = src.STYLE_ID,
+            tgt.BOAT_ID = src.BOAT_ID,
+            tgt.TIME_ID = src.TIME_ID,
+            tgt.TIMEFRAME_ID = src.TIMEFRAME_ID,
+            tgt.MAIN_BOAT = src.MAIN_BOAT,
+            tgt.NUM_PASSENGERS = src.NUM_PASSENGERS,
+            tgt.BOAT_DEPARTURE = src.BOAT_DEPARTURE,
+            tgt.BOAT_RETURN = src.BOAT_RETURN,
+            tgt.STATUS_BOOKING = src.STATUS_BOOKING,
+            tgt.PRICE = src.PRICE,
+            tgt.PRICE_OVERRIDE = src.PRICE_OVERRIDE,
+            tgt.SIGNATURE_DATE = src.SIGNATURE_DATE,
+            tgt.CHECK_OUT_DATE = src.CHECK_OUT_DATE,
+            tgt.CHECK_OUT_EQUIPMENT = src.CHECK_OUT_EQUIPMENT,
+            tgt.CHECK_OUT_NOTES = src.CHECK_OUT_NOTES,
+            tgt.CHECK_OUT_ENGINE_HOURS = src.CHECK_OUT_ENGINE_HOURS,
+            tgt.CHECK_IN_DATE = src.CHECK_IN_DATE,
+            tgt.CHECK_IN_EQUIPMENT = src.CHECK_IN_EQUIPMENT,
+            tgt.CHECK_IN_NOTES = src.CHECK_IN_NOTES,
+            tgt.CHECK_IN_ENGINE_HOURS = src.CHECK_IN_ENGINE_HOURS,
+            tgt.CHECK_IN_HOURS = src.CHECK_IN_HOURS,
+            tgt.CHECK_IN_DEPOSIT = src.CHECK_IN_DEPOSIT,
+            tgt.CHECK_IN_WEATHER = src.CHECK_IN_WEATHER,
+            tgt.CHECK_IN_LATE = src.CHECK_IN_LATE,
+            tgt.CHECK_IN_MISC_NON_TAX = src.CHECK_IN_MISC_NON_TAX,
+            tgt.CHECK_IN_MISC_TAX = src.CHECK_IN_MISC_TAX,
+            tgt.CHECK_IN_CLEANING = src.CHECK_IN_CLEANING,
+            tgt.CHECK_IN_GALLONS = src.CHECK_IN_GALLONS,
+            tgt.CHECK_IN_FUEL = src.CHECK_IN_FUEL,
+            tgt.CHECK_IN_DIESEL_GALLONS = src.CHECK_IN_DIESEL_GALLONS,
+            tgt.CHECK_IN_DIESEL = src.CHECK_IN_DIESEL,
+            tgt.CHECK_IN_TIP = src.CHECK_IN_TIP,
+            tgt.CHECK_IN_TAX_1 = src.CHECK_IN_TAX_1,
+            tgt.CHECK_IN_TAX_2 = src.CHECK_IN_TAX_2,
+            tgt.CHECK_IN_TOTAL = src.CHECK_IN_TOTAL,
+            tgt.QUEUE_ADMIN_ID = src.QUEUE_ADMIN_ID,
+            tgt.QUEUE_DATE = src.QUEUE_DATE,
+            tgt.ATTENDANT_QUEUE_ADMIN_ID = src.ATTENDANT_QUEUE_ADMIN_ID,
+            tgt.ATTENDANT_WATER_ADMIN_ID = src.ATTENDANT_WATER_ADMIN_ID,
+            tgt.BOAT_ASSIGNED = src.BOAT_ASSIGNED,
+            tgt.ADDITIONAL_DRIVERS = src.ADDITIONAL_DRIVERS,
+            tgt.ADDITIONAL_DRIVER_NAMES = src.ADDITIONAL_DRIVER_NAMES,
+            tgt.ACCESSORIES_MIGRATED = src.ACCESSORIES_MIGRATED,
+            tgt.PRICE_RULE_ID = src.PRICE_RULE_ID,
+            tgt.PRICE_RULE_ORIGINAL_PRICE = src.PRICE_RULE_ORIGINAL_PRICE,
+            tgt.PRICE_RULE_DYNAMIC_PRICE = src.PRICE_RULE_DYNAMIC_PRICE,
+            tgt.PRICE_RULE_DIFFERENCE = src.PRICE_RULE_DIFFERENCE,
+            tgt.EMERGENCY_NAME = src.EMERGENCY_NAME,
+            tgt.EMERGENCY_PHONE = src.EMERGENCY_PHONE,
+            tgt.DATE_OF_BIRTH = src.DATE_OF_BIRTH,
+            tgt.CONTRACT_RETURN_PDF = src.CONTRACT_RETURN_PDF,
+            tgt.CONTRACT_PDF = src.CONTRACT_PDF,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DELETED_AT = src.DELETED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, BOOKING_ID, STYLE_ID, BOAT_ID, TIME_ID, TIMEFRAME_ID, MAIN_BOAT, NUM_PASSENGERS, BOAT_DEPARTURE, BOAT_RETURN, STATUS_BOOKING, PRICE, PRICE_OVERRIDE, SIGNATURE_DATE, CHECK_OUT_DATE, CHECK_OUT_EQUIPMENT, CHECK_OUT_NOTES, CHECK_OUT_ENGINE_HOURS, CHECK_IN_DATE, CHECK_IN_EQUIPMENT, CHECK_IN_NOTES, CHECK_IN_ENGINE_HOURS, CHECK_IN_HOURS, CHECK_IN_DEPOSIT, CHECK_IN_WEATHER, CHECK_IN_LATE, CHECK_IN_MISC_NON_TAX, CHECK_IN_MISC_TAX, CHECK_IN_CLEANING, CHECK_IN_GALLONS, CHECK_IN_FUEL, CHECK_IN_DIESEL_GALLONS, CHECK_IN_DIESEL, CHECK_IN_TIP, CHECK_IN_TAX_1, CHECK_IN_TAX_2, CHECK_IN_TOTAL, QUEUE_ADMIN_ID, QUEUE_DATE, ATTENDANT_QUEUE_ADMIN_ID, ATTENDANT_WATER_ADMIN_ID, BOAT_ASSIGNED, ADDITIONAL_DRIVERS, ADDITIONAL_DRIVER_NAMES, ACCESSORIES_MIGRATED, PRICE_RULE_ID, PRICE_RULE_ORIGINAL_PRICE, PRICE_RULE_DYNAMIC_PRICE, PRICE_RULE_DIFFERENCE, EMERGENCY_NAME, EMERGENCY_PHONE, DATE_OF_BIRTH, CONTRACT_RETURN_PDF, CONTRACT_PDF, CREATED_AT, UPDATED_AT, DELETED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.BOOKING_ID, src.STYLE_ID, src.BOAT_ID, src.TIME_ID, src.TIMEFRAME_ID, src.MAIN_BOAT, src.NUM_PASSENGERS, src.BOAT_DEPARTURE, src.BOAT_RETURN, src.STATUS_BOOKING, src.PRICE, src.PRICE_OVERRIDE, src.SIGNATURE_DATE, src.CHECK_OUT_DATE, src.CHECK_OUT_EQUIPMENT, src.CHECK_OUT_NOTES, src.CHECK_OUT_ENGINE_HOURS, src.CHECK_IN_DATE, src.CHECK_IN_EQUIPMENT, src.CHECK_IN_NOTES, src.CHECK_IN_ENGINE_HOURS, src.CHECK_IN_HOURS, src.CHECK_IN_DEPOSIT, src.CHECK_IN_WEATHER, src.CHECK_IN_LATE, src.CHECK_IN_MISC_NON_TAX, src.CHECK_IN_MISC_TAX, src.CHECK_IN_CLEANING, src.CHECK_IN_GALLONS, src.CHECK_IN_FUEL, src.CHECK_IN_DIESEL_GALLONS, src.CHECK_IN_DIESEL, src.CHECK_IN_TIP, src.CHECK_IN_TAX_1, src.CHECK_IN_TAX_2, src.CHECK_IN_TOTAL, src.QUEUE_ADMIN_ID, src.QUEUE_DATE, src.ATTENDANT_QUEUE_ADMIN_ID, src.ATTENDANT_WATER_ADMIN_ID, src.BOAT_ASSIGNED, src.ADDITIONAL_DRIVERS, src.ADDITIONAL_DRIVER_NAMES, src.ACCESSORIES_MIGRATED, src.PRICE_RULE_ID, src.PRICE_RULE_ORIGINAL_PRICE, src.PRICE_RULE_DYNAMIC_PRICE, src.PRICE_RULE_DIFFERENCE, src.EMERGENCY_NAME, src.EMERGENCY_PHONE, src.DATE_OF_BIRTH, src.CONTRACT_RETURN_PDF, src.CONTRACT_PDF, src.CREATED_AT, src.UPDATED_AT, src.DELETED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_BOOKING_BOATS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_BOOKING_BOATS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_BOOKING_BOATS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_BOOKING_PAYMENTS to DW_STELLAR_BOOKING_PAYMENTS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_BOOKING_PAYMENTS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_BOOKING_PAYMENTS tgt
+    USING STG_STELLAR_BOOKING_PAYMENTS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.BOOKING_ID = src.BOOKING_ID,
+            tgt.CUSTOMER_ID = src.CUSTOMER_ID,
+            tgt.ADMIN_ID = src.ADMIN_ID,
+            tgt.FRONTEND = src.FRONTEND,
+            tgt.PAYMENT_FOR = src.PAYMENT_FOR,
+            tgt.PAYMENT_TYPE = src.PAYMENT_TYPE,
+            tgt.CARD_TYPE = src.CARD_TYPE,
+            tgt.PAYMENT_TOTAL = src.PAYMENT_TOTAL,
+            tgt.CASH_TOTAL = src.CASH_TOTAL,
+            tgt.CREDIT_TOTAL = src.CREDIT_TOTAL,
+            tgt.AGENT_AR_TOTAL = src.AGENT_AR_TOTAL,
+            tgt.CREDIT_LAST4 = src.CREDIT_LAST4,
+            tgt.CREDIT_EXPIRY = src.CREDIT_EXPIRY,
+            tgt.BILLING_FIRST_NAME = src.BILLING_FIRST_NAME,
+            tgt.BILLING_LAST_NAME = src.BILLING_LAST_NAME,
+            tgt.BILLING_STREET1 = src.BILLING_STREET1,
+            tgt.BILLING_STREET2 = src.BILLING_STREET2,
+            tgt.BILLING_CITY = src.BILLING_CITY,
+            tgt.BILLING_STATE = src.BILLING_STATE,
+            tgt.BILLING_COUNTRY = src.BILLING_COUNTRY,
+            tgt.BILLING_ZIP = src.BILLING_ZIP,
+            tgt.TRANS_ID = src.TRANS_ID,
+            tgt.ORIGINAL_PAYMENT_ID = src.ORIGINAL_PAYMENT_ID,
+            tgt.STATUS_PAYMENT = src.STATUS_PAYMENT,
+            tgt.NOTES = src.NOTES,
+            tgt.IS_AGENT_AR = src.IS_AGENT_AR,
+            tgt.OFFLINE_TYPE = src.OFFLINE_TYPE,
+            tgt.DOCK_MASTER_TICKET = src.DOCK_MASTER_TICKET,
+            tgt.MY_TASK_IT_ID = src.MY_TASK_IT_ID,
+            tgt.REPORT_BOATS = src.REPORT_BOATS,
+            tgt.REPORT_PROPANE = src.REPORT_PROPANE,
+            tgt.REPORT_ACCESSORIES = src.REPORT_ACCESSORIES,
+            tgt.REPORT_PARKING = src.REPORT_PARKING,
+            tgt.REPORT_INSURANCE = src.REPORT_INSURANCE,
+            tgt.REPORT_FUEL = src.REPORT_FUEL,
+            tgt.REPORT_DAMAGES = src.REPORT_DAMAGES,
+            tgt.REPORT_CLEANING = src.REPORT_CLEANING,
+            tgt.REPORT_LATE = src.REPORT_LATE,
+            tgt.REPORT_OTHER = src.REPORT_OTHER,
+            tgt.REPORT_DISCOUNT = src.REPORT_DISCOUNT,
+            tgt.INTERNAL_APPLICATION_FEE = src.INTERNAL_APPLICATION_FEE,
+            tgt.CC_PROCESSOR_FEE = src.CC_PROCESSOR_FEE,
+            tgt.CC_BRAND = src.CC_BRAND,
+            tgt.CC_COUNTRY = src.CC_COUNTRY,
+            tgt.CC_FUNDING = src.CC_FUNDING,
+            tgt.CC_CONNECT_TYPE = src.CC_CONNECT_TYPE,
+            tgt.CC_CONNECT_ID = src.CC_CONNECT_ID,
+            tgt.CC_PAYOUT_ID = src.CC_PAYOUT_ID,
+            tgt.CC_PAYOUT_DATE = src.CC_PAYOUT_DATE,
+            tgt.EXTERNAL_CHARGE_ID = src.EXTERNAL_CHARGE_ID,
+            tgt.IS_SYNCED = src.IS_SYNCED,
+            tgt.STRIPE_READER_ID = src.STRIPE_READER_ID,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DELETED_AT = src.DELETED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, BOOKING_ID, CUSTOMER_ID, ADMIN_ID, FRONTEND, PAYMENT_FOR, PAYMENT_TYPE, CARD_TYPE, PAYMENT_TOTAL, CASH_TOTAL, CREDIT_TOTAL, AGENT_AR_TOTAL, CREDIT_LAST4, CREDIT_EXPIRY, BILLING_FIRST_NAME, BILLING_LAST_NAME, BILLING_STREET1, BILLING_STREET2, BILLING_CITY, BILLING_STATE, BILLING_COUNTRY, BILLING_ZIP, TRANS_ID, ORIGINAL_PAYMENT_ID, STATUS_PAYMENT, NOTES, IS_AGENT_AR, OFFLINE_TYPE, DOCK_MASTER_TICKET, MY_TASK_IT_ID, REPORT_BOATS, REPORT_PROPANE, REPORT_ACCESSORIES, REPORT_PARKING, REPORT_INSURANCE, REPORT_FUEL, REPORT_DAMAGES, REPORT_CLEANING, REPORT_LATE, REPORT_OTHER, REPORT_DISCOUNT, INTERNAL_APPLICATION_FEE, CC_PROCESSOR_FEE, CC_BRAND, CC_COUNTRY, CC_FUNDING, CC_CONNECT_TYPE, CC_CONNECT_ID, CC_PAYOUT_ID, CC_PAYOUT_DATE, EXTERNAL_CHARGE_ID, IS_SYNCED, STRIPE_READER_ID, CREATED_AT, UPDATED_AT, DELETED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.BOOKING_ID, src.CUSTOMER_ID, src.ADMIN_ID, src.FRONTEND, src.PAYMENT_FOR, src.PAYMENT_TYPE, src.CARD_TYPE, src.PAYMENT_TOTAL, src.CASH_TOTAL, src.CREDIT_TOTAL, src.AGENT_AR_TOTAL, src.CREDIT_LAST4, src.CREDIT_EXPIRY, src.BILLING_FIRST_NAME, src.BILLING_LAST_NAME, src.BILLING_STREET1, src.BILLING_STREET2, src.BILLING_CITY, src.BILLING_STATE, src.BILLING_COUNTRY, src.BILLING_ZIP, src.TRANS_ID, src.ORIGINAL_PAYMENT_ID, src.STATUS_PAYMENT, src.NOTES, src.IS_AGENT_AR, src.OFFLINE_TYPE, src.DOCK_MASTER_TICKET, src.MY_TASK_IT_ID, src.REPORT_BOATS, src.REPORT_PROPANE, src.REPORT_ACCESSORIES, src.REPORT_PARKING, src.REPORT_INSURANCE, src.REPORT_FUEL, src.REPORT_DAMAGES, src.REPORT_CLEANING, src.REPORT_LATE, src.REPORT_OTHER, src.REPORT_DISCOUNT, src.INTERNAL_APPLICATION_FEE, src.CC_PROCESSOR_FEE, src.CC_BRAND, src.CC_COUNTRY, src.CC_FUNDING, src.CC_CONNECT_TYPE, src.CC_CONNECT_ID, src.CC_PAYOUT_ID, src.CC_PAYOUT_DATE, src.EXTERNAL_CHARGE_ID, src.IS_SYNCED, src.STRIPE_READER_ID, src.CREATED_AT, src.UPDATED_AT, src.DELETED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_BOOKING_PAYMENTS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_BOOKING_PAYMENTS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_BOOKING_PAYMENTS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_BOOKINGS to DW_STELLAR_BOOKINGS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_BOOKINGS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_BOOKINGS tgt
+    USING STG_STELLAR_BOOKINGS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.CUSTOMER_ID = src.CUSTOMER_ID,
+            tgt.CREATOR_ID = src.CREATOR_ID,
+            tgt.ADMIN_ID = src.ADMIN_ID,
+            tgt.BILLING_FIRST_NAME = src.BILLING_FIRST_NAME,
+            tgt.BILLING_LAST_NAME = src.BILLING_LAST_NAME,
+            tgt.BILLING_STREET1 = src.BILLING_STREET1,
+            tgt.BILLING_STREET2 = src.BILLING_STREET2,
+            tgt.BILLING_CITY = src.BILLING_CITY,
+            tgt.BILLING_STATE = src.BILLING_STATE,
+            tgt.BILLING_COUNTRY = src.BILLING_COUNTRY,
+            tgt.BILLING_ZIP = src.BILLING_ZIP,
+            tgt.CC_SAVED_NAME = src.CC_SAVED_NAME,
+            tgt.CC_SAVED_LAST4 = src.CC_SAVED_LAST4,
+            tgt.CC_SAVED_PROFILE_ID = src.CC_SAVED_PROFILE_ID,
+            tgt.CC_SAVED_METHOD_ID = src.CC_SAVED_METHOD_ID,
+            tgt.CC_SAVED_ADDRESS_ID = src.CC_SAVED_ADDRESS_ID,
+            tgt.CC_PREAUTH_ID = src.CC_PREAUTH_ID,
+            tgt.CC_PREAUTH_AMOUNT = src.CC_PREAUTH_AMOUNT,
+            tgt.CC_CONNECT_TYPE = src.CC_CONNECT_TYPE,
+            tgt.CC_CONNECT_ID = src.CC_CONNECT_ID,
+            tgt.ACCESSORIES_CUSTOM_PRICE = src.ACCESSORIES_CUSTOM_PRICE,
+            tgt.ACCESSORIES_TOTAL = src.ACCESSORIES_TOTAL,
+            tgt.INSURANCE_AMOUNT = src.INSURANCE_AMOUNT,
+            tgt.PETS = src.PETS,
+            tgt.PARKING = src.PARKING,
+            tgt.PARKING_OVERRIDE = src.PARKING_OVERRIDE,
+            tgt.BOATS_TOTAL = src.BOATS_TOTAL,
+            tgt.POS_TOTAL = src.POS_TOTAL,
+            tgt.USE_CLUB_CREDITS = src.USE_CLUB_CREDITS,
+            tgt.NO_SHOW_FEE = src.NO_SHOW_FEE,
+            tgt.CANCELLATION_FEE = src.CANCELLATION_FEE,
+            tgt.CLUB_FEES = src.CLUB_FEES,
+            tgt.CLUB_FEES_OVERRIDE = src.CLUB_FEES_OVERRIDE,
+            tgt.SUB_TOTAL = src.SUB_TOTAL,
+            tgt.CONVENIENCE_FEE = src.CONVENIENCE_FEE,
+            tgt.CONVENIENCE_FEE_WAIVED = src.CONVENIENCE_FEE_WAIVED,
+            tgt.INTERNAL_APPLICATION_FEE = src.INTERNAL_APPLICATION_FEE,
+            tgt.TAX_1 = src.TAX_1,
+            tgt.TAX_1_EXEMPT = src.TAX_1_EXEMPT,
+            tgt.TAX_1_RATE_OVERRIDE = src.TAX_1_RATE_OVERRIDE,
+            tgt.TAX_2 = src.TAX_2,
+            tgt.TAX_2_EXEMPT = src.TAX_2_EXEMPT,
+            tgt.CHECK_IN_TAX_1 = src.CHECK_IN_TAX_1,
+            tgt.CHECK_IN_TAX_2 = src.CHECK_IN_TAX_2,
+            tgt.CHECK_IN_TOTAL = src.CHECK_IN_TOTAL,
+            tgt.DEPOSIT_TOTAL = src.DEPOSIT_TOTAL,
+            tgt.DEPOSIT_OVERRIDE = src.DEPOSIT_OVERRIDE,
+            tgt.DEPOSIT_WAIVED = src.DEPOSIT_WAIVED,
+            tgt.GRATUITY = src.GRATUITY,
+            tgt.GRAND_TOTAL = src.GRAND_TOTAL,
+            tgt.ADJUSTMENT_TOTAL = src.ADJUSTMENT_TOTAL,
+            tgt.AMOUNT_PAID = src.AMOUNT_PAID,
+            tgt.NOTES = src.NOTES,
+            tgt.NOTES_CONTRACT = src.NOTES_CONTRACT,
+            tgt.NOTES_FROM_CUSTOMER = src.NOTES_FROM_CUSTOMER,
+            tgt.NOTES_FROM_CUSTOMER_CONTRACT = src.NOTES_FROM_CUSTOMER_CONTRACT,
+            tgt.NOTES_FOR_CUSTOMER = src.NOTES_FOR_CUSTOMER,
+            tgt.NOTES_FOR_CUSTOMER_CONTRACT = src.NOTES_FOR_CUSTOMER_CONTRACT,
+            tgt.FRONTEND = src.FRONTEND,
+            tgt.IS_ON_HOLD = src.IS_ON_HOLD,
+            tgt.IS_LOCKED = src.IS_LOCKED,
+            tgt.IS_FINALIZED = src.IS_FINALIZED,
+            tgt.IS_CANCELED = src.IS_CANCELED,
+            tgt.OVERRIDE_TURNAROUND_TIME = src.OVERRIDE_TURNAROUND_TIME,
+            tgt.CANCELLATION_TYPE = src.CANCELLATION_TYPE,
+            tgt.BYPASS_CLUB_RESTRICTIONS = src.BYPASS_CLUB_RESTRICTIONS,
+            tgt.RENTERS_INSURANCE_INTEREST = src.RENTERS_INSURANCE_INTEREST,
+            tgt.COUPON_ID = src.COUPON_ID,
+            tgt.COUPON_TYPE = src.COUPON_TYPE,
+            tgt.COUPON_AMOUNT = src.COUPON_AMOUNT,
+            tgt.DISCOUNT_TOTAL = src.DISCOUNT_TOTAL,
+            tgt.AGENT_ID = src.AGENT_ID,
+            tgt.AGENT_NAME = src.AGENT_NAME,
+            tgt.REFERRER_ID = src.REFERRER_ID,
+            tgt.SAFETY_REMINDER = src.SAFETY_REMINDER,
+            tgt.DELETED_ADMIN_ID = src.DELETED_ADMIN_ID,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.FINALIZED_AT = src.FINALIZED_AT,
+            tgt.DELETED_AT = src.DELETED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, CUSTOMER_ID, CREATOR_ID, ADMIN_ID, BILLING_FIRST_NAME, BILLING_LAST_NAME, BILLING_STREET1, BILLING_STREET2, BILLING_CITY, BILLING_STATE, BILLING_COUNTRY, BILLING_ZIP, CC_SAVED_NAME, CC_SAVED_LAST4, CC_SAVED_PROFILE_ID, CC_SAVED_METHOD_ID, CC_SAVED_ADDRESS_ID, CC_PREAUTH_ID, CC_PREAUTH_AMOUNT, CC_CONNECT_TYPE, CC_CONNECT_ID, ACCESSORIES_CUSTOM_PRICE, ACCESSORIES_TOTAL, INSURANCE_AMOUNT, PETS, PARKING, PARKING_OVERRIDE, BOATS_TOTAL, POS_TOTAL, USE_CLUB_CREDITS, NO_SHOW_FEE, CANCELLATION_FEE, CLUB_FEES, CLUB_FEES_OVERRIDE, SUB_TOTAL, CONVENIENCE_FEE, CONVENIENCE_FEE_WAIVED, INTERNAL_APPLICATION_FEE, TAX_1, TAX_1_EXEMPT, TAX_1_RATE_OVERRIDE, TAX_2, TAX_2_EXEMPT, CHECK_IN_TAX_1, CHECK_IN_TAX_2, CHECK_IN_TOTAL, DEPOSIT_TOTAL, DEPOSIT_OVERRIDE, DEPOSIT_WAIVED, GRATUITY, GRAND_TOTAL, ADJUSTMENT_TOTAL, AMOUNT_PAID, NOTES, NOTES_CONTRACT, NOTES_FROM_CUSTOMER, NOTES_FROM_CUSTOMER_CONTRACT, NOTES_FOR_CUSTOMER, NOTES_FOR_CUSTOMER_CONTRACT, FRONTEND, IS_ON_HOLD, IS_LOCKED, IS_FINALIZED, IS_CANCELED, OVERRIDE_TURNAROUND_TIME, CANCELLATION_TYPE, BYPASS_CLUB_RESTRICTIONS, RENTERS_INSURANCE_INTEREST, COUPON_ID, COUPON_TYPE, COUPON_AMOUNT, DISCOUNT_TOTAL, AGENT_ID, AGENT_NAME, REFERRER_ID, SAFETY_REMINDER, DELETED_ADMIN_ID, CREATED_AT, UPDATED_AT, FINALIZED_AT, DELETED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.CUSTOMER_ID, src.CREATOR_ID, src.ADMIN_ID, src.BILLING_FIRST_NAME, src.BILLING_LAST_NAME, src.BILLING_STREET1, src.BILLING_STREET2, src.BILLING_CITY, src.BILLING_STATE, src.BILLING_COUNTRY, src.BILLING_ZIP, src.CC_SAVED_NAME, src.CC_SAVED_LAST4, src.CC_SAVED_PROFILE_ID, src.CC_SAVED_METHOD_ID, src.CC_SAVED_ADDRESS_ID, src.CC_PREAUTH_ID, src.CC_PREAUTH_AMOUNT, src.CC_CONNECT_TYPE, src.CC_CONNECT_ID, src.ACCESSORIES_CUSTOM_PRICE, src.ACCESSORIES_TOTAL, src.INSURANCE_AMOUNT, src.PETS, src.PARKING, src.PARKING_OVERRIDE, src.BOATS_TOTAL, src.POS_TOTAL, src.USE_CLUB_CREDITS, src.NO_SHOW_FEE, src.CANCELLATION_FEE, src.CLUB_FEES, src.CLUB_FEES_OVERRIDE, src.SUB_TOTAL, src.CONVENIENCE_FEE, src.CONVENIENCE_FEE_WAIVED, src.INTERNAL_APPLICATION_FEE, src.TAX_1, src.TAX_1_EXEMPT, src.TAX_1_RATE_OVERRIDE, src.TAX_2, src.TAX_2_EXEMPT, src.CHECK_IN_TAX_1, src.CHECK_IN_TAX_2, src.CHECK_IN_TOTAL, src.DEPOSIT_TOTAL, src.DEPOSIT_OVERRIDE, src.DEPOSIT_WAIVED, src.GRATUITY, src.GRAND_TOTAL, src.ADJUSTMENT_TOTAL, src.AMOUNT_PAID, src.NOTES, src.NOTES_CONTRACT, src.NOTES_FROM_CUSTOMER, src.NOTES_FROM_CUSTOMER_CONTRACT, src.NOTES_FOR_CUSTOMER, src.NOTES_FOR_CUSTOMER_CONTRACT, src.FRONTEND, src.IS_ON_HOLD, src.IS_LOCKED, src.IS_FINALIZED, src.IS_CANCELED, src.OVERRIDE_TURNAROUND_TIME, src.CANCELLATION_TYPE, src.BYPASS_CLUB_RESTRICTIONS, src.RENTERS_INSURANCE_INTEREST, src.COUPON_ID, src.COUPON_TYPE, src.COUPON_AMOUNT, src.DISCOUNT_TOTAL, src.AGENT_ID, src.AGENT_NAME, src.REFERRER_ID, src.SAFETY_REMINDER, src.DELETED_ADMIN_ID, src.CREATED_AT, src.UPDATED_AT, src.FINALIZED_AT, src.DELETED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_BOOKINGS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_BOOKINGS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_BOOKINGS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_CATEGORIES to DW_STELLAR_CATEGORIES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_CATEGORIES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_CATEGORIES tgt
+    USING STG_STELLAR_CATEGORIES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.CATEGORY_NAME = src.CATEGORY_NAME,
+            tgt.FRONTEND_DISPLAY = src.FRONTEND_DISPLAY,
+            tgt.FRONTEND_NAME = src.FRONTEND_NAME,
+            tgt.FRONTEND_TYPE = src.FRONTEND_TYPE,
+            tgt.FRONTEND_POSITION = src.FRONTEND_POSITION,
+            tgt.FILTER_UNIT_TYPE_ENABLED = src.FILTER_UNIT_TYPE_ENABLED,
+            tgt.FILTER_UNIT_TYPE_NAME = src.FILTER_UNIT_TYPE_NAME,
+            tgt.FILTER_UNIT_TYPE_POSITION = src.FILTER_UNIT_TYPE_POSITION,
+            tgt.MIN_NIGHTS_MULTI_DAY = src.MIN_NIGHTS_MULTI_DAY,
+            tgt.CALENDAR_BANNER_TEXT = src.CALENDAR_BANNER_TEXT,
+            tgt.DESCRIPTION_TEXT = src.DESCRIPTION_TEXT,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, CATEGORY_NAME, FRONTEND_DISPLAY, FRONTEND_NAME, FRONTEND_TYPE, FRONTEND_POSITION, FILTER_UNIT_TYPE_ENABLED, FILTER_UNIT_TYPE_NAME, FILTER_UNIT_TYPE_POSITION, MIN_NIGHTS_MULTI_DAY, CALENDAR_BANNER_TEXT, DESCRIPTION_TEXT, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.CATEGORY_NAME, src.FRONTEND_DISPLAY, src.FRONTEND_NAME, src.FRONTEND_TYPE, src.FRONTEND_POSITION, src.FILTER_UNIT_TYPE_ENABLED, src.FILTER_UNIT_TYPE_NAME, src.FILTER_UNIT_TYPE_POSITION, src.MIN_NIGHTS_MULTI_DAY, src.CALENDAR_BANNER_TEXT, src.DESCRIPTION_TEXT, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_CATEGORIES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_CATEGORIES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_CATEGORIES;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_CLOSED_DATES to DW_STELLAR_CLOSED_DATES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_CLOSED_DATES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_CLOSED_DATES tgt
+    USING STG_STELLAR_CLOSED_DATES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.CLOSED_DATE = src.CLOSED_DATE,
+            tgt.ALLOW_BACKEND_DEPARTURES = src.ALLOW_BACKEND_DEPARTURES,
+            tgt.ALLOW_BACKEND_RETURNS = src.ALLOW_BACKEND_RETURNS,
+            tgt.ALLOW_FRONTEND_DEPARTURES = src.ALLOW_FRONTEND_DEPARTURES,
+            tgt.ALLOW_FRONTEND_RETURNS = src.ALLOW_FRONTEND_RETURNS,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, CLOSED_DATE, ALLOW_BACKEND_DEPARTURES, ALLOW_BACKEND_RETURNS, ALLOW_FRONTEND_DEPARTURES, ALLOW_FRONTEND_RETURNS, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.CLOSED_DATE, src.ALLOW_BACKEND_DEPARTURES, src.ALLOW_BACKEND_RETURNS, src.ALLOW_FRONTEND_DEPARTURES, src.ALLOW_FRONTEND_RETURNS, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_CLOSED_DATES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_CLOSED_DATES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_CLOSED_DATES;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_CLUB_TIERS to DW_STELLAR_CLUB_TIERS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_CLUB_TIERS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_CLUB_TIERS tgt
+    USING STG_STELLAR_CLUB_TIERS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.TIER_NAME = src.TIER_NAME,
+            tgt.FRONTEND_DISPLAY = src.FRONTEND_DISPLAY,
+            tgt.FRONTEND_NAME = src.FRONTEND_NAME,
+            tgt.FRONTEND_POSITION = src.FRONTEND_POSITION,
+            tgt.TERM_LENGTH = src.TERM_LENGTH,
+            tgt.TERM_LENGTH_TYPE = src.TERM_LENGTH_TYPE,
+            tgt.TERM_AUTO_RENEW = src.TERM_AUTO_RENEW,
+            tgt.TERM_FEE = src.TERM_FEE,
+            tgt.PERIOD_LENGTH = src.PERIOD_LENGTH,
+            tgt.PERIOD_LENGTH_TYPE = src.PERIOD_LENGTH_TYPE,
+            tgt.CREDITS_PER_PERIOD = src.CREDITS_PER_PERIOD,
+            tgt.HOURS_PER_CREDIT = src.HOURS_PER_CREDIT,
+            tgt.PERIOD_FEE = src.PERIOD_FEE,
+            tgt.FRONTEND_DISPLAY_PRICING = src.FRONTEND_DISPLAY_PRICING,
+            tgt.NO_SHOW_FEE = src.NO_SHOW_FEE,
+            tgt.ALLOW_SELF_CANCELLATIONS = src.ALLOW_SELF_CANCELLATIONS,
+            tgt.CANCELLATION_FEE = src.CANCELLATION_FEE,
+            tgt.APPLICATION_FEE = src.APPLICATION_FEE,
+            tgt.BOAT_DAMAGE_RESPONSIBILITY_DEDUCTION = src.BOAT_DAMAGE_RESPONSIBILITY_DEDUCTION,
+            tgt.MAX_PENDING_WAIT_LIST_ENTRIES = src.MAX_PENDING_WAIT_LIST_ENTRIES,
+            tgt.FREE_ACCESSORIES = src.FREE_ACCESSORIES,
+            tgt.DESCRIPTION_TEXT = src.DESCRIPTION_TEXT,
+            tgt.TERMS_TEXT = src.TERMS_TEXT,
+            tgt.STATUS_TIER = src.STATUS_TIER,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, TIER_NAME, FRONTEND_DISPLAY, FRONTEND_NAME, FRONTEND_POSITION, TERM_LENGTH, TERM_LENGTH_TYPE, TERM_AUTO_RENEW, TERM_FEE, PERIOD_LENGTH, PERIOD_LENGTH_TYPE, CREDITS_PER_PERIOD, HOURS_PER_CREDIT, PERIOD_FEE, FRONTEND_DISPLAY_PRICING, NO_SHOW_FEE, ALLOW_SELF_CANCELLATIONS, CANCELLATION_FEE, APPLICATION_FEE, BOAT_DAMAGE_RESPONSIBILITY_DEDUCTION, MAX_PENDING_WAIT_LIST_ENTRIES, FREE_ACCESSORIES, DESCRIPTION_TEXT, TERMS_TEXT, STATUS_TIER, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.TIER_NAME, src.FRONTEND_DISPLAY, src.FRONTEND_NAME, src.FRONTEND_POSITION, src.TERM_LENGTH, src.TERM_LENGTH_TYPE, src.TERM_AUTO_RENEW, src.TERM_FEE, src.PERIOD_LENGTH, src.PERIOD_LENGTH_TYPE, src.CREDITS_PER_PERIOD, src.HOURS_PER_CREDIT, src.PERIOD_FEE, src.FRONTEND_DISPLAY_PRICING, src.NO_SHOW_FEE, src.ALLOW_SELF_CANCELLATIONS, src.CANCELLATION_FEE, src.APPLICATION_FEE, src.BOAT_DAMAGE_RESPONSIBILITY_DEDUCTION, src.MAX_PENDING_WAIT_LIST_ENTRIES, src.FREE_ACCESSORIES, src.DESCRIPTION_TEXT, src.TERMS_TEXT, src.STATUS_TIER, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_CLUB_TIERS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_CLUB_TIERS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_CLUB_TIERS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_COUPONS to DW_STELLAR_COUPONS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_COUPONS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_COUPONS tgt
+    USING STG_STELLAR_COUPONS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.CODE = src.CODE,
+            tgt.COUPON_NAME = src.COUPON_NAME,
+            tgt.COUPON_TYPE = src.COUPON_TYPE,
+            tgt.COUPON_AMOUNT = src.COUPON_AMOUNT,
+            tgt.COUNT_ALLOWED = src.COUNT_ALLOWED,
+            tgt.COUNT_ALLOWED_DAILY = src.COUNT_ALLOWED_DAILY,
+            tgt.COUNT_USED = src.COUNT_USED,
+            tgt.RENTAL_START = src.RENTAL_START,
+            tgt.RENTAL_END = src.RENTAL_END,
+            tgt.COUPON_START = src.COUPON_START,
+            tgt.COUPON_END = src.COUPON_END,
+            tgt.MIN_DEPARTURE_TIME = src.MIN_DEPARTURE_TIME,
+            tgt.MAX_DEPARTURE_TIME = src.MAX_DEPARTURE_TIME,
+            tgt.MIN_RETURN_TIME = src.MIN_RETURN_TIME,
+            tgt.MAX_RETURN_TIME = src.MAX_RETURN_TIME,
+            tgt.MIN_HOURS = src.MIN_HOURS,
+            tgt.MAX_HOURS = src.MAX_HOURS,
+            tgt.MIN_HOURS_BEFORE_DEPARTURE = src.MIN_HOURS_BEFORE_DEPARTURE,
+            tgt.MAX_HOURS_BEFORE_DEPARTURE = src.MAX_HOURS_BEFORE_DEPARTURE,
+            tgt.MAX_SAME_DAY_PER_CUSTOMER = src.MAX_SAME_DAY_PER_CUSTOMER,
+            tgt.MAX_ACTIVE_PER_CUSTOMER = src.MAX_ACTIVE_PER_CUSTOMER,
+            tgt.DISABLE_CONSECUTIVE_PER_CUSTOMER = src.DISABLE_CONSECUTIVE_PER_CUSTOMER,
+            tgt.STATUS_COUPON = src.STATUS_COUPON,
+            tgt.VALID_DAYS = src.VALID_DAYS,
+            tgt.HOLIDAYS_ONLY_IF_VALID_DAY = src.HOLIDAYS_ONLY_IF_VALID_DAY,
+            tgt.VALID_STYLES = src.VALID_STYLES,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, CODE, COUPON_NAME, COUPON_TYPE, COUPON_AMOUNT, COUNT_ALLOWED, COUNT_ALLOWED_DAILY, COUNT_USED, RENTAL_START, RENTAL_END, COUPON_START, COUPON_END, MIN_DEPARTURE_TIME, MAX_DEPARTURE_TIME, MIN_RETURN_TIME, MAX_RETURN_TIME, MIN_HOURS, MAX_HOURS, MIN_HOURS_BEFORE_DEPARTURE, MAX_HOURS_BEFORE_DEPARTURE, MAX_SAME_DAY_PER_CUSTOMER, MAX_ACTIVE_PER_CUSTOMER, DISABLE_CONSECUTIVE_PER_CUSTOMER, STATUS_COUPON, VALID_DAYS, HOLIDAYS_ONLY_IF_VALID_DAY, VALID_STYLES, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.CODE, src.COUPON_NAME, src.COUPON_TYPE, src.COUPON_AMOUNT, src.COUNT_ALLOWED, src.COUNT_ALLOWED_DAILY, src.COUNT_USED, src.RENTAL_START, src.RENTAL_END, src.COUPON_START, src.COUPON_END, src.MIN_DEPARTURE_TIME, src.MAX_DEPARTURE_TIME, src.MIN_RETURN_TIME, src.MAX_RETURN_TIME, src.MIN_HOURS, src.MAX_HOURS, src.MIN_HOURS_BEFORE_DEPARTURE, src.MAX_HOURS_BEFORE_DEPARTURE, src.MAX_SAME_DAY_PER_CUSTOMER, src.MAX_ACTIVE_PER_CUSTOMER, src.DISABLE_CONSECUTIVE_PER_CUSTOMER, src.STATUS_COUPON, src.VALID_DAYS, src.HOLIDAYS_ONLY_IF_VALID_DAY, src.VALID_STYLES, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_COUPONS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_COUPONS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_COUPONS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_CUSTOMER_BOATS to DW_STELLAR_CUSTOMER_BOATS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_CUSTOMER_BOATS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_CUSTOMER_BOATS tgt
+    USING STG_STELLAR_CUSTOMER_BOATS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.CUSTOMER_ID = src.CUSTOMER_ID,
+            tgt.SLIP_ID = src.SLIP_ID,
+            tgt.BOAT_NAME = src.BOAT_NAME,
+            tgt.BOAT_NUMBER = src.BOAT_NUMBER,
+            tgt.LENGTH_FEET = src.LENGTH_FEET,
+            tgt.WIDTH_FEET = src.WIDTH_FEET,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, CUSTOMER_ID, SLIP_ID, BOAT_NAME, BOAT_NUMBER, LENGTH_FEET, WIDTH_FEET, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.CUSTOMER_ID, src.SLIP_ID, src.BOAT_NAME, src.BOAT_NUMBER, src.LENGTH_FEET, src.WIDTH_FEET, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_CUSTOMER_BOATS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_CUSTOMER_BOATS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_CUSTOMER_BOATS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_CUSTOMERS to DW_STELLAR_CUSTOMERS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_CUSTOMERS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_CUSTOMERS tgt
+    USING STG_STELLAR_CUSTOMERS src
+    ON (tgt.USER_ID = src.USER_ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.CLUB_PRINCIPAL_USER_ID = src.CLUB_PRINCIPAL_USER_ID,
+            tgt.COUPON_ID = src.COUPON_ID,
+            tgt.CLUB_TIER_ID = src.CLUB_TIER_ID,
+            tgt.FIRST_NAME = src.FIRST_NAME,
+            tgt.LAST_NAME = src.LAST_NAME,
+            tgt.MIDDLE_NAME = src.MIDDLE_NAME,
+            tgt.GENDER = src.GENDER,
+            tgt.PHONE = src.PHONE,
+            tgt.CELL = src.CELL,
+            tgt.EMERGENCY_NAME = src.EMERGENCY_NAME,
+            tgt.EMERGENCY_PHONE = src.EMERGENCY_PHONE,
+            tgt.SECONDARY_EMAIL = src.SECONDARY_EMAIL,
+            tgt.BILLING_STREET1 = src.BILLING_STREET1,
+            tgt.BILLING_STREET2 = src.BILLING_STREET2,
+            tgt.BILLING_CITY = src.BILLING_CITY,
+            tgt.BILLING_STATE = src.BILLING_STATE,
+            tgt.BILLING_COUNTRY = src.BILLING_COUNTRY,
+            tgt.BILLING_ZIP = src.BILLING_ZIP,
+            tgt.MAILING_STREET1 = src.MAILING_STREET1,
+            tgt.MAILING_STREET2 = src.MAILING_STREET2,
+            tgt.MAILING_CITY = src.MAILING_CITY,
+            tgt.MAILING_STATE = src.MAILING_STATE,
+            tgt.MAILING_COUNTRY = src.MAILING_COUNTRY,
+            tgt.MAILING_ZIP = src.MAILING_ZIP,
+            tgt.NUM_KIDS = src.NUM_KIDS,
+            tgt.REFERRER = src.REFERRER,
+            tgt.SERVICES = src.SERVICES,
+            tgt.DATE_OF_BIRTH = src.DATE_OF_BIRTH,
+            tgt.DL_STATE = src.DL_STATE,
+            tgt.DL_COUNTRY = src.DL_COUNTRY,
+            tgt.DL_NUMBER = src.DL_NUMBER,
+            tgt.NOTES = src.NOTES,
+            tgt.INTERNAL_NOTES = src.INTERNAL_NOTES,
+            tgt.CLUB_STATUS = src.CLUB_STATUS,
+            tgt.CLUB_START_DATE = src.CLUB_START_DATE,
+            tgt.CLUB_USE_RECURRING_BILLING = src.CLUB_USE_RECURRING_BILLING,
+            tgt.CLUB_RECURRING_BILLING_START_DATE = src.CLUB_RECURRING_BILLING_START_DATE,
+            tgt.BALANCE = src.BALANCE,
+            tgt.BOAT_DAMAGE_RESPONSIBILITY_COVERAGE = src.BOAT_DAMAGE_RESPONSIBILITY_COVERAGE,
+            tgt.PENALTY_POINTS = src.PENALTY_POINTS,
+            tgt.OPEN_BALANCE_THRESHOLD = src.OPEN_BALANCE_THRESHOLD,
+            tgt.CLUB_END_DATE = src.CLUB_END_DATE,
+            tgt.CC_SAVED_NAME = src.CC_SAVED_NAME,
+            tgt.CC_SAVED_LAST4 = src.CC_SAVED_LAST4,
+            tgt.CC_SAVED_EXPIRY = src.CC_SAVED_EXPIRY,
+            tgt.CC_SAVED_PROFILE_ID = src.CC_SAVED_PROFILE_ID,
+            tgt.CC_SAVED_METHOD_ID = src.CC_SAVED_METHOD_ID,
+            tgt.CC_SAVED_ADDRESS_ID = src.CC_SAVED_ADDRESS_ID,
+            tgt.EXTERNAL_ID = src.EXTERNAL_ID,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            USER_ID, CLUB_PRINCIPAL_USER_ID, COUPON_ID, CLUB_TIER_ID, FIRST_NAME, LAST_NAME, MIDDLE_NAME, GENDER, PHONE, CELL, EMERGENCY_NAME, EMERGENCY_PHONE, SECONDARY_EMAIL, BILLING_STREET1, BILLING_STREET2, BILLING_CITY, BILLING_STATE, BILLING_COUNTRY, BILLING_ZIP, MAILING_STREET1, MAILING_STREET2, MAILING_CITY, MAILING_STATE, MAILING_COUNTRY, MAILING_ZIP, NUM_KIDS, REFERRER, SERVICES, DATE_OF_BIRTH, DL_STATE, DL_COUNTRY, DL_NUMBER, NOTES, INTERNAL_NOTES, CLUB_STATUS, CLUB_START_DATE, CLUB_USE_RECURRING_BILLING, CLUB_RECURRING_BILLING_START_DATE, BALANCE, BOAT_DAMAGE_RESPONSIBILITY_COVERAGE, PENALTY_POINTS, OPEN_BALANCE_THRESHOLD, CLUB_END_DATE, CC_SAVED_NAME, CC_SAVED_LAST4, CC_SAVED_EXPIRY, CC_SAVED_PROFILE_ID, CC_SAVED_METHOD_ID, CC_SAVED_ADDRESS_ID, EXTERNAL_ID, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.USER_ID, src.CLUB_PRINCIPAL_USER_ID, src.COUPON_ID, src.CLUB_TIER_ID, src.FIRST_NAME, src.LAST_NAME, src.MIDDLE_NAME, src.GENDER, src.PHONE, src.CELL, src.EMERGENCY_NAME, src.EMERGENCY_PHONE, src.SECONDARY_EMAIL, src.BILLING_STREET1, src.BILLING_STREET2, src.BILLING_CITY, src.BILLING_STATE, src.BILLING_COUNTRY, src.BILLING_ZIP, src.MAILING_STREET1, src.MAILING_STREET2, src.MAILING_CITY, src.MAILING_STATE, src.MAILING_COUNTRY, src.MAILING_ZIP, src.NUM_KIDS, src.REFERRER, src.SERVICES, src.DATE_OF_BIRTH, src.DL_STATE, src.DL_COUNTRY, src.DL_NUMBER, src.NOTES, src.INTERNAL_NOTES, src.CLUB_STATUS, src.CLUB_START_DATE, src.CLUB_USE_RECURRING_BILLING, src.CLUB_RECURRING_BILLING_START_DATE, src.BALANCE, src.BOAT_DAMAGE_RESPONSIBILITY_COVERAGE, src.PENALTY_POINTS, src.OPEN_BALANCE_THRESHOLD, src.CLUB_END_DATE, src.CC_SAVED_NAME, src.CC_SAVED_LAST4, src.CC_SAVED_EXPIRY, src.CC_SAVED_PROFILE_ID, src.CC_SAVED_METHOD_ID, src.CC_SAVED_ADDRESS_ID, src.EXTERNAL_ID, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_CUSTOMERS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_CUSTOMERS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_CUSTOMERS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_FUEL_SALES to DW_STELLAR_FUEL_SALES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_FUEL_SALES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_FUEL_SALES tgt
+    USING STG_STELLAR_FUEL_SALES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.ADMIN_ID = src.ADMIN_ID,
+            tgt.CUSTOMER_NAME = src.CUSTOMER_NAME,
+            tgt.FUEL_TYPE = src.FUEL_TYPE,
+            tgt.QTY = src.QTY,
+            tgt.PRICE = src.PRICE,
+            tgt.SUB_TOTAL = src.SUB_TOTAL,
+            tgt.TIP = src.TIP,
+            tgt.GRAND_TOTAL = src.GRAND_TOTAL,
+            tgt.AMOUNT_PAID = src.AMOUNT_PAID,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DELETED_AT = src.DELETED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, ADMIN_ID, CUSTOMER_NAME, FUEL_TYPE, QTY, PRICE, SUB_TOTAL, TIP, GRAND_TOTAL, AMOUNT_PAID, CREATED_AT, UPDATED_AT, DELETED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.ADMIN_ID, src.CUSTOMER_NAME, src.FUEL_TYPE, src.QTY, src.PRICE, src.SUB_TOTAL, src.TIP, src.GRAND_TOTAL, src.AMOUNT_PAID, src.CREATED_AT, src.UPDATED_AT, src.DELETED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_FUEL_SALES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_FUEL_SALES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_FUEL_SALES;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_HOLIDAYS to DW_STELLAR_HOLIDAYS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_HOLIDAYS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_HOLIDAYS tgt
+    USING STG_STELLAR_HOLIDAYS src
+    ON (tgt.LOCATION_ID = src.LOCATION_ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.HOLIDAY_DATE = src.HOLIDAY_DATE,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            LOCATION_ID, HOLIDAY_DATE,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.LOCATION_ID, src.HOLIDAY_DATE,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_HOLIDAYS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_HOLIDAYS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_HOLIDAYS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_LOCATIONS to DW_STELLAR_LOCATIONS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_LOCATIONS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_LOCATIONS tgt
+    USING STG_STELLAR_LOCATIONS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.CODE = src.CODE,
+            tgt.LOCATION_NAME = src.LOCATION_NAME,
+            tgt.LOCATION_TYPE = src.LOCATION_TYPE,
+            tgt.MINIMUM_1 = src.MINIMUM_1,
+            tgt.MINIMUM_2 = src.MINIMUM_2,
+            tgt.DELIVERY = src.DELIVERY,
+            tgt.FRONTEND = src.FRONTEND,
+            tgt.PRICING = src.PRICING,
+            tgt.IS_INTERNAL = src.IS_INTERNAL,
+            tgt.IS_CANCELED = src.IS_CANCELED,
+            tgt.CANCEL_REASON = src.CANCEL_REASON,
+            tgt.CANCEL_DATE = src.CANCEL_DATE,
+            tgt.IS_TRANSFERRED = src.IS_TRANSFERRED,
+            tgt.TRANSFER_DESTINATION = src.TRANSFER_DESTINATION,
+            tgt.MODULE_TYPE = src.MODULE_TYPE,
+            tgt.OPERATING_LOCATION = src.OPERATING_LOCATION,
+            tgt.ZOHO_ID = src.ZOHO_ID,
+            tgt.ZCRM_ID = src.ZCRM_ID,
+            tgt.IS_ACTIVE = src.IS_ACTIVE,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, CODE, LOCATION_NAME, LOCATION_TYPE, MINIMUM_1, MINIMUM_2, DELIVERY, FRONTEND, PRICING, IS_INTERNAL, IS_CANCELED, CANCEL_REASON, CANCEL_DATE, IS_TRANSFERRED, TRANSFER_DESTINATION, MODULE_TYPE, OPERATING_LOCATION, ZOHO_ID, ZCRM_ID, IS_ACTIVE, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.CODE, src.LOCATION_NAME, src.LOCATION_TYPE, src.MINIMUM_1, src.MINIMUM_2, src.DELIVERY, src.FRONTEND, src.PRICING, src.IS_INTERNAL, src.IS_CANCELED, src.CANCEL_REASON, src.CANCEL_DATE, src.IS_TRANSFERRED, src.TRANSFER_DESTINATION, src.MODULE_TYPE, src.OPERATING_LOCATION, src.ZOHO_ID, src.ZCRM_ID, src.IS_ACTIVE, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_LOCATIONS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_LOCATIONS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_LOCATIONS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_POS_ITEMS to DW_STELLAR_POS_ITEMS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_POS_ITEMS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_POS_ITEMS tgt
+    USING STG_STELLAR_POS_ITEMS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.SKU = src.SKU,
+            tgt.ITEM_NAME = src.ITEM_NAME,
+            tgt.COST = src.COST,
+            tgt.PRICE = src.PRICE,
+            tgt.TAX_EXEMPT = src.TAX_EXEMPT,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, SKU, ITEM_NAME, COST, PRICE, TAX_EXEMPT, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.SKU, src.ITEM_NAME, src.COST, src.PRICE, src.TAX_EXEMPT, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_POS_ITEMS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_POS_ITEMS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_POS_ITEMS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_POS_SALES to DW_STELLAR_POS_SALES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_POS_SALES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_POS_SALES tgt
+    USING STG_STELLAR_POS_SALES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.ADMIN_ID = src.ADMIN_ID,
+            tgt.CUSTOMER_NAME = src.CUSTOMER_NAME,
+            tgt.SUB_TOTAL = src.SUB_TOTAL,
+            tgt.TAX_1 = src.TAX_1,
+            tgt.GRAND_TOTAL = src.GRAND_TOTAL,
+            tgt.AMOUNT_PAID = src.AMOUNT_PAID,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DELETED_AT = src.DELETED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, ADMIN_ID, CUSTOMER_NAME, SUB_TOTAL, TAX_1, GRAND_TOTAL, AMOUNT_PAID, CREATED_AT, UPDATED_AT, DELETED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.ADMIN_ID, src.CUSTOMER_NAME, src.SUB_TOTAL, src.TAX_1, src.GRAND_TOTAL, src.AMOUNT_PAID, src.CREATED_AT, src.UPDATED_AT, src.DELETED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_POS_SALES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_POS_SALES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_POS_SALES;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_SEASON_DATES to DW_STELLAR_SEASON_DATES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_SEASON_DATES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_SEASON_DATES tgt
+    USING STG_STELLAR_SEASON_DATES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.SEASON_ID = src.SEASON_ID,
+            tgt.START_DATE = src.START_DATE,
+            tgt.END_DATE = src.END_DATE,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, SEASON_ID, START_DATE, END_DATE,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.SEASON_ID, src.START_DATE, src.END_DATE,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_SEASON_DATES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_SEASON_DATES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_SEASON_DATES;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_SEASONS to DW_STELLAR_SEASONS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_SEASONS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_SEASONS tgt
+    USING STG_STELLAR_SEASONS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.SEASON_NAME = src.SEASON_NAME,
+            tgt.SEASON_START = src.SEASON_START,
+            tgt.SEASON_END = src.SEASON_END,
+            tgt.STATUS_SEASON = src.STATUS_SEASON,
+            tgt.WEEK_DAY_MIN_START_TIME = src.WEEK_DAY_MIN_START_TIME,
+            tgt.WEEK_DAY_MAX_START_TIME = src.WEEK_DAY_MAX_START_TIME,
+            tgt.WEEK_DAY_MIN_END_TIME = src.WEEK_DAY_MIN_END_TIME,
+            tgt.WEEK_DAY_MAX_END_TIME = src.WEEK_DAY_MAX_END_TIME,
+            tgt.WEEK_END_MIN_START_TIME = src.WEEK_END_MIN_START_TIME,
+            tgt.WEEK_END_MAX_START_TIME = src.WEEK_END_MAX_START_TIME,
+            tgt.WEEK_END_MIN_END_TIME = src.WEEK_END_MIN_END_TIME,
+            tgt.WEEK_END_MAX_END_TIME = src.WEEK_END_MAX_END_TIME,
+            tgt.HOLIDAY_MIN_START_TIME = src.HOLIDAY_MIN_START_TIME,
+            tgt.HOLIDAY_MAX_START_TIME = src.HOLIDAY_MAX_START_TIME,
+            tgt.HOLIDAY_MIN_END_TIME = src.HOLIDAY_MIN_END_TIME,
+            tgt.HOLIDAY_MAX_END_TIME = src.HOLIDAY_MAX_END_TIME,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, SEASON_NAME, SEASON_START, SEASON_END, STATUS_SEASON, WEEK_DAY_MIN_START_TIME, WEEK_DAY_MAX_START_TIME, WEEK_DAY_MIN_END_TIME, WEEK_DAY_MAX_END_TIME, WEEK_END_MIN_START_TIME, WEEK_END_MAX_START_TIME, WEEK_END_MIN_END_TIME, WEEK_END_MAX_END_TIME, HOLIDAY_MIN_START_TIME, HOLIDAY_MAX_START_TIME, HOLIDAY_MIN_END_TIME, HOLIDAY_MAX_END_TIME, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.SEASON_NAME, src.SEASON_START, src.SEASON_END, src.STATUS_SEASON, src.WEEK_DAY_MIN_START_TIME, src.WEEK_DAY_MAX_START_TIME, src.WEEK_DAY_MIN_END_TIME, src.WEEK_DAY_MAX_END_TIME, src.WEEK_END_MIN_START_TIME, src.WEEK_END_MAX_START_TIME, src.WEEK_END_MIN_END_TIME, src.WEEK_END_MAX_END_TIME, src.HOLIDAY_MIN_START_TIME, src.HOLIDAY_MAX_START_TIME, src.HOLIDAY_MIN_END_TIME, src.HOLIDAY_MAX_END_TIME, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_SEASONS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_SEASONS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_SEASONS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_STYLE_BOATS to DW_STELLAR_STYLE_BOATS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_STYLE_BOATS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_STYLE_BOATS tgt
+    USING STG_STELLAR_STYLE_BOATS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.STYLE_ID = src.STYLE_ID,
+            tgt.BOAT_NUMBER = src.BOAT_NUMBER,
+            tgt.PAPER_LESS_NUMBER = src.PAPER_LESS_NUMBER,
+            tgt.MOTOR = src.MOTOR,
+            tgt.MANUFACTURER = src.MANUFACTURER,
+            tgt.SERIAL_NUMBER = src.SERIAL_NUMBER,
+            tgt.IN_FLEET = src.IN_FLEET,
+            tgt.HULL_NUMBER = src.HULL_NUMBER,
+            tgt.STATE_NUMBER = src.STATE_NUMBER,
+            tgt.CYLINDERS = src.CYLINDERS,
+            tgt.HP = src.HP,
+            tgt.MODEL = src.MODEL,
+            tgt.BOAT_TYPE = src.BOAT_TYPE,
+            tgt.PURCHASED_DATE = src.PURCHASED_DATE,
+            tgt.PURCHASED_COST = src.PURCHASED_COST,
+            tgt.SALE_DATE = src.SALE_DATE,
+            tgt.SALE_PRICE = src.SALE_PRICE,
+            tgt.CLUB_LOCATION = src.CLUB_LOCATION,
+            tgt.DEALER_NAME = src.DEALER_NAME,
+            tgt.DEALER_CITY = src.DEALER_CITY,
+            tgt.DEALER_STATE = src.DEALER_STATE,
+            tgt.PO_NUMBER = src.PO_NUMBER,
+            tgt.BOAT_YEAR_MODEL = src.BOAT_YEAR_MODEL,
+            tgt.MOTOR_YEAR_MODEL = src.MOTOR_YEAR_MODEL,
+            tgt.MOTOR_MANUFACTURER_MODEL = src.MOTOR_MANUFACTURER_MODEL,
+            tgt.STATE_REG_DATE = src.STATE_REG_DATE,
+            tgt.STATE_REG_EXP_DATE = src.STATE_REG_EXP_DATE,
+            tgt.ENGINE_PURCHASED_COST = src.ENGINE_PURCHASED_COST,
+            tgt.BACKEND_DISPLAY = src.BACKEND_DISPLAY,
+            tgt.POSITION_ORDER = src.POSITION_ORDER,
+            tgt.STATUS_BOAT = src.STATUS_BOAT,
+            tgt.SERVICE_START = src.SERVICE_START,
+            tgt.SERVICE_END = src.SERVICE_END,
+            tgt.CLEAN_STATUS = src.CLEAN_STATUS,
+            tgt.INSURANCE_REG_NO = src.INSURANCE_REG_NO,
+            tgt.BUOY_INSURANCE_STATUS = src.BUOY_INSURANCE_STATUS,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, STYLE_ID, BOAT_NUMBER, PAPER_LESS_NUMBER, MOTOR, MANUFACTURER, SERIAL_NUMBER, IN_FLEET, HULL_NUMBER, STATE_NUMBER, CYLINDERS, HP, MODEL, BOAT_TYPE, PURCHASED_DATE, PURCHASED_COST, SALE_DATE, SALE_PRICE, CLUB_LOCATION, DEALER_NAME, DEALER_CITY, DEALER_STATE, PO_NUMBER, BOAT_YEAR_MODEL, MOTOR_YEAR_MODEL, MOTOR_MANUFACTURER_MODEL, STATE_REG_DATE, STATE_REG_EXP_DATE, ENGINE_PURCHASED_COST, BACKEND_DISPLAY, POSITION_ORDER, STATUS_BOAT, SERVICE_START, SERVICE_END, CLEAN_STATUS, INSURANCE_REG_NO, BUOY_INSURANCE_STATUS, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.STYLE_ID, src.BOAT_NUMBER, src.PAPER_LESS_NUMBER, src.MOTOR, src.MANUFACTURER, src.SERIAL_NUMBER, src.IN_FLEET, src.HULL_NUMBER, src.STATE_NUMBER, src.CYLINDERS, src.HP, src.MODEL, src.BOAT_TYPE, src.PURCHASED_DATE, src.PURCHASED_COST, src.SALE_DATE, src.SALE_PRICE, src.CLUB_LOCATION, src.DEALER_NAME, src.DEALER_CITY, src.DEALER_STATE, src.PO_NUMBER, src.BOAT_YEAR_MODEL, src.MOTOR_YEAR_MODEL, src.MOTOR_MANUFACTURER_MODEL, src.STATE_REG_DATE, src.STATE_REG_EXP_DATE, src.ENGINE_PURCHASED_COST, src.BACKEND_DISPLAY, src.POSITION_ORDER, src.STATUS_BOAT, src.SERVICE_START, src.SERVICE_END, src.CLEAN_STATUS, src.INSURANCE_REG_NO, src.BUOY_INSURANCE_STATUS, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_STYLE_BOATS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_STYLE_BOATS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_STYLE_BOATS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_STYLE_GROUPS to DW_STELLAR_STYLE_GROUPS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_STYLE_GROUPS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_STYLE_GROUPS tgt
+    USING STG_STELLAR_STYLE_GROUPS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.GROUP_NAME = src.GROUP_NAME,
+            tgt.FRONTEND_MAX_SAME_DEPARTURES = src.FRONTEND_MAX_SAME_DEPARTURES,
+            tgt.SAFETY_TEST_ENABLED = src.SAFETY_TEST_ENABLED,
+            tgt.SAFETY_TEST_INSTRUCTIONS = src.SAFETY_TEST_INSTRUCTIONS,
+            tgt.SAFETY_TEST_MIN_PERCENT_PASS = src.SAFETY_TEST_MIN_PERCENT_PASS,
+            tgt.SAFETY_TEST_EXPIRATION_DAYS = src.SAFETY_TEST_EXPIRATION_DAYS,
+            tgt.SAFETY_VIDEO_LINK = src.SAFETY_VIDEO_LINK,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, GROUP_NAME, FRONTEND_MAX_SAME_DEPARTURES, SAFETY_TEST_ENABLED, SAFETY_TEST_INSTRUCTIONS, SAFETY_TEST_MIN_PERCENT_PASS, SAFETY_TEST_EXPIRATION_DAYS, SAFETY_VIDEO_LINK, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.GROUP_NAME, src.FRONTEND_MAX_SAME_DEPARTURES, src.SAFETY_TEST_ENABLED, src.SAFETY_TEST_INSTRUCTIONS, src.SAFETY_TEST_MIN_PERCENT_PASS, src.SAFETY_TEST_EXPIRATION_DAYS, src.SAFETY_VIDEO_LINK, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_STYLE_GROUPS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_STYLE_GROUPS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_STYLE_GROUPS;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_STYLE_HOURLY_PRICES to DW_STELLAR_STYLE_HOURLY_PRICES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_STYLE_HOURLY_PRICES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_STYLE_HOURLY_PRICES tgt
+    USING STG_STELLAR_STYLE_HOURLY_PRICES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.STYLE_ID = src.STYLE_ID,
+            tgt.SEASON_ID = src.SEASON_ID,
+            tgt.HOURLY_TYPE = src.HOURLY_TYPE,
+            tgt.DEFAULT_PRICE = src.DEFAULT_PRICE,
+            tgt.HOLIDAY = src.HOLIDAY,
+            tgt.SATURDAY = src.SATURDAY,
+            tgt.SUNDAY = src.SUNDAY,
+            tgt.MONDAY = src.MONDAY,
+            tgt.TUESDAY = src.TUESDAY,
+            tgt.WEDNESDAY = src.WEDNESDAY,
+            tgt.THURSDAY = src.THURSDAY,
+            tgt.FRIDAY = src.FRIDAY,
+            tgt.DAY_DISCOUNT = src.DAY_DISCOUNT,
+            tgt.UNDER_ONE_HOUR = src.UNDER_ONE_HOUR,
+            tgt.FIRST_HOUR_AM = src.FIRST_HOUR_AM,
+            tgt.FIRST_HOUR_PM = src.FIRST_HOUR_PM,
+            tgt.MAX_PRICE = src.MAX_PRICE,
+            tgt.MIN_HOURS = src.MIN_HOURS,
+            tgt.MAX_HOURS = src.MAX_HOURS,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, STYLE_ID, SEASON_ID, HOURLY_TYPE, DEFAULT_PRICE, HOLIDAY, SATURDAY, SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, DAY_DISCOUNT, UNDER_ONE_HOUR, FIRST_HOUR_AM, FIRST_HOUR_PM, MAX_PRICE, MIN_HOURS, MAX_HOURS, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.STYLE_ID, src.SEASON_ID, src.HOURLY_TYPE, src.DEFAULT_PRICE, src.HOLIDAY, src.SATURDAY, src.SUNDAY, src.MONDAY, src.TUESDAY, src.WEDNESDAY, src.THURSDAY, src.FRIDAY, src.DAY_DISCOUNT, src.UNDER_ONE_HOUR, src.FIRST_HOUR_AM, src.FIRST_HOUR_PM, src.MAX_PRICE, src.MIN_HOURS, src.MAX_HOURS, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_STYLE_HOURLY_PRICES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_STYLE_HOURLY_PRICES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_STYLE_HOURLY_PRICES;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_STYLE_PRICES to DW_STELLAR_STYLE_PRICES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_STYLE_PRICES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_STYLE_PRICES tgt
+    USING STG_STELLAR_STYLE_PRICES src
+    ON (tgt.TIME_ID = src.TIME_ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.DEFAULT_PRICE = src.DEFAULT_PRICE,
+            tgt.HOLIDAY = src.HOLIDAY,
+            tgt.SATURDAY = src.SATURDAY,
+            tgt.SUNDAY = src.SUNDAY,
+            tgt.MONDAY = src.MONDAY,
+            tgt.TUESDAY = src.TUESDAY,
+            tgt.WEDNESDAY = src.WEDNESDAY,
+            tgt.THURSDAY = src.THURSDAY,
+            tgt.FRIDAY = src.FRIDAY,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            TIME_ID, DEFAULT_PRICE, HOLIDAY, SATURDAY, SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.TIME_ID, src.DEFAULT_PRICE, src.HOLIDAY, src.SATURDAY, src.SUNDAY, src.MONDAY, src.TUESDAY, src.WEDNESDAY, src.THURSDAY, src.FRIDAY, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_STYLE_PRICES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_STYLE_PRICES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_STYLE_PRICES;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_STYLE_TIMES to DW_STELLAR_STYLE_TIMES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_STYLE_TIMES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_STYLE_TIMES tgt
+    USING STG_STELLAR_STYLE_TIMES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.STYLE_ID = src.STYLE_ID,
+            tgt.SEASON_ID = src.SEASON_ID,
+            tgt.DESCRIPTION_TEXT = src.DESCRIPTION_TEXT,
+            tgt.FRONTEND_DISPLAY = src.FRONTEND_DISPLAY,
+            tgt.START_1 = src.START_1,
+            tgt.END_1 = src.END_1,
+            tgt.END_DAYS_1 = src.END_DAYS_1,
+            tgt.STATUS_1 = src.STATUS_1,
+            tgt.START_2 = src.START_2,
+            tgt.END_2 = src.END_2,
+            tgt.END_DAYS_2 = src.END_DAYS_2,
+            tgt.STATUS_2 = src.STATUS_2,
+            tgt.START_3 = src.START_3,
+            tgt.END_3 = src.END_3,
+            tgt.END_DAYS_3 = src.END_DAYS_3,
+            tgt.STATUS_3 = src.STATUS_3,
+            tgt.START_4 = src.START_4,
+            tgt.END_4 = src.END_4,
+            tgt.END_DAYS_4 = src.END_DAYS_4,
+            tgt.STATUS_4 = src.STATUS_4,
+            tgt.VALID_DAYS = src.VALID_DAYS,
+            tgt.HOLIDAYS_ONLY_IF_VALID_DAY = src.HOLIDAYS_ONLY_IF_VALID_DAY,
+            tgt.MAPPED_TIME_ID = src.MAPPED_TIME_ID,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, STYLE_ID, SEASON_ID, DESCRIPTION_TEXT, FRONTEND_DISPLAY, START_1, END_1, END_DAYS_1, STATUS_1, START_2, END_2, END_DAYS_2, STATUS_2, START_3, END_3, END_DAYS_3, STATUS_3, START_4, END_4, END_DAYS_4, STATUS_4, VALID_DAYS, HOLIDAYS_ONLY_IF_VALID_DAY, MAPPED_TIME_ID, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.STYLE_ID, src.SEASON_ID, src.DESCRIPTION_TEXT, src.FRONTEND_DISPLAY, src.START_1, src.END_1, src.END_DAYS_1, src.STATUS_1, src.START_2, src.END_2, src.END_DAYS_2, src.STATUS_2, src.START_3, src.END_3, src.END_DAYS_3, src.STATUS_3, src.START_4, src.END_4, src.END_DAYS_4, src.STATUS_4, src.VALID_DAYS, src.HOLIDAYS_ONLY_IF_VALID_DAY, src.MAPPED_TIME_ID, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_STYLE_TIMES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_STYLE_TIMES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_STYLE_TIMES;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_STYLES to DW_STELLAR_STYLES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_STYLES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_STYLES tgt
+    USING STG_STELLAR_STYLES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.STYLE_GROUP_ID = src.STYLE_GROUP_ID,
+            tgt.STYLE_NAME = src.STYLE_NAME,
+            tgt.BACKEND_DISPLAY = src.BACKEND_DISPLAY,
+            tgt.POSITION_ORDER = src.POSITION_ORDER,
+            tgt.TURN_AROUND_TIME = src.TURN_AROUND_TIME,
+            tgt.DEPOSIT_AMOUNT = src.DEPOSIT_AMOUNT,
+            tgt.MULTI_DAY_DEPOSIT_AMOUNT = src.MULTI_DAY_DEPOSIT_AMOUNT,
+            tgt.PRE_AUTH_AMOUNT = src.PRE_AUTH_AMOUNT,
+            tgt.FUEL_BURN_RATIO = src.FUEL_BURN_RATIO,
+            tgt.TAX_1_RATE = src.TAX_1_RATE,
+            tgt.TAX_2_RATE = src.TAX_2_RATE,
+            tgt.INSURANCE_ENABLED = src.INSURANCE_ENABLED,
+            tgt.INSURANCE_PRICING_TYPE = src.INSURANCE_PRICING_TYPE,
+            tgt.INSURANCE_PRICING_RATE = src.INSURANCE_PRICING_RATE,
+            tgt.INSURANCE_FIRST_DAY_PRICE = src.INSURANCE_FIRST_DAY_PRICE,
+            tgt.GRATUITY_ENABLED = src.GRATUITY_ENABLED,
+            tgt.GRATUITY_PRICING_RATE = src.GRATUITY_PRICING_RATE,
+            tgt.PARKING_QTY_MULTIPLIER = src.PARKING_QTY_MULTIPLIER,
+            tgt.FRONTEND_DISPLAY = src.FRONTEND_DISPLAY,
+            tgt.FRONTEND_NAME = src.FRONTEND_NAME,
+            tgt.FRONTEND_POSITION = src.FRONTEND_POSITION,
+            tgt.FRONTEND_TYPE = src.FRONTEND_TYPE,
+            tgt.FRONTEND_QTY_LIMIT = src.FRONTEND_QTY_LIMIT,
+            tgt.FRONTEND_UNIT_SELECTOR = src.FRONTEND_UNIT_SELECTOR,
+            tgt.FRONTEND_PARTIAL_PAYMENT_TYPE = src.FRONTEND_PARTIAL_PAYMENT_TYPE,
+            tgt.FRONTEND_PARTIAL_PAYMENT_AMOUNT = src.FRONTEND_PARTIAL_PAYMENT_AMOUNT,
+            tgt.BACKEND_MULTI_DAY_DISABLED = src.BACKEND_MULTI_DAY_DISABLED,
+            tgt.MAX_SAME_STYLE_PER_BOOKING = src.MAX_SAME_STYLE_PER_BOOKING,
+            tgt.FRONTEND_MIN_HOURS_ADVANCE_DEPARTURE = src.FRONTEND_MIN_HOURS_ADVANCE_DEPARTURE,
+            tgt.BACKEND_HOURLY_ENABLED = src.BACKEND_HOURLY_ENABLED,
+            tgt.WEEK_DAY_BACKEND_HOURLY_MIN_HOURS = src.WEEK_DAY_BACKEND_HOURLY_MIN_HOURS,
+            tgt.WEEK_DAY_BACKEND_HOURLY_MAX_HOURS = src.WEEK_DAY_BACKEND_HOURLY_MAX_HOURS,
+            tgt.WEEK_END_BACKEND_HOURLY_MIN_HOURS = src.WEEK_END_BACKEND_HOURLY_MIN_HOURS,
+            tgt.WEEK_END_BACKEND_HOURLY_MAX_HOURS = src.WEEK_END_BACKEND_HOURLY_MAX_HOURS,
+            tgt.HOLIDAY_BACKEND_HOURLY_MIN_HOURS = src.HOLIDAY_BACKEND_HOURLY_MIN_HOURS,
+            tgt.HOLIDAY_BACKEND_HOURLY_MAX_HOURS = src.HOLIDAY_BACKEND_HOURLY_MAX_HOURS,
+            tgt.FRONTEND_HOURLY_ENABLED = src.FRONTEND_HOURLY_ENABLED,
+            tgt.WEEK_DAY_FRONTEND_HOURLY_MIN_HOURS = src.WEEK_DAY_FRONTEND_HOURLY_MIN_HOURS,
+            tgt.WEEK_DAY_FRONTEND_HOURLY_MAX_HOURS = src.WEEK_DAY_FRONTEND_HOURLY_MAX_HOURS,
+            tgt.WEEK_DAY_FRONTEND_HOURLY_TIME_INCREMENT = src.WEEK_DAY_FRONTEND_HOURLY_TIME_INCREMENT,
+            tgt.WEEK_DAY_FRONTEND_HOURLY_LENGTH_INCREMENT = src.WEEK_DAY_FRONTEND_HOURLY_LENGTH_INCREMENT,
+            tgt.WEEK_END_FRONTEND_HOURLY_MIN_HOURS = src.WEEK_END_FRONTEND_HOURLY_MIN_HOURS,
+            tgt.WEEK_END_FRONTEND_HOURLY_MAX_HOURS = src.WEEK_END_FRONTEND_HOURLY_MAX_HOURS,
+            tgt.WEEK_END_FRONTEND_HOURLY_TIME_INCREMENT = src.WEEK_END_FRONTEND_HOURLY_TIME_INCREMENT,
+            tgt.WEEK_END_FRONTEND_HOURLY_LENGTH_INCREMENT = src.WEEK_END_FRONTEND_HOURLY_LENGTH_INCREMENT,
+            tgt.HOLIDAY_FRONTEND_HOURLY_MIN_HOURS = src.HOLIDAY_FRONTEND_HOURLY_MIN_HOURS,
+            tgt.HOLIDAY_FRONTEND_HOURLY_MAX_HOURS = src.HOLIDAY_FRONTEND_HOURLY_MAX_HOURS,
+            tgt.HOLIDAY_FRONTEND_HOURLY_TIME_INCREMENT = src.HOLIDAY_FRONTEND_HOURLY_TIME_INCREMENT,
+            tgt.HOLIDAY_FRONTEND_HOURLY_LENGTH_INCREMENT = src.HOLIDAY_FRONTEND_HOURLY_LENGTH_INCREMENT,
+            tgt.BACKEND_NIGHTLY_ENABLED = src.BACKEND_NIGHTLY_ENABLED,
+            tgt.BACKEND_NIGHTLY_MIN_NIGHTS = src.BACKEND_NIGHTLY_MIN_NIGHTS,
+            tgt.BACKEND_NIGHTLY_MAX_NIGHTS = src.BACKEND_NIGHTLY_MAX_NIGHTS,
+            tgt.BACKEND_NIGHTLY_START = src.BACKEND_NIGHTLY_START,
+            tgt.BACKEND_NIGHTLY_END = src.BACKEND_NIGHTLY_END,
+            tgt.BACKEND_NIGHTLY_DISCOUNT_DAYS = src.BACKEND_NIGHTLY_DISCOUNT_DAYS,
+            tgt.BACKEND_NIGHTLY_DISCOUNT_TYPE = src.BACKEND_NIGHTLY_DISCOUNT_TYPE,
+            tgt.BACKEND_NIGHTLY_DISCOUNT_AMOUNT = src.BACKEND_NIGHTLY_DISCOUNT_AMOUNT,
+            tgt.FRONTEND_NIGHTLY_ENABLED = src.FRONTEND_NIGHTLY_ENABLED,
+            tgt.FRONTEND_NIGHTLY_MIN_NIGHTS = src.FRONTEND_NIGHTLY_MIN_NIGHTS,
+            tgt.FRONTEND_NIGHTLY_MIN_NIGHTS_PEAK = src.FRONTEND_NIGHTLY_MIN_NIGHTS_PEAK,
+            tgt.FRONTEND_NIGHTLY_MAX_NIGHTS = src.FRONTEND_NIGHTLY_MAX_NIGHTS,
+            tgt.FRONTEND_NIGHTLY_START = src.FRONTEND_NIGHTLY_START,
+            tgt.FRONTEND_NIGHTLY_END = src.FRONTEND_NIGHTLY_END,
+            tgt.FRONTEND_NIGHTLY_ADDL_TIMES = src.FRONTEND_NIGHTLY_ADDL_TIMES,
+            tgt.FRONTEND_NIGHTLY_DISCOUNT_DAYS = src.FRONTEND_NIGHTLY_DISCOUNT_DAYS,
+            tgt.FRONTEND_NIGHTLY_DISCOUNT_TYPE = src.FRONTEND_NIGHTLY_DISCOUNT_TYPE,
+            tgt.FRONTEND_NIGHTLY_DISCOUNT_AMOUNT = src.FRONTEND_NIGHTLY_DISCOUNT_AMOUNT,
+            tgt.IMAGE_URL = src.IMAGE_URL,
+            tgt.PASSENGERS = src.PASSENGERS,
+            tgt.WEIGHT_CAPACITY = src.WEIGHT_CAPACITY,
+            tgt.HORSEPOWER = src.HORSEPOWER,
+            tgt.ENGINE_TYPE = src.ENGINE_TYPE,
+            tgt.LENGTH_FEET = src.LENGTH_FEET,
+            tgt.WIDTH_FEET = src.WIDTH_FEET,
+            tgt.DRAFT_FEET = src.DRAFT_FEET,
+            tgt.FUEL_CAPACITY = src.FUEL_CAPACITY,
+            tgt.BRAND = src.BRAND,
+            tgt.MODEL = src.MODEL,
+            tgt.TITLE = src.TITLE,
+            tgt.DESCRIPTION_TEXT = src.DESCRIPTION_TEXT,
+            tgt.SUMMARY_TEXT = src.SUMMARY_TEXT,
+            tgt.NOTES = src.NOTES,
+            tgt.VIDEO_LINK = src.VIDEO_LINK,
+            tgt.SMARTWAIVER_WAIVER_LINK = src.SMARTWAIVER_WAIVER_LINK,
+            tgt.ACCOUNTING_ITEM_ID = src.ACCOUNTING_ITEM_ID,
+            tgt.LOCAL_VIDEO_LINK = src.LOCAL_VIDEO_LINK,
+            tgt.DOCKMASTER_PART_NUMBER = src.DOCKMASTER_PART_NUMBER,
+            tgt.DOCKMASTER_TAX_CODE = src.DOCKMASTER_TAX_CODE,
+            tgt.END_HOURS = src.END_HOURS,
+            tgt.SEASONAL_BUFFER_DEFAULT_LOWER = src.SEASONAL_BUFFER_DEFAULT_LOWER,
+            tgt.SEASONAL_BUFFER_DEFAULT_UPPER = src.SEASONAL_BUFFER_DEFAULT_UPPER,
+            tgt.SEASONAL_BUFFER_PEAK_LOWER = src.SEASONAL_BUFFER_PEAK_LOWER,
+            tgt.SEASONAL_BUFFER_PEAK_UPPER = src.SEASONAL_BUFFER_PEAK_UPPER,
+            tgt.BILLABLE_UNIT_TYPE = src.BILLABLE_UNIT_TYPE,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, STYLE_GROUP_ID, STYLE_NAME, BACKEND_DISPLAY, POSITION_ORDER, TURN_AROUND_TIME, DEPOSIT_AMOUNT, MULTI_DAY_DEPOSIT_AMOUNT, PRE_AUTH_AMOUNT, FUEL_BURN_RATIO, TAX_1_RATE, TAX_2_RATE, INSURANCE_ENABLED, INSURANCE_PRICING_TYPE, INSURANCE_PRICING_RATE, INSURANCE_FIRST_DAY_PRICE, GRATUITY_ENABLED, GRATUITY_PRICING_RATE, PARKING_QTY_MULTIPLIER, FRONTEND_DISPLAY, FRONTEND_NAME, FRONTEND_POSITION, FRONTEND_TYPE, FRONTEND_QTY_LIMIT, FRONTEND_UNIT_SELECTOR, FRONTEND_PARTIAL_PAYMENT_TYPE, FRONTEND_PARTIAL_PAYMENT_AMOUNT, BACKEND_MULTI_DAY_DISABLED, MAX_SAME_STYLE_PER_BOOKING, FRONTEND_MIN_HOURS_ADVANCE_DEPARTURE, BACKEND_HOURLY_ENABLED, WEEK_DAY_BACKEND_HOURLY_MIN_HOURS, WEEK_DAY_BACKEND_HOURLY_MAX_HOURS, WEEK_END_BACKEND_HOURLY_MIN_HOURS, WEEK_END_BACKEND_HOURLY_MAX_HOURS, HOLIDAY_BACKEND_HOURLY_MIN_HOURS, HOLIDAY_BACKEND_HOURLY_MAX_HOURS, FRONTEND_HOURLY_ENABLED, WEEK_DAY_FRONTEND_HOURLY_MIN_HOURS, WEEK_DAY_FRONTEND_HOURLY_MAX_HOURS, WEEK_DAY_FRONTEND_HOURLY_TIME_INCREMENT, WEEK_DAY_FRONTEND_HOURLY_LENGTH_INCREMENT, WEEK_END_FRONTEND_HOURLY_MIN_HOURS, WEEK_END_FRONTEND_HOURLY_MAX_HOURS, WEEK_END_FRONTEND_HOURLY_TIME_INCREMENT, WEEK_END_FRONTEND_HOURLY_LENGTH_INCREMENT, HOLIDAY_FRONTEND_HOURLY_MIN_HOURS, HOLIDAY_FRONTEND_HOURLY_MAX_HOURS, HOLIDAY_FRONTEND_HOURLY_TIME_INCREMENT, HOLIDAY_FRONTEND_HOURLY_LENGTH_INCREMENT, BACKEND_NIGHTLY_ENABLED, BACKEND_NIGHTLY_MIN_NIGHTS, BACKEND_NIGHTLY_MAX_NIGHTS, BACKEND_NIGHTLY_START, BACKEND_NIGHTLY_END, BACKEND_NIGHTLY_DISCOUNT_DAYS, BACKEND_NIGHTLY_DISCOUNT_TYPE, BACKEND_NIGHTLY_DISCOUNT_AMOUNT, FRONTEND_NIGHTLY_ENABLED, FRONTEND_NIGHTLY_MIN_NIGHTS, FRONTEND_NIGHTLY_MIN_NIGHTS_PEAK, FRONTEND_NIGHTLY_MAX_NIGHTS, FRONTEND_NIGHTLY_START, FRONTEND_NIGHTLY_END, FRONTEND_NIGHTLY_ADDL_TIMES, FRONTEND_NIGHTLY_DISCOUNT_DAYS, FRONTEND_NIGHTLY_DISCOUNT_TYPE, FRONTEND_NIGHTLY_DISCOUNT_AMOUNT, IMAGE_URL, PASSENGERS, WEIGHT_CAPACITY, HORSEPOWER, ENGINE_TYPE, LENGTH_FEET, WIDTH_FEET, DRAFT_FEET, FUEL_CAPACITY, BRAND, MODEL, TITLE, DESCRIPTION_TEXT, SUMMARY_TEXT, NOTES, VIDEO_LINK, SMARTWAIVER_WAIVER_LINK, ACCOUNTING_ITEM_ID, LOCAL_VIDEO_LINK, DOCKMASTER_PART_NUMBER, DOCKMASTER_TAX_CODE, END_HOURS, SEASONAL_BUFFER_DEFAULT_LOWER, SEASONAL_BUFFER_DEFAULT_UPPER, SEASONAL_BUFFER_PEAK_LOWER, SEASONAL_BUFFER_PEAK_UPPER, BILLABLE_UNIT_TYPE, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.STYLE_GROUP_ID, src.STYLE_NAME, src.BACKEND_DISPLAY, src.POSITION_ORDER, src.TURN_AROUND_TIME, src.DEPOSIT_AMOUNT, src.MULTI_DAY_DEPOSIT_AMOUNT, src.PRE_AUTH_AMOUNT, src.FUEL_BURN_RATIO, src.TAX_1_RATE, src.TAX_2_RATE, src.INSURANCE_ENABLED, src.INSURANCE_PRICING_TYPE, src.INSURANCE_PRICING_RATE, src.INSURANCE_FIRST_DAY_PRICE, src.GRATUITY_ENABLED, src.GRATUITY_PRICING_RATE, src.PARKING_QTY_MULTIPLIER, src.FRONTEND_DISPLAY, src.FRONTEND_NAME, src.FRONTEND_POSITION, src.FRONTEND_TYPE, src.FRONTEND_QTY_LIMIT, src.FRONTEND_UNIT_SELECTOR, src.FRONTEND_PARTIAL_PAYMENT_TYPE, src.FRONTEND_PARTIAL_PAYMENT_AMOUNT, src.BACKEND_MULTI_DAY_DISABLED, src.MAX_SAME_STYLE_PER_BOOKING, src.FRONTEND_MIN_HOURS_ADVANCE_DEPARTURE, src.BACKEND_HOURLY_ENABLED, src.WEEK_DAY_BACKEND_HOURLY_MIN_HOURS, src.WEEK_DAY_BACKEND_HOURLY_MAX_HOURS, src.WEEK_END_BACKEND_HOURLY_MIN_HOURS, src.WEEK_END_BACKEND_HOURLY_MAX_HOURS, src.HOLIDAY_BACKEND_HOURLY_MIN_HOURS, src.HOLIDAY_BACKEND_HOURLY_MAX_HOURS, src.FRONTEND_HOURLY_ENABLED, src.WEEK_DAY_FRONTEND_HOURLY_MIN_HOURS, src.WEEK_DAY_FRONTEND_HOURLY_MAX_HOURS, src.WEEK_DAY_FRONTEND_HOURLY_TIME_INCREMENT, src.WEEK_DAY_FRONTEND_HOURLY_LENGTH_INCREMENT, src.WEEK_END_FRONTEND_HOURLY_MIN_HOURS, src.WEEK_END_FRONTEND_HOURLY_MAX_HOURS, src.WEEK_END_FRONTEND_HOURLY_TIME_INCREMENT, src.WEEK_END_FRONTEND_HOURLY_LENGTH_INCREMENT, src.HOLIDAY_FRONTEND_HOURLY_MIN_HOURS, src.HOLIDAY_FRONTEND_HOURLY_MAX_HOURS, src.HOLIDAY_FRONTEND_HOURLY_TIME_INCREMENT, src.HOLIDAY_FRONTEND_HOURLY_LENGTH_INCREMENT, src.BACKEND_NIGHTLY_ENABLED, src.BACKEND_NIGHTLY_MIN_NIGHTS, src.BACKEND_NIGHTLY_MAX_NIGHTS, src.BACKEND_NIGHTLY_START, src.BACKEND_NIGHTLY_END, src.BACKEND_NIGHTLY_DISCOUNT_DAYS, src.BACKEND_NIGHTLY_DISCOUNT_TYPE, src.BACKEND_NIGHTLY_DISCOUNT_AMOUNT, src.FRONTEND_NIGHTLY_ENABLED, src.FRONTEND_NIGHTLY_MIN_NIGHTS, src.FRONTEND_NIGHTLY_MIN_NIGHTS_PEAK, src.FRONTEND_NIGHTLY_MAX_NIGHTS, src.FRONTEND_NIGHTLY_START, src.FRONTEND_NIGHTLY_END, src.FRONTEND_NIGHTLY_ADDL_TIMES, src.FRONTEND_NIGHTLY_DISCOUNT_DAYS, src.FRONTEND_NIGHTLY_DISCOUNT_TYPE, src.FRONTEND_NIGHTLY_DISCOUNT_AMOUNT, src.IMAGE_URL, src.PASSENGERS, src.WEIGHT_CAPACITY, src.HORSEPOWER, src.ENGINE_TYPE, src.LENGTH_FEET, src.WIDTH_FEET, src.DRAFT_FEET, src.FUEL_CAPACITY, src.BRAND, src.MODEL, src.TITLE, src.DESCRIPTION_TEXT, src.SUMMARY_TEXT, src.NOTES, src.VIDEO_LINK, src.SMARTWAIVER_WAIVER_LINK, src.ACCOUNTING_ITEM_ID, src.LOCAL_VIDEO_LINK, src.DOCKMASTER_PART_NUMBER, src.DOCKMASTER_TAX_CODE, src.END_HOURS, src.SEASONAL_BUFFER_DEFAULT_LOWER, src.SEASONAL_BUFFER_DEFAULT_UPPER, src.SEASONAL_BUFFER_PEAK_LOWER, src.SEASONAL_BUFFER_PEAK_UPPER, src.BILLABLE_UNIT_TYPE, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_STYLES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_STYLES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_STYLES;
+/
+
+-- ============================================================================
+-- Merge STG_STELLAR_WAITLISTS to DW_STELLAR_WAITLISTS
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_WAITLISTS
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_WAITLISTS tgt
+    USING STG_STELLAR_WAITLISTS src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.CATEGORY_ID = src.CATEGORY_ID,
+            tgt.STYLE_ID = src.STYLE_ID,
+            tgt.CUSTOMER_ID = src.CUSTOMER_ID,
+            tgt.TIME_ID = src.TIME_ID,
+            tgt.TIMEFRAME_ID = src.TIMEFRAME_ID,
+            tgt.FIRST_NAME = src.FIRST_NAME,
+            tgt.LAST_NAME = src.LAST_NAME,
+            tgt.EMAIL = src.EMAIL,
+            tgt.PHONE = src.PHONE,
+            tgt.DEPARTURE_DATE = src.DEPARTURE_DATE,
+            tgt.LENGTH_REQUESTED = src.LENGTH_REQUESTED,
+            tgt.WAIT_LIST_TIME = src.WAIT_LIST_TIME,
+            tgt.FULFILLED = src.FULFILLED,
+            tgt.FULFILLED_DATE = src.FULFILLED_DATE,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, CATEGORY_ID, STYLE_ID, CUSTOMER_ID, TIME_ID, TIMEFRAME_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE, DEPARTURE_DATE, LENGTH_REQUESTED, WAIT_LIST_TIME, FULFILLED, FULFILLED_DATE, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.CATEGORY_ID, src.STYLE_ID, src.CUSTOMER_ID, src.TIME_ID, src.TIMEFRAME_ID, src.FIRST_NAME, src.LAST_NAME, src.EMAIL, src.PHONE, src.DEPARTURE_DATE, src.LENGTH_REQUESTED, src.WAIT_LIST_TIME, src.FULFILLED, src.FULFILLED_DATE, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_WAITLISTS: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_WAITLISTS: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_WAITLISTS;
+/
+
+-- ============================================================================
+-- Master Procedure: Execute All MOLO and Stellar Merges
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_RUN_ALL_MOLO_STELLAR_MERGES
+IS
+    v_start_time TIMESTAMP;
+    v_end_time TIMESTAMP;
+    v_duration NUMBER;
+BEGIN
+    v_start_time := SYSTIMESTAMP;
+    
+    DBMS_OUTPUT.PUT_LINE('========================================');
+    DBMS_OUTPUT.PUT_LINE('STARTING MERGE: STG_* -> DW_* Tables');
+    DBMS_OUTPUT.PUT_LINE('========================================');
+    
+    -- MOLO Merges
+    DBMS_OUTPUT.PUT_LINE('--- Processing MOLO Tables ---');
+    SP_MERGE_MOLO_ACCOUNTS;
+    SP_MERGE_MOLO_BOATS;
+    SP_MERGE_MOLO_BOAT_TYPES;
+    SP_MERGE_MOLO_CITIES;
+    SP_MERGE_MOLO_COMPANIES;
+    SP_MERGE_MOLO_CONTACT_AUTO_CHARGE;
+    SP_MERGE_MOLO_CONTACTS;
+    SP_MERGE_MOLO_CONTACT_TYPES;
+    SP_MERGE_MOLO_COUNTRIES;
+    SP_MERGE_MOLO_INSURANCE_STATUS;
+    SP_MERGE_MOLO_INVOICE_ITEMS;
+    SP_MERGE_MOLO_INVOICES;
+    SP_MERGE_MOLO_INVOICE_STATUS;
+    SP_MERGE_MOLO_INVOICE_TYPES;
+    SP_MERGE_MOLO_ITEM_CHARGE_METHODS;
+    SP_MERGE_MOLO_ITEM_MASTERS;
+    SP_MERGE_MOLO_MARINA_LOCATIONS;
+    SP_MERGE_MOLO_PAYMENT_METHODS;
+    SP_MERGE_MOLO_PHONE_TYPES;
+    SP_MERGE_MOLO_PIERS;
+    SP_MERGE_MOLO_POWER_NEEDS;
+    SP_MERGE_MOLO_RECORD_STATUS;
+    SP_MERGE_MOLO_RESERVATIONS;
+    SP_MERGE_MOLO_RESERVATION_STATUS;
+    SP_MERGE_MOLO_RESERVATION_TYPES;
+    SP_MERGE_MOLO_SEASONAL_CHARGE_METHODS;
+    SP_MERGE_MOLO_SEASONAL_PRICES;
+    SP_MERGE_MOLO_SLIPS;
+    SP_MERGE_MOLO_SLIP_TYPES;
+    SP_MERGE_MOLO_STATEMENTS_PREFERENCE;
+    SP_MERGE_MOLO_TRANSACTION_METHODS;
+    SP_MERGE_MOLO_TRANSACTIONS;
+    SP_MERGE_MOLO_TRANSACTION_TYPES;
+    SP_MERGE_MOLO_TRANSIENT_CHARGE_METHODS;
+    SP_MERGE_MOLO_TRANSIENT_PRICES;
+    
+    -- Stellar Merges
+    DBMS_OUTPUT.PUT_LINE('--- Processing Stellar Tables ---');
+    SP_MERGE_STELLAR_CUSTOMERS;
+    SP_MERGE_STELLAR_LOCATIONS;
+    SP_MERGE_STELLAR_SEASONS;
+    SP_MERGE_STELLAR_ACCESSORIES;
+    SP_MERGE_STELLAR_ACCESSORY_OPTIONS;
+    SP_MERGE_STELLAR_ACCESSORY_TIERS;
+    SP_MERGE_STELLAR_AMENITIES;
+    SP_MERGE_STELLAR_CATEGORIES;
+    SP_MERGE_STELLAR_HOLIDAYS;
+    SP_MERGE_STELLAR_BOOKINGS;
+    SP_MERGE_STELLAR_BOOKING_BOATS;
+    SP_MERGE_STELLAR_BOOKING_PAYMENTS;
+    SP_MERGE_STELLAR_BOOKING_ACCESSORIES;
+    SP_MERGE_STELLAR_STYLE_GROUPS;
+    SP_MERGE_STELLAR_STYLES;
+    SP_MERGE_STELLAR_STYLE_BOATS;
+    SP_MERGE_STELLAR_CUSTOMER_BOATS;
+    SP_MERGE_STELLAR_SEASON_DATES;
+    SP_MERGE_STELLAR_STYLE_HOURLY_PRICES;
+    SP_MERGE_STELLAR_STYLE_TIMES;
+    SP_MERGE_STELLAR_STYLE_PRICES;
+    SP_MERGE_STELLAR_CLUB_TIERS;
+    SP_MERGE_STELLAR_COUPONS;
+    SP_MERGE_STELLAR_POS_ITEMS;
+    SP_MERGE_STELLAR_POS_SALES;
+    SP_MERGE_STELLAR_FUEL_SALES;
+    SP_MERGE_STELLAR_WAITLISTS;
+    SP_MERGE_STELLAR_CLOSED_DATES;
+    SP_MERGE_STELLAR_BLACKLISTS;
+    
+    v_end_time := SYSTIMESTAMP;
+    v_duration := EXTRACT(SECOND FROM (v_end_time - v_start_time));
+    
+    DBMS_OUTPUT.PUT_LINE('========================================');
+    DBMS_OUTPUT.PUT_LINE('ALL MERGES COMPLETED');
+    DBMS_OUTPUT.PUT_LINE('Duration: ' || ROUND(v_duration, 2) || ' seconds');
+    DBMS_OUTPUT.PUT_LINE('========================================');
+    
+    COMMIT;
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('ERROR: ' || SQLERRM);
+        RAISE;
+END SP_RUN_ALL_MOLO_STELLAR_MERGES;
+/

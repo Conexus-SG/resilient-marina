@@ -1,0 +1,31 @@
+{
+  "_comment": "Marina Data Processing Pipeline - Configuration File",
+  "_warning": "This file contains sensitive credentials. Keep it secure and never commit to version control!",
+  "_instructions": [
+    "1. Copy this file to 'config.json' (without .template)",
+    "2. Fill in your actual credentials below",
+    "3. Add 'config.json' to your .gitignore file",
+    "4. Set appropriate file permissions (chmod 600 config.json on Linux/Mac)"
+  ],
+  
+  "aws": {
+    "access_key_id": "your_aws_access_key_here",
+    "secret_access_key": "your_aws_secret_access_key_here",
+    "region": "us-east-1"
+  },
+  
+  "database": {
+    "user": "OAX_USER",
+    "password": "your_database_password_here",
+    "dsn": "oax5007253621_low"
+  },
+  
+  "s3": {
+    "molo_bucket": "cnxtestbucket",
+    "stellar_bucket": "resilient-ims-backups"
+  },
+  
+  "logging": {
+    "level": "INFO"
+  }
+}

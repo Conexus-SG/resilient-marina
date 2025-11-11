@@ -1,0 +1,46 @@
+
+-- ============================================================================
+-- Merge STG_STELLAR_CLOSED_DATES to DW_STELLAR_CLOSED_DATES
+-- ============================================================================
+CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_CLOSED_DATES
+IS
+    v_merged NUMBER := 0;
+BEGIN
+    MERGE INTO DW_STELLAR_CLOSED_DATES tgt
+    USING STG_STELLAR_CLOSED_DATES src
+    ON (tgt.ID = src.ID)
+    WHEN MATCHED THEN
+        UPDATE SET
+            tgt.LOCATION_ID = src.LOCATION_ID,
+            tgt.CLOSED_DATE = src.CLOSED_DATE,
+            tgt.ALLOW_BACKEND_DEPARTURES = src.ALLOW_BACKEND_DEPARTURES,
+            tgt.ALLOW_BACKEND_RETURNS = src.ALLOW_BACKEND_RETURNS,
+            tgt.ALLOW_FRONTEND_DEPARTURES = src.ALLOW_FRONTEND_DEPARTURES,
+            tgt.ALLOW_FRONTEND_RETURNS = src.ALLOW_FRONTEND_RETURNS,
+            tgt.CREATED_AT = src.CREATED_AT,
+            tgt.UPDATED_AT = src.UPDATED_AT,
+            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (
+            ID, LOCATION_ID, CLOSED_DATE, ALLOW_BACKEND_DEPARTURES, ALLOW_BACKEND_RETURNS, ALLOW_FRONTEND_DEPARTURES, ALLOW_FRONTEND_RETURNS, CREATED_AT, UPDATED_AT,
+            DW_LAST_INSERTED,
+            DW_LAST_UPDATED
+        )
+        VALUES (
+            src.ID, src.LOCATION_ID, src.CLOSED_DATE, src.ALLOW_BACKEND_DEPARTURES, src.ALLOW_BACKEND_RETURNS, src.ALLOW_FRONTEND_DEPARTURES, src.ALLOW_FRONTEND_RETURNS, src.CREATED_AT, src.UPDATED_AT,
+            SYSTIMESTAMP,
+            SYSTIMESTAMP
+        );
+    
+    v_merged := SQL%ROWCOUNT;
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DW_STELLAR_CLOSED_DATES: Merged ' || v_merged || ' records');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_STELLAR_CLOSED_DATES: ' || SQLERRM);
+        RAISE;
+END SP_MERGE_STELLAR_CLOSED_DATES;
+/

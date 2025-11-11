@@ -1,0 +1,20 @@
+# Environment variables and configuration
+.env
+config.json
+
+# Downloaded data
+downloaded_data.csv
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+
+# Testing artifacts
+.pytest_cache/
+.coverage
+htmlcov/
