@@ -567,20 +567,40 @@ def parse_slips_data(csv_content):
         try:
             slip_data = (
                 parse_int(row.get('Id', '')),
-                row.get('Name', '').strip()[:255],
-                row.get('Type', '').strip()[:50],
-                row.get('RecomendedLOA', '').strip()[:50],
-                row.get('RecomendedBeam', '').strip()[:50],
-                row.get('RecomendedDraft', '').strip()[:50],
-                row.get('MaximumLOA', '').strip()[:50],
-                row.get('MaximumBeam', '').strip()[:50],
-                row.get('MaximumDraft', '').strip()[:50],
+                row.get('Name', '').strip()[:255] if row.get('Name') else None,
+                row.get('Type', '').strip()[:50] if row.get('Type') else None,
+                row.get('RecomendedLOA', '').strip()[:50] if row.get('RecomendedLOA') else None,
+                row.get('RecomendedBeam', '').strip()[:50] if row.get('RecomendedBeam') else None,
+                row.get('RecomendedDraft', '').strip()[:50] if row.get('RecomendedDraft') else None,
+                row.get('RecomendedAirDraft', '').strip()[:50] if row.get('RecomendedAirDraft') else None,
+                row.get('MaximumLOA', '').strip()[:50] if row.get('MaximumLOA') else None,
+                row.get('MaximumBeam', '').strip()[:50] if row.get('MaximumBeam') else None,
+                row.get('MaximumDraft', '').strip()[:50] if row.get('MaximumDraft') else None,
+                row.get('MaximumAirDraft', '').strip()[:50] if row.get('MaximumAirDraft') else None,
                 parse_int(row.get('MarinaLocationId', '')),
                 parse_int(row.get('Pier_Id', '')),
-                row.get('Status', '').strip()[:50],
+                row.get('Status', '').strip()[:50] if row.get('Status') else None,
+                parse_datetime(row.get('StartDate', '')),  # START_DATE
+                parse_datetime(row.get('EndDate', '')),    # END_DATE
+                parse_boolean(row.get('DoNotCountInOccupancy', '')),  # DO_NOT_COUNT_IN_OCCUPANCY
                 parse_boolean(row.get('Active', '')),  # Convert TRUE/FALSE to 1/0
+                parse_datetime(row.get('CreationDateTime', '')),  # CREATION_DATE_TIME - KEY FIELD
+                row.get('CreationUser', '').strip()[:255] if row.get('CreationUser') else None,  # CREATION_USER
                 parse_int(row.get('SlipType_Id', '')),
-                row.get('HashID', '').strip()[:50]
+                parse_float(row.get('PaymentProcessingFee', '0')),  # PAYMENT_PROCESSING_FEE
+                parse_float(row.get('ManagementFee', '0')),  # MANAGEMENT_FEE
+                parse_int(row.get('OwnerId', '')),  # OWNER_ID
+                parse_int(row.get('PaymentProcessingFeeTypeId', '')),  # PAYMENT_PROCESSING_FEE_TYPE_ID
+                parse_int(row.get('ManagementFeeTypeId', '')),  # MANAGEMENT_FEE_TYPE_ID
+                row.get('OverrideOccupancyLOA', '').strip()[:50] if row.get('OverrideOccupancyLOA') else None,
+                row.get('HashID', '').strip()[:50] if row.get('HashID') else None,
+                parse_float(row.get('MaintenanceFee', '0')),  # MAINTENANCE_FEE
+                row.get('SvgId', '').strip()[:255] if row.get('SvgId') else None,  # SVG_ID
+                parse_float(row.get('Assessment', '0')),  # ASSESSMENT
+                parse_float(row.get('Loan', '0')),  # LOAN
+                parse_int(row.get('OrderColumn', '')),  # ORDER_COLUMN
+                row.get('SignName', '').strip()[:255] if row.get('SignName') else None,  # SIGN_NAME
+                parse_float(row.get('MaxWeight', '0'))  # MAX_WEIGHT
             )
             slips.append(slip_data)
         except Exception as e:
@@ -1142,7 +1162,7 @@ def parse_invoice_items_data(csv_content):
     for row in csv_reader:
         try:
             invoice_item_data = (
-                safe_string(row.get('Id'), allow_null=False) or '',  # ID cannot be null
+                safe_string(row.get('Id'), allow_null=False) or '',
                 safe_string(row.get('Prefix'), 10, allow_null=False) or '',
                 safe_float(row.get('Quantity'), 0.0),
                 safe_string(row.get('Title'), 500, allow_null=False) or 'Untitled Item',
@@ -1150,7 +1170,7 @@ def parse_invoice_items_data(csv_content):
                 safe_float(row.get('Value'), 0.0),
                 safe_float(row.get('Discount'), 0.0),
                 safe_string(row.get('DiscountType'), 50, allow_null=False) or '',
-                safe_bool_as_int(row.get('Taxable'), 0),  # Convert boolean to int
+                safe_bool_as_int(row.get('Taxable'), 0),
                 safe_float(row.get('Tax'), 0.0),
                 safe_string(row.get('Misc'), 500, allow_null=False) or '',
                 safe_float(row.get('DiscountTotal'), 0.0),
@@ -1163,8 +1183,81 @@ def parse_invoice_items_data(csv_content):
                 safe_string(row.get('ChargeGroup'), 100, allow_null=False) or '',
                 safe_string(row.get('PaymentAccount'), 100, allow_null=False) or '',
                 safe_string(row.get('PriceStr'), 100, allow_null=False) or '',
-                safe_bool_as_int(row.get('IsVoid'), 0),  # Convert boolean to int
-                safe_datetime(row.get('Date'))
+                safe_bool_as_int(row.get('IsVoid'), 0),
+                safe_datetime(row.get('Date')),  # DATE_FIELD
+                safe_string(row.get('TextAux'), 1000, allow_null=True),
+                safe_string(row.get('TextAux2'), 1000, allow_null=True),
+                safe_datetime(row.get('DiscountDateTime')),
+                safe_string(row.get('DiscountUserId'), 1000, allow_null=True),
+                safe_string(row.get('Notes'), 1000, allow_null=True),
+                safe_string(row.get('PrType'), 1000, allow_null=True),
+                safe_string(row.get('Status'), 1000, allow_null=True),
+                safe_string(row.get('DeletionUserId'), 1000, allow_null=True),
+                safe_datetime(row.get('DeletionDateTime')),
+                safe_int(row.get('OverpaymentId'), 0),
+                safe_string(row.get('VoidUser'), 1000, allow_null=True),
+                safe_datetime(row.get('VoidDateTime')),
+                safe_string(row.get('Misc2'), 1000, allow_null=True),
+                safe_int(row.get('PrepaymentId'), 0),
+                safe_int(row.get('CreditInvoiceId'), 0),
+                safe_string(row.get('AllocationType'), 1000, allow_null=True),
+                safe_int(row.get('ReservationId'), 0),
+                safe_int(row.get('ItemMasterId'), 0),
+                safe_string(row.get('AspNetUserId'), 256, allow_null=True),
+                safe_int(row.get('InvoiceItemTypeId'), 0),
+                safe_int(row.get('SeasonalPriceId'), 0),
+                safe_int(row.get('TransientPriceId'), 0),
+                safe_int(row.get('SvJobId'), 0),
+                safe_int(row.get('OriginalCreditItem'), 0),
+                safe_bool_as_int(row.get('TaxExempt'), 0),
+                safe_datetime(row.get('LastModifiedDateTime')),
+                safe_string(row.get('LastModifiedAspNetUser'), 1000, allow_null=True),
+                safe_string(row.get('DeletionReason'), 1000, allow_null=True),
+                safe_string(row.get('VoidReason'), 1000, allow_null=True),
+                safe_datetime(row.get('StartDateTime')),
+                safe_datetime(row.get('EndDateTime')),
+                safe_int(row.get('CreationPartnerId'), 0),
+                safe_int(row.get('DeletePartnerId'), 0),
+                safe_int(row.get('VoidPartnerId'), 0),
+                safe_float(row.get('OriginalPrice'), 0.0),
+                safe_int(row.get('OverrideXeroTaxRate'), 0),
+                safe_int(row.get('OverrideXeroSalesAccount'), 0),
+                safe_float(row.get('OriginalReservationPrice'), 0.0),
+                safe_int(row.get('NumberOfDecimals'), 0),
+                safe_int(row.get('StripeTransactionDataId'), 0),
+                safe_float(row.get('ValueAlternative'), 0.0),
+                safe_int(row.get('StripeTerminalId'), 0),
+                safe_string(row.get('StripeApplicationName'), 1000, allow_null=True),
+                safe_string(row.get('StripeAid'), 1000, allow_null=True),
+                safe_float(row.get('EnteredAmount'), 0.0),
+                safe_float(row.get('ExchangeRate'), 0.0),
+                safe_int(row.get('CurrenciesId'), 0),  # 69
+                safe_int(row.get('SvChargeInstanceId'), 0),  # 70
+                safe_int(row.get('SvLaborInstanceId'), 0),  # 71
+                safe_int(row.get('SvPartInstanceId'), 0),  # 72
+                safe_string(row.get('RevenueGlCode'), 1000, allow_null=True),  # 73
+                safe_string(row.get('ArGlCode'), 1000, allow_null=True),  # 74
+                safe_string(row.get('PaymentGlCode'), 1000, allow_null=True),  # 75
+                safe_string(row.get('CogsGlCode'), 1000, allow_null=True),  # 76
+                safe_string(row.get('InventoryGlCode'), 1000, allow_null=True),  # 77
+                safe_string(row.get('SalesTaxGlCode'), 1000, allow_null=True),  # 78
+                safe_string(row.get('PrepaymentGlCode'), 1000, allow_null=True),  # 79
+                safe_string(row.get('AccountType'), 1000, allow_null=True),  # 80
+                safe_string(row.get('ApplicationCryptogram'), 1000, allow_null=True),  # 81
+                safe_string(row.get('AuthorizationCode'), 1000, allow_null=True),  # 82
+                safe_string(row.get('AuthorizationResponseCode'), 1000, allow_null=True),  # 83
+                safe_string(row.get('CardholderVerificationMethod'), 1000, allow_null=True),  # 84
+                safe_string(row.get('TerminalVerificationResults'), 1000, allow_null=True),  # 85
+                safe_string(row.get('TransactionStatusInformation'), 1000, allow_null=True),  # 86
+                safe_string(row.get('TrackingCode'), 1000, allow_null=True),  # 87
+                safe_string(row.get('DiscountGlCode'), 1000, allow_null=True),  # 88
+                safe_int(row.get('OverrideTrackingCategory1'), 0),  # 89
+                safe_int(row.get('OverrideTrackingCategory2'), 0),  # 90
+                safe_string(row.get('QuickbooksPaymentId'), 1000, allow_null=True),  # 91
+                safe_bool_as_int(row.get('AllowTotalPriceEntry'), 0),  # 92
+                safe_bool_as_int(row.get('AddedAutomatically'), 0),  # 93
+                safe_datetime(row.get('AllocationPerformedDate')),  # 94
+                safe_datetime(row.get('CreatedDate'))  # 95 - THE KEY FIELD YOU MENTIONED
             )
             invoice_items.append(invoice_item_data)
         except Exception as e:

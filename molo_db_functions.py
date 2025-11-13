@@ -278,17 +278,29 @@ class OracleConnector:
             return
         
         insert_sql = """
-            INSERT INTO STG_MOLO_SLIPS (id, name, type, RECOMMENDED_LOA, RECOMMENDED_BEAM, 
-                       RECOMMENDED_DRAFT, MAXIMUM_LOA, MAXIMUM_BEAM, MAXIMUM_DRAFT, 
-                       MARINA_LOCATION_ID, PIER_ID, STATUS, ACTIVE, SLIP_TYPE_ID, 
-                       HASH_ID)
-            VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15)
+            INSERT INTO STG_MOLO_SLIPS (
+                ID, NAME, TYPE, RECOMMENDED_LOA, RECOMMENDED_BEAM, 
+                RECOMMENDED_DRAFT, RECOMMENDED_AIR_DRAFT, MAXIMUM_LOA, 
+                MAXIMUM_BEAM, MAXIMUM_DRAFT, MAXIMUM_AIR_DRAFT,
+                MARINA_LOCATION_ID, PIER_ID, STATUS, START_DATE, END_DATE,
+                DO_NOT_COUNT_IN_OCCUPANCY, ACTIVE, CREATION_DATE_TIME, 
+                CREATION_USER, SLIP_TYPE_ID, PAYMENT_PROCESSING_FEE,
+                MANAGEMENT_FEE, OWNER_ID, PAYMENT_PROCESSING_FEE_TYPE_ID,
+                MANAGEMENT_FEE_TYPE_ID, OVERRIDE_OCCUPANCY_LOA, HASH_ID,
+                MAINTENANCE_FEE, SVG_ID, ASSESSMENT, LOAN, ORDER_COLUMN,
+                SIGN_NAME, MAX_WEIGHT
+            )
+            VALUES (
+                :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, 
+                :15, :16, :17, :18, :19, :20, :21, :22, :23, :24, :25, :26, 
+                :27, :28, :29, :30, :31, :32, :33, :34, :35
+            )
         """
         
         try:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
-            logger.info(f"✅ Successfully merged {len(data_rows)} slip records")
+            logger.info(f"✅ Successfully inserted {len(data_rows)} slip records")
         except Exception as e:
             logger.exception(f"Error inserting slips to staging: {e}")
             self.connection.rollback()
@@ -485,18 +497,52 @@ class OracleConnector:
         
         insert_sql = """
             INSERT INTO STG_MOLO_INVOICE_ITEMS (
-                ID, PREFIX, QUANTITY, TITLE, TYPE_FIELD, VALUE_FIELD, DISCOUNT, 
-                       DISCOUNT_TYPE, TAXABLE, TAX, MISC, DISCOUNT_TOTAL, PRICE_SUFFIX, 
-                       SUB_TOTAL, SUBTOTAL_WO_DISCOUNT, TAX_TOTAL, TOTAL, INVOICE_ID, 
-                       CHARGE_GROUP, PAYMENT_ACCOUNT, PRICE_STR, IS_VOID, DATE_FIELD
+                ID, PREFIX, QUANTITY, TITLE, TYPE_FIELD, VALUE_FIELD, DISCOUNT,
+                DISCOUNT_TYPE, TAXABLE, TAX, MISC, DISCOUNT_TOTAL, PRICE_SUFFIX,
+                SUB_TOTAL, SUBTOTAL_WO_DISCOUNT, TAX_TOTAL, TOTAL, INVOICE_ID,
+                CHARGE_GROUP, PAYMENT_ACCOUNT, PRICE_STR, IS_VOID, DATE_FIELD,
+                TEXT_AUX, TEXT_AUX2, DISCOUNT_DATE_TIME, DISCOUNT_USER_ID,
+                NOTES, PR_TYPE, STATUS_FIELD, DELETION_USER_ID,
+                DELETION_DATE_TIME, OVERPAYMENT_ID, VOID_USER, VOID_DATE_TIME,
+                MISC2, PREPAYMENT_ID, CREDIT_INVOICE_ID, ALLOCATION_TYPE,
+                RESERVATION_ID, ITEM_MASTER_ID, ASPNET_USER_ID,
+                INVOICE_ITEM_TYPE_ID, SEASONAL_PRICE_ID, TRANSIENT_PRICE_ID,
+                SV_JOB_ID, ORIGINAL_CREDIT_ITEM, TAX_EXEMPT,
+                LAST_MODIFIED_DATE_TIME, LAST_MODIFIED_ASPNET_USER,
+                DELETION_REASON, VOID_REASON, START_DATE_TIME, END_DATE_TIME,
+                CREATION_PARTNER_ID, DELETE_PARTNER_ID, VOID_PARTNER_ID,
+                ORIGINAL_PRICE, OVERRIDE_XERO_TAX_RATE,
+                OVERRIDE_XERO_SALES_ACCOUNT, ORIGINAL_RESERVATION_PRICE,
+                NUMBER_OF_DECIMALS, STRIPE_TRANSACTION_DATA_ID,
+                VALUE_ALTERNATIVE, STRIPE_TERMINAL_ID, STRIPE_APPLICATION_NAME,
+                STRIPE_AID, ENTERED_AMOUNT, EXCHANGE_RATE, CURRENCIES_ID,
+                SV_CHARGE_INSTANCE_ID, SV_LABOR_INSTANCE_ID, SV_PART_INSTANCE_ID,
+                REVENUE_GL_CODE, AR_GL_CODE, PAYMENT_GL_CODE, COGS_GL_CODE,
+                INVENTORY_GL_CODE, SALES_TAX_GL_CODE, PREPAYMENT_GL_CODE,
+                ACCOUNT_TYPE, APPLICATION_CRYPTOGRAM, AUTHORIZATION_CODE,
+                AUTHORIZATION_RESPONSE_CODE, CARDHOLDER_VERIFICATION_METHOD,
+                TERMINAL_VERIFICATION_RESULTS, TRANSACTION_STATUS_INFORMATION,
+                TRACKING_CODE, DISCOUNT_GL_CODE, OVERRIDE_TRACKING_CATEGORY1,
+                OVERRIDE_TRACKING_CATEGORY2, QUICKBOOKS_PAYMENT_ID,
+                ALLOW_TOTAL_PRICE_ENTRY, ADDED_AUTOMATICALLY,
+                ALLOCATION_PERFORMED_DATE, CREATED_DATE
             )
-            VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16, :17, :18, :19, :20, :21, :22, :23)
+            VALUES (
+                :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14,
+                :15, :16, :17, :18, :19, :20, :21, :22, :23, :24, :25, :26,
+                :27, :28, :29, :30, :31, :32, :33, :34, :35, :36, :37, :38,
+                :39, :40, :41, :42, :43, :44, :45, :46, :47, :48, :49, :50,
+                :51, :52, :53, :54, :55, :56, :57, :58, :59, :60, :61, :62,
+                :63, :64, :65, :66, :67, :68, :69, :70, :71, :72, :73, :74,
+                :75, :76, :77, :78, :79, :80, :81, :82, :83, :84, :85, :86,
+                :87, :88, :89, :90, :91, :92, :93, :94, :95, :96
+            )
         """
         
         try:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
-            logger.info(f"✅ Successfully merged {len(data_rows)} invoice item records")
+            logger.info(f"✅ Successfully inserted {len(data_rows)} invoice item records")
         except Exception as e:
             logger.exception(f"Error merging invoice items: {e}")
             self.connection.rollback()
