@@ -73,6 +73,26 @@ def parse_date(value):
 
 def parse_customers_data(csv_content):
     """Parse customers CSV - 52 columns matching actual CSV structure."""
+    from datetime import datetime
+    
+    def convert_date(value):
+        """Convert date string to datetime object or None."""
+        if not value or value == '':
+            return None
+        try:
+            return datetime.strptime(value, '%Y-%m-%d')
+        except:
+            return None
+    
+    def convert_timestamp(value):
+        """Convert timestamp string to datetime object or None."""
+        if not value or value == '':
+            return None
+        try:
+            return datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+        except:
+            return None
+    
     reader = csv.DictReader(io.StringIO(csv_content))
     data_rows = []
     
@@ -106,30 +126,30 @@ def parse_customers_data(csv_content):
             parse_int(row.get('numkids')),
             row.get('referrer'),
             row.get('services'),
-            parse_date(row.get('dob')),
+            row.get('dob'),  # Keep as string - table expects NVARCHAR2
             row.get('dlstate'),
             row.get('dlcountry'),
             row.get('dlnumber'),
             row.get('notes'),
             row.get('internal_notes'),
             row.get('club_status'),
-            parse_date(row.get('club_start_date')),
+            convert_date(row.get('club_start_date')),
             parse_int(row.get('club_use_recurring_billing')),
-            parse_date(row.get('club_recurring_billing_start_date')),
+            convert_date(row.get('club_recurring_billing_start_date')),
             parse_float(row.get('balance')),
             row.get('bdrc'),
             parse_int(row.get('penalty_points')),
             parse_float(row.get('open_balance_threshold')),
-            parse_date(row.get('club_end_date')),
+            convert_date(row.get('club_end_date')),
             row.get('cc_saved_name'),
             row.get('cc_saved_last4'),
-            row.get('cc_saved_expiry'),
+            convert_date(row.get('cc_saved_expiry')),
             row.get('cc_saved_profile_id'),
             row.get('cc_saved_method_id'),
             row.get('cc_saved_address_id'),
             row.get('external_id'),
-            parse_date(row.get('created_at')),
-            parse_date(row.get('updated_at'))
+            convert_timestamp(row.get('created_at')),
+            convert_timestamp(row.get('updated_at'))
         ))
     
     logger.info(f"Parsed {len(data_rows)} customer records")
@@ -209,6 +229,12 @@ def parse_accessories_data(csv_content):
     reader = csv.DictReader(io.StringIO(csv_content))
     data_rows = []
     
+    def convert_yes_no(value):
+        """Convert boolean-like value to Yes/No string."""
+        if not value or value.strip() == '' or value == '0':
+            return 'No'
+        return 'Yes' if value == '1' else 'No'
+    
     for row in reader:
         data_rows.append((
             parse_int(row.get('id')),
@@ -221,10 +247,10 @@ def parse_accessories_data(csv_content):
             row.get('image'),
             parse_float(row.get('price')),
             parse_float(row.get('deposit_amount')),
-            parse_int(row.get('tax_exempt')),
+            convert_yes_no(row.get('tax_exempt')),
             parse_int(row.get('max_overlapping_rentals')),
             parse_int(row.get('frontend_qty_limit')),
-            parse_int(row.get('use_striped_background')),
+            convert_yes_no(row.get('use_striped_background')),
             parse_int(row.get('backend_available_days')),
             parse_int(row.get('frontend_available_days')),
             parse_int(row.get('max_same_departures')),
@@ -241,12 +267,18 @@ def parse_accessory_options_data(csv_content):
     reader = csv.DictReader(io.StringIO(csv_content))
     data_rows = []
     
+    def convert_yes_no(value):
+        """Convert boolean-like value to Yes/No string."""
+        if not value or value.strip() == '' or value == '0':
+            return 'No'
+        return 'Yes' if value == '1' else 'No'
+    
     for row in reader:
         data_rows.append((
             parse_int(row.get('id')),
             parse_int(row.get('accessory_id')),
             row.get('value'),
-            parse_int(row.get('use_striped_background')),
+            convert_yes_no(row.get('use_striped_background')),
             parse_date(row.get('created_at')),
             parse_date(row.get('updated_at'))
         ))
@@ -261,11 +293,15 @@ def parse_accessory_tiers_data(csv_content):
     data_rows = []
     
     for row in reader:
+        # Default min_hours and max_hours to 0 if NULL
+        min_hours = parse_int(row.get('min_hours'))
+        max_hours = parse_int(row.get('max_hours'))
+        
         data_rows.append((
             parse_int(row.get('id')),
             parse_int(row.get('accessory_id')),
-            parse_int(row.get('min_hours')),
-            parse_int(row.get('max_hours')),
+            min_hours if min_hours is not None else 0,
+            max_hours if max_hours is not None else 0,
             parse_float(row.get('price')),
             parse_int(row.get('accessory_option_id')),
             parse_date(row.get('created_at')),
@@ -281,16 +317,22 @@ def parse_amenities_data(csv_content):
     reader = csv.DictReader(io.StringIO(csv_content))
     data_rows = []
     
+    def convert_yes_no(value):
+        """Convert boolean-like value to Yes/No string."""
+        if not value or value.strip() == '' or value == '0':
+            return 'No'
+        return 'Yes' if value == '1' else 'No'
+    
     for row in reader:
         data_rows.append((
             parse_int(row.get('id')),
             parse_int(row.get('location_id')),
             row.get('amenity_name'),
-            parse_int(row.get('frontend_display')),
+            convert_yes_no(row.get('frontend_display')),
             row.get('frontend_name'),
             parse_int(row.get('frontend_position')),
-            parse_int(row.get('featured')),
-            parse_int(row.get('filterable')),
+            convert_yes_no(row.get('featured')),
+            convert_yes_no(row.get('filterable')),
             row.get('icon'),
             row.get('type'),
             row.get('options'),
@@ -310,19 +352,35 @@ def parse_categories_data(csv_content):
     reader = csv.DictReader(io.StringIO(csv_content))
     data_rows = []
     
+    def convert_yes_no(value):
+        """Convert boolean-like value to Yes/No string."""
+        if not value or value.strip() == '' or value == '0':
+            return 'No'
+        return 'Yes' if value == '1' else 'No'
+    
     for row in reader:
+        # filter_unit_type_position is a string, default to 'First' if NULL
+        filter_position = row.get('filter_unit_type_position')
+        if not filter_position or filter_position.strip() == '':
+            filter_position = 'First'
+        
+        # min_nights_multi_day defaults to 1 if NULL
+        min_nights = parse_int(row.get('min_nights_multi_day'))
+        if min_nights is None:
+            min_nights = 1
+        
         data_rows.append((
             parse_int(row.get('id')),
             parse_int(row.get('location_id')),
             row.get('category_name'),
-            parse_int(row.get('frontend_display')),
+            convert_yes_no(row.get('frontend_display')),
             row.get('frontend_name'),
             row.get('frontend_type'),
             parse_int(row.get('frontend_position')),
-            parse_int(row.get('filter_unit_type_enabled')),
+            convert_yes_no(row.get('filter_unit_type_enabled')),
             row.get('filter_unit_type_name'),
-            parse_int(row.get('filter_unit_type_position')),
-            parse_int(row.get('min_nights_multi_day')),
+            filter_position,
+            min_nights,
             row.get('calendar_banner_text'),
             row.get('description'),
             parse_date(row.get('created_at')),
@@ -445,6 +503,22 @@ def parse_bookings_data(csv_content):
 
 def parse_booking_boats_data(csv_content):
     """Parse booking_boats CSV - 57 columns matching actual CSV structure."""
+    from datetime import datetime
+    
+    def convert_timestamp(value):
+        """Convert timestamp string to datetime object or None."""
+        if not value or value == '':
+            return None
+        try:
+            # Try with seconds
+            return datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+        except:
+            try:
+                # Try without seconds
+                return datetime.strptime(value, '%Y-%m-%d %H:%M')
+            except:
+                return None
+    
     reader = csv.DictReader(io.StringIO(csv_content))
     data_rows = []
     
@@ -458,17 +532,17 @@ def parse_booking_boats_data(csv_content):
             parse_int(row.get('timeframe_id')),
             parse_int(row.get('main_boat')),
             parse_int(row.get('num_passengers')),
-            row.get('boat_departure'),
-            row.get('boat_return'),
+            convert_timestamp(row.get('boat_departure')),
+            convert_timestamp(row.get('boat_return')),
             row.get('status'),
             parse_float(row.get('price')),
             parse_int(row.get('price_override')),
-            parse_date(row.get('signature_date')),
-            parse_date(row.get('checkout_date')),
+            convert_timestamp(row.get('signature_date')),
+            convert_timestamp(row.get('checkout_date')),
             row.get('checkout_equipment'),
             row.get('checkout_notes'),
             parse_float(row.get('checkout_engine_hours')),
-            parse_date(row.get('checkin_date')),
+            convert_timestamp(row.get('checkin_date')),
             row.get('checkin_equipment'),
             row.get('checkin_notes'),
             parse_float(row.get('checkin_engine_hours')),
@@ -488,7 +562,7 @@ def parse_booking_boats_data(csv_content):
             parse_float(row.get('checkin_tax_2')),
             parse_float(row.get('checkin_total')),
             parse_int(row.get('queue_admin_id')),
-            parse_date(row.get('queue_date')),
+            convert_timestamp(row.get('queue_date')),
             parse_int(row.get('attendant_queue_admin_id')),
             parse_int(row.get('attendant_water_admin_id')),
             parse_int(row.get('boat_assigned')),
@@ -504,9 +578,9 @@ def parse_booking_boats_data(csv_content):
             row.get('dob'),
             row.get('contract_return_pdf'),
             row.get('contract_pdf'),
-            parse_date(row.get('created_at')),
-            parse_date(row.get('updated_at')),
-            parse_date(row.get('deleted_at'))
+            convert_timestamp(row.get('created_at')),
+            convert_timestamp(row.get('updated_at')),
+            convert_timestamp(row.get('deleted_at'))
         ))
     
     logger.info(f"Parsed {len(data_rows)} booking boat records")
@@ -1485,92 +1559,3 @@ def process_stellar_data_from_s3(
         logger.info("All tables processed successfully!")
     
     logger.info("=" * 80)
-    
-    # Save detailed failure report to file
-    if failed_tables_details:
-        from datetime import datetime
-        report_file = f"stellar_failed_tables_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-        try:
-            with open(report_file, 'w') as f:
-                f.write("=" * 80 + "\n")
-                f.write("STELLAR TABLE IMPORT FAILURE REPORT\n")
-                f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-                f.write("=" * 80 + "\n\n")
-                
-                f.write(f"Summary:\n")
-                f.write(f"  • Successful: {successful_tables}/{len(tables_to_process)} tables\n")
-                f.write(f"  • Failed: {len(failed_tables)}/{len(tables_to_process)} tables\n")
-                f.write(f"  • Total records loaded: {total_records:,}\n\n")
-                
-                # Categorize failures
-                data_quality = []
-                schema_issues = []
-                empty_data = []
-                other_errors = []
-                
-                for table, reason in failed_tables_details.items():
-                    if 'No data rows' in reason:
-                        empty_data.append((table, reason))
-                    elif 'NULL constraint' in reason or 'Bind variable' in reason or 'Data type' in reason:
-                        schema_issues.append((table, reason))
-                    elif 'Date format' in reason:
-                        data_quality.append((table, reason))
-                    else:
-                        other_errors.append((table, reason))
-                
-                f.write("=" * 80 + "\n")
-                f.write("FAILED TABLES BY CATEGORY\n")
-                f.write("=" * 80 + "\n\n")
-                
-                if data_quality:
-                    f.write("Data Quality Issues:\n")
-                    f.write("-" * 80 + "\n")
-                    for table, reason in data_quality:
-                        f.write(f"  • {table:25} → {reason}\n")
-                    f.write("\n")
-                
-                if schema_issues:
-                    f.write("Schema/Constraint Issues:\n")
-                    f.write("-" * 80 + "\n")
-                    for table, reason in schema_issues:
-                        f.write(f"  • {table:25} → {reason}\n")
-                    f.write("\n")
-                
-                if empty_data:
-                    f.write("Empty Datasets (No Data in CSV):\n")
-                    f.write("-" * 80 + "\n")
-                    for table, reason in empty_data:
-                        f.write(f"  • {table}\n")
-                    f.write("\n")
-                
-                if other_errors:
-                    f.write("Other Errors:\n")
-                    f.write("-" * 80 + "\n")
-                    for table, reason in other_errors:
-                        f.write(f"  • {table:25} → {reason}\n")
-                    f.write("\n")
-                
-                f.write("=" * 80 + "\n")
-                f.write("RECOMMENDED ACTIONS\n")
-                f.write("=" * 80 + "\n\n")
-                
-                if data_quality:
-                    f.write("1. Data Quality Issues:\n")
-                    f.write("   → Review CSV data for invalid date/time formats\n")
-                    f.write("   → Check for data that doesn't match expected patterns\n\n")
-                
-                if schema_issues:
-                    f.write("2. Schema/Constraint Issues:\n")
-                    f.write("   → Add default values in parse functions for NULL constraints\n")
-                    f.write("   → Verify column counts match between CSV and database\n")
-                    f.write("   → Check data types match between CSV and Oracle schema\n\n")
-                
-                if empty_data:
-                    f.write("3. Empty Datasets:\n")
-                    f.write("   → No action needed - these will process when data is available\n\n")
-                
-                f.write("=" * 80 + "\n")
-            
-            logger.info(f"📝 Detailed failure report saved to: {report_file}")
-        except Exception as e:
-            logger.warning(f"Could not write failure report: {e}")

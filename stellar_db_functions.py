@@ -260,7 +260,7 @@ class OracleConnector:
                     CC_SAVED_NAME, CC_SAVED_LAST4, CC_SAVED_EXPIRY, CC_SAVED_PROFILE_ID,
                     CC_SAVED_METHOD_ID, CC_SAVED_ADDRESS_ID,
                     EXTERNAL_ID, CREATED_AT, UPDATED_AT)
-            VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16, :17, :18, :19, :20, :21, :22, :23, :24, :25, :26, :27, :28, TO_DATE(:29, 'YYYY-MM-DD'), :30, :31, :32, :33, :34, :35, TO_DATE(:36, 'YYYY-MM-DD'), :37, TO_DATE(:38, 'YYYY-MM-DD'), :39, :40, :41, :42, TO_DATE(:43, 'YYYY-MM-DD'), :44, :45, :46, :47, :48, :49, :50, TO_TIMESTAMP(:51, 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP(:52, 'YYYY-MM-DD HH24:MI:SS'))"""
+            VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16, :17, :18, :19, :20, :21, :22, :23, :24, :25, :26, :27, :28, :29, :30, :31, :32, :33, :34, :35, :36, :37, :38, :39, :40, :41, :42, :43, :44, :45, :46, :47, :48, :49, :50, :51, :52)"""
         
         try:
             self.cursor.executemany(insert_sql, data_rows)
@@ -320,7 +320,7 @@ class OracleConnector:
                     PRICE_RULE_ID, PRICE_RULE_ORIGINAL_PRICE, PRICE_RULE_DYNAMIC_PRICE,
                     PRICE_RULE_DIFFERENCE, EMERGENCY_NAME, EMERGENCY_PHONE, DATE_OF_BIRTH,
                     CONTRACT_RETURN_PDF, CONTRACT_PDF, CREATED_AT, UPDATED_AT, DELETED_AT)
-            VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, TO_TIMESTAMP(:14, 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP(:15, 'YYYY-MM-DD HH24:MI:SS'), :16, :17, :18, TO_TIMESTAMP(:19, 'YYYY-MM-DD HH24:MI:SS'), :20, :21, :22, :23, :24, :25, :26, :27, :28, :29, :30, :31, :32, :33, :34, :35, :36, :37, :38, TO_TIMESTAMP(:39, 'YYYY-MM-DD HH24:MI:SS'), :40, :41, :42, :43, :44, :45, :46, :47, :48, :49, :50, :51, :52, :53, :54, TO_TIMESTAMP(:55, 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP(:56, 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP(:57, 'YYYY-MM-DD HH24:MI:SS'))"""
+            VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16, :17, :18, :19, :20, :21, :22, :23, :24, :25, :26, :27, :28, :29, :30, :31, :32, :33, :34, :35, :36, :37, :38, :39, :40, :41, :42, :43, :44, :45, :46, :47, :48, :49, :50, :51, :52, :53, :54, :55, :56, :57)"""
         
         try:
             self.cursor.executemany(insert_sql, data_rows)
