@@ -14,10 +14,6 @@ BEGIN
             tgt.NAME = src.NAME,
             tgt.MARINA_LOCATION_ID = src.MARINA_LOCATION_ID,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
-        WHERE 
-            -- Only update if data has actually changed
-            NVL(tgt.NAME, '~') != NVL(src.NAME, '~')
-            OR NVL(tgt.MARINA_LOCATION_ID, -1) != NVL(src.MARINA_LOCATION_ID, -1)
     WHEN NOT MATCHED THEN
         INSERT (
             ID, NAME, MARINA_LOCATION_ID,

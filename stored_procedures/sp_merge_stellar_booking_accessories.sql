@@ -19,15 +19,6 @@ BEGIN
             tgt.CREATED_AT = src.CREATED_AT,
             tgt.UPDATED_AT = src.UPDATED_AT,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
-        WHERE 
-            -- Only update if data has actually changed
-            NVL(tgt.ACCESSORY_ID, -1) != NVL(src.ACCESSORY_ID, -1)
-            OR NVL(tgt.QTY, '~') != NVL(src.QTY, '~')
-            OR NVL(tgt.PRICE, -999999) != NVL(src.PRICE, -999999)
-            OR NVL(tgt.PRICE_OVERRIDE, -1) != NVL(src.PRICE_OVERRIDE, -1)
-            OR NVL(tgt.ACCESSORY_OPTION_ID, -1) != NVL(src.ACCESSORY_OPTION_ID, -1)
-            OR NVL(tgt.CREATED_AT, '~') != NVL(src.CREATED_AT, '~')
-            OR NVL(tgt.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
     WHEN NOT MATCHED THEN
         INSERT (
             BOOKING_ID, ACCESSORY_ID, QTY, PRICE, PRICE_OVERRIDE, ACCESSORY_OPTION_ID, CREATED_AT, UPDATED_AT,

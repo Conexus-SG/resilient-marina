@@ -17,13 +17,6 @@ BEGIN
             tgt.CREATED_AT = src.CREATED_AT,
             tgt.UPDATED_AT = src.UPDATED_AT,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
-        WHERE 
-            -- Only update if data has actually changed
-            NVL(tgt.ACCESSORY_ID, -1) != NVL(src.ACCESSORY_ID, -1)
-            OR NVL(tgt.VALUE_TEXT, '~') != NVL(src.VALUE_TEXT, '~')
-            OR NVL(tgt.USE_STRIPED_BACKGROUND, '~') != NVL(src.USE_STRIPED_BACKGROUND, '~')
-            OR NVL(tgt.CREATED_AT, '~') != NVL(src.CREATED_AT, '~')
-            OR NVL(tgt.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
     WHEN NOT MATCHED THEN
         INSERT (
             ID, ACCESSORY_ID, VALUE_TEXT, USE_STRIPED_BACKGROUND, CREATED_AT, UPDATED_AT,

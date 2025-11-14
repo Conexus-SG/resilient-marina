@@ -27,23 +27,6 @@ BEGIN
             tgt.CREATED_AT = src.CREATED_AT,
             tgt.UPDATED_AT = src.UPDATED_AT,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
-        WHERE 
-            -- Only update if data has actually changed
-            NVL(tgt.LOCATION_ID, -1) != NVL(src.LOCATION_ID, -1)
-            OR NVL(tgt.AMENITY_NAME, '~') != NVL(src.AMENITY_NAME, '~')
-            OR NVL(tgt.FRONTEND_DISPLAY, '~') != NVL(src.FRONTEND_DISPLAY, '~')
-            OR NVL(tgt.FRONTEND_NAME, '~') != NVL(src.FRONTEND_NAME, '~')
-            OR NVL(tgt.FRONTEND_POSITION, '~') != NVL(src.FRONTEND_POSITION, '~')
-            OR NVL(tgt.FEATURED, '~') != NVL(src.FEATURED, '~')
-            OR NVL(tgt.FILTERABLE, '~') != NVL(src.FILTERABLE, '~')
-            OR NVL(tgt.ICON, '~') != NVL(src.ICON, '~')
-            OR NVL(tgt.AMENITY_TYPE, '~') != NVL(src.AMENITY_TYPE, '~')
-            OR NVL(tgt.OPTIONS_TEXT, '~') != NVL(src.OPTIONS_TEXT, '~')
-            OR NVL(tgt.PREFIX_TEXT, '~') != NVL(src.PREFIX_TEXT, '~')
-            OR NVL(tgt.SUFFIX_TEXT, '~') != NVL(src.SUFFIX_TEXT, '~')
-            OR NVL(tgt.DESCRIPTION_TEXT, '~') != NVL(src.DESCRIPTION_TEXT, '~')
-            OR NVL(tgt.CREATED_AT, '~') != NVL(src.CREATED_AT, '~')
-            OR NVL(tgt.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
     WHEN NOT MATCHED THEN
         INSERT (
             ID, LOCATION_ID, AMENITY_NAME, FRONTEND_DISPLAY, FRONTEND_NAME, FRONTEND_POSITION, FEATURED, FILTERABLE, ICON, AMENITY_TYPE, OPTIONS_TEXT, PREFIX_TEXT, SUFFIX_TEXT, DESCRIPTION_TEXT, CREATED_AT, UPDATED_AT,

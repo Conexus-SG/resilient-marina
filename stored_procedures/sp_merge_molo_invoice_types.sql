@@ -13,9 +13,6 @@ BEGIN
         UPDATE SET
             tgt.NAME = src.NAME,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
-        WHERE 
-            -- Only update if data has actually changed
-            NVL(tgt.NAME, '~') != NVL(src.NAME, '~')
     WHEN NOT MATCHED THEN
         INSERT (
             ID, NAME,

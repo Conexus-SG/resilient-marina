@@ -25,21 +25,6 @@ BEGIN
             tgt.UPDATED_AT = src.UPDATED_AT,
             tgt.DELETED_AT = src.DELETED_AT,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
-        WHERE 
-            -- Only update if data has actually changed
-            NVL(tgt.LOCATION_ID, -1) != NVL(src.LOCATION_ID, -1)
-            OR NVL(tgt.ADMIN_ID, -1) != NVL(src.ADMIN_ID, -1)
-            OR NVL(tgt.CUSTOMER_NAME, '~') != NVL(src.CUSTOMER_NAME, '~')
-            OR NVL(tgt.FUEL_TYPE, '~') != NVL(src.FUEL_TYPE, '~')
-            OR NVL(tgt.QTY, '~') != NVL(src.QTY, '~')
-            OR NVL(tgt.PRICE, -999999) != NVL(src.PRICE, -999999)
-            OR NVL(tgt.SUB_TOTAL, '~') != NVL(src.SUB_TOTAL, '~')
-            OR NVL(tgt.TIP, '~') != NVL(src.TIP, '~')
-            OR NVL(tgt.GRAND_TOTAL, '~') != NVL(src.GRAND_TOTAL, '~')
-            OR NVL(tgt.AMOUNT_PAID, -1) != NVL(src.AMOUNT_PAID, -1)
-            OR NVL(tgt.CREATED_AT, '~') != NVL(src.CREATED_AT, '~')
-            OR NVL(tgt.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
-            OR NVL(tgt.DELETED_AT, '~') != NVL(src.DELETED_AT, '~')
     WHEN NOT MATCHED THEN
         INSERT (
             ID, LOCATION_ID, ADMIN_ID, CUSTOMER_NAME, FUEL_TYPE, QTY, PRICE, SUB_TOTAL, TIP, GRAND_TOTAL, AMOUNT_PAID, CREATED_AT, UPDATED_AT, DELETED_AT,

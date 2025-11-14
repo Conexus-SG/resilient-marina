@@ -20,16 +20,6 @@ BEGIN
             tgt.CREATED_AT = src.CREATED_AT,
             tgt.UPDATED_AT = src.UPDATED_AT,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
-        WHERE 
-            -- Only update if data has actually changed
-            NVL(tgt.CUSTOMER_ID, -1) != NVL(src.CUSTOMER_ID, -1)
-            OR NVL(tgt.SLIP_ID, -1) != NVL(src.SLIP_ID, -1)
-            OR NVL(tgt.BOAT_NAME, '~') != NVL(src.BOAT_NAME, '~')
-            OR NVL(tgt.BOAT_NUMBER, -1) != NVL(src.BOAT_NUMBER, -1)
-            OR NVL(tgt.LENGTH_FEET, -1) != NVL(src.LENGTH_FEET, -1)
-            OR NVL(tgt.WIDTH_FEET, -1) != NVL(src.WIDTH_FEET, -1)
-            OR NVL(tgt.CREATED_AT, '~') != NVL(src.CREATED_AT, '~')
-            OR NVL(tgt.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
     WHEN NOT MATCHED THEN
         INSERT (
             ID, CUSTOMER_ID, SLIP_ID, BOAT_NAME, BOAT_NUMBER, LENGTH_FEET, WIDTH_FEET, CREATED_AT, UPDATED_AT,

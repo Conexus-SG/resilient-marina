@@ -23,19 +23,6 @@ BEGIN
             tgt.CREATED_AT = src.CREATED_AT,
             tgt.UPDATED_AT = src.UPDATED_AT,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
-        WHERE 
-            -- Only update if data has actually changed
-            NVL(tgt.DEFAULT_PRICE, -1) != NVL(src.DEFAULT_PRICE, -1)
-            OR NVL(tgt.HOLIDAY, '~') != NVL(src.HOLIDAY, '~')
-            OR NVL(tgt.SATURDAY, '~') != NVL(src.SATURDAY, '~')
-            OR NVL(tgt.SUNDAY, '~') != NVL(src.SUNDAY, '~')
-            OR NVL(tgt.MONDAY, '~') != NVL(src.MONDAY, '~')
-            OR NVL(tgt.TUESDAY, '~') != NVL(src.TUESDAY, '~')
-            OR NVL(tgt.WEDNESDAY, '~') != NVL(src.WEDNESDAY, '~')
-            OR NVL(tgt.THURSDAY, '~') != NVL(src.THURSDAY, '~')
-            OR NVL(tgt.FRIDAY, '~') != NVL(src.FRIDAY, '~')
-            OR NVL(tgt.CREATED_AT, '~') != NVL(src.CREATED_AT, '~')
-            OR NVL(tgt.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
     WHEN NOT MATCHED THEN
         INSERT (
             TIME_ID, DEFAULT_PRICE, HOLIDAY, SATURDAY, SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, CREATED_AT, UPDATED_AT,

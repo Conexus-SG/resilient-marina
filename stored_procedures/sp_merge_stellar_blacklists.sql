@@ -22,18 +22,6 @@ BEGIN
             tgt.CREATED_AT = src.CREATED_AT,
             tgt.UPDATED_AT = src.UPDATED_AT,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
-        WHERE 
-            -- Only update if data has actually changed
-            NVL(tgt.LOCATION_ID, -1) != NVL(src.LOCATION_ID, -1)
-            OR NVL(tgt.FIRST_NAME, '~') != NVL(src.FIRST_NAME, '~')
-            OR NVL(tgt.LAST_NAME, '~') != NVL(src.LAST_NAME, '~')
-            OR NVL(tgt.PHONE, '~') != NVL(src.PHONE, '~')
-            OR NVL(tgt.CELL, '~') != NVL(src.CELL, '~')
-            OR NVL(tgt.EMAIL, '~') != NVL(src.EMAIL, '~')
-            OR NVL(tgt.DL_NUMBER, -1) != NVL(src.DL_NUMBER, -1)
-            OR NVL(tgt.NOTES, '~') != NVL(src.NOTES, '~')
-            OR NVL(tgt.CREATED_AT, '~') != NVL(src.CREATED_AT, '~')
-            OR NVL(tgt.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
     WHEN NOT MATCHED THEN
         INSERT (
             ID, LOCATION_ID, FIRST_NAME, LAST_NAME, PHONE, CELL, EMAIL, DL_NUMBER, NOTES, CREATED_AT, UPDATED_AT,

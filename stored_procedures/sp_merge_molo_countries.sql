@@ -14,10 +14,6 @@ BEGIN
             tgt.NAME = src.NAME,
             tgt.CODE = src.CODE,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
-        WHERE 
-            -- Only update if data has actually changed
-            NVL(tgt.NAME, '~') != NVL(src.NAME, '~')
-            OR NVL(tgt.CODE, '~') != NVL(src.CODE, '~')
     WHEN NOT MATCHED THEN
         INSERT (
             ID, NAME, CODE,

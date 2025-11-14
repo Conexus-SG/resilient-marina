@@ -20,16 +20,6 @@ BEGIN
             tgt.CREATED_AT = src.CREATED_AT,
             tgt.UPDATED_AT = src.UPDATED_AT,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
-        WHERE 
-            -- Only update if data has actually changed
-            NVL(tgt.LOCATION_ID, -1) != NVL(src.LOCATION_ID, -1)
-            OR NVL(tgt.SKU, '~') != NVL(src.SKU, '~')
-            OR NVL(tgt.ITEM_NAME, '~') != NVL(src.ITEM_NAME, '~')
-            OR NVL(tgt.COST, '~') != NVL(src.COST, '~')
-            OR NVL(tgt.PRICE, -999999) != NVL(src.PRICE, -999999)
-            OR NVL(tgt.TAX_EXEMPT, -1) != NVL(src.TAX_EXEMPT, -1)
-            OR NVL(tgt.CREATED_AT, '~') != NVL(src.CREATED_AT, '~')
-            OR NVL(tgt.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
     WHEN NOT MATCHED THEN
         INSERT (
             ID, LOCATION_ID, SKU, ITEM_NAME, COST, PRICE, TAX_EXEMPT, CREATED_AT, UPDATED_AT,

@@ -50,46 +50,6 @@ BEGIN
             tgt.CREATED_AT = src.CREATED_AT,
             tgt.UPDATED_AT = src.UPDATED_AT,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
-        WHERE 
-            -- Only update if data has actually changed
-            NVL(tgt.STYLE_ID, -1) != NVL(src.STYLE_ID, -1)
-            OR NVL(tgt.BOAT_NUMBER, -1) != NVL(src.BOAT_NUMBER, -1)
-            OR NVL(tgt.PAPER_LESS_NUMBER, -1) != NVL(src.PAPER_LESS_NUMBER, -1)
-            OR NVL(tgt.MOTOR, '~') != NVL(src.MOTOR, '~')
-            OR NVL(tgt.MANUFACTURER, '~') != NVL(src.MANUFACTURER, '~')
-            OR NVL(tgt.SERIAL_NUMBER, -1) != NVL(src.SERIAL_NUMBER, -1)
-            OR NVL(tgt.IN_FLEET, '~') != NVL(src.IN_FLEET, '~')
-            OR NVL(tgt.HULL_NUMBER, -1) != NVL(src.HULL_NUMBER, -1)
-            OR NVL(tgt.STATE_NUMBER, -1) != NVL(src.STATE_NUMBER, -1)
-            OR NVL(tgt.CYLINDERS, '~') != NVL(src.CYLINDERS, '~')
-            OR NVL(tgt.HP, '~') != NVL(src.HP, '~')
-            OR NVL(tgt.MODEL, '~') != NVL(src.MODEL, '~')
-            OR NVL(tgt.BOAT_TYPE, '~') != NVL(src.BOAT_TYPE, '~')
-            OR NVL(tgt.PURCHASED_DATE, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.PURCHASED_DATE, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
-            OR NVL(tgt.PURCHASED_COST, '~') != NVL(src.PURCHASED_COST, '~')
-            OR NVL(tgt.SALE_DATE, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.SALE_DATE, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
-            OR NVL(tgt.SALE_PRICE, -1) != NVL(src.SALE_PRICE, -1)
-            OR NVL(tgt.CLUB_LOCATION, '~') != NVL(src.CLUB_LOCATION, '~')
-            OR NVL(tgt.DEALER_NAME, '~') != NVL(src.DEALER_NAME, '~')
-            OR NVL(tgt.DEALER_CITY, '~') != NVL(src.DEALER_CITY, '~')
-            OR NVL(tgt.DEALER_STATE, '~') != NVL(src.DEALER_STATE, '~')
-            OR NVL(tgt.PO_NUMBER, -1) != NVL(src.PO_NUMBER, -1)
-            OR NVL(tgt.BOAT_YEAR_MODEL, '~') != NVL(src.BOAT_YEAR_MODEL, '~')
-            OR NVL(tgt.MOTOR_YEAR_MODEL, '~') != NVL(src.MOTOR_YEAR_MODEL, '~')
-            OR NVL(tgt.MOTOR_MANUFACTURER_MODEL, '~') != NVL(src.MOTOR_MANUFACTURER_MODEL, '~')
-            OR NVL(tgt.STATE_REG_DATE, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.STATE_REG_DATE, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
-            OR NVL(tgt.STATE_REG_EXP_DATE, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.STATE_REG_EXP_DATE, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
-            OR NVL(tgt.ENGINE_PURCHASED_COST, '~') != NVL(src.ENGINE_PURCHASED_COST, '~')
-            OR NVL(tgt.BACKEND_DISPLAY, '~') != NVL(src.BACKEND_DISPLAY, '~')
-            OR NVL(tgt.POSITION_ORDER, '~') != NVL(src.POSITION_ORDER, '~')
-            OR NVL(tgt.STATUS_BOAT, '~') != NVL(src.STATUS_BOAT, '~')
-            OR NVL(tgt.SERVICE_START, '~') != NVL(src.SERVICE_START, '~')
-            OR NVL(tgt.SERVICE_END, '~') != NVL(src.SERVICE_END, '~')
-            OR NVL(tgt.CLEAN_STATUS, '~') != NVL(src.CLEAN_STATUS, '~')
-            OR NVL(tgt.INSURANCE_REG_NO, '~') != NVL(src.INSURANCE_REG_NO, '~')
-            OR NVL(tgt.BUOY_INSURANCE_STATUS, '~') != NVL(src.BUOY_INSURANCE_STATUS, '~')
-            OR NVL(tgt.CREATED_AT, '~') != NVL(src.CREATED_AT, '~')
-            OR NVL(tgt.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.UPDATED_AT, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
     WHEN NOT MATCHED THEN
         INSERT (
             ID, STYLE_ID, BOAT_NUMBER, PAPER_LESS_NUMBER, MOTOR, MANUFACTURER, SERIAL_NUMBER, IN_FLEET, HULL_NUMBER, STATE_NUMBER, CYLINDERS, HP, MODEL, BOAT_TYPE, PURCHASED_DATE, PURCHASED_COST, SALE_DATE, SALE_PRICE, CLUB_LOCATION, DEALER_NAME, DEALER_CITY, DEALER_STATE, PO_NUMBER, BOAT_YEAR_MODEL, MOTOR_YEAR_MODEL, MOTOR_MANUFACTURER_MODEL, STATE_REG_DATE, STATE_REG_EXP_DATE, ENGINE_PURCHASED_COST, BACKEND_DISPLAY, POSITION_ORDER, STATUS_BOAT, SERVICE_START, SERVICE_END, CLEAN_STATUS, INSURANCE_REG_NO, BUOY_INSURANCE_STATUS, CREATED_AT, UPDATED_AT,
