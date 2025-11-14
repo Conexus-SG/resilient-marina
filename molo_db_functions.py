@@ -359,6 +359,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Inserted {len(data_rows)} pier records to staging")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for PIERS...")
+            self.merge_single_table('PIERS')
+            
         except Exception as e:
             logger.exception(f"Error inserting piers to staging: {e}")
             self.connection.rollback()
@@ -425,6 +430,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Successfully inserted {len(data_rows)} slip records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for SLIPS...")
+            self.merge_single_table('SLIPS')
+            
         except Exception as e:
             logger.exception(f"Error inserting slips to staging: {e}")
             self.connection.rollback()
@@ -451,6 +461,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Successfully merged {len(data_rows)} reservation records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for RESERVATIONS...")
+            self.merge_single_table('RESERVATIONS')
+            
         except Exception as e:
             logger.exception(f"Error inserting reservations to staging: {e}")
             self.connection.rollback()
@@ -611,6 +626,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Successfully merged {len(data_rows)} invoice records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for INVOICES...")
+            self.merge_single_table('INVOICES')
+            
         except Exception as e:
             logger.exception(f"Error inserting invoices to staging: {e}")
             self.connection.rollback()
@@ -673,6 +693,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Successfully inserted {len(data_rows)} invoice item records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for INVOICE_ITEMS...")
+            self.merge_single_table('INVOICE_ITEMS')
+            
         except Exception as e:
             logger.exception(f"Error merging invoice items: {e}")
             self.connection.rollback()
@@ -707,6 +732,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Successfully merged {len(data_rows)} transaction records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for TRANSACTIONS...")
+            self.merge_single_table('TRANSACTIONS')
+            
         except Exception as e:
             logger.exception(f"Error inserting transactions to staging: {e}")
             self.connection.rollback()

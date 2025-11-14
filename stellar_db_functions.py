@@ -192,6 +192,74 @@ class OracleConnector:
             # Don't raise - let the process continue
             self.connection.rollback()
     
+    def merge_single_table(self, table_name):
+        """
+        Execute a single merge stored procedure immediately after data load.
+        
+        Args:
+            table_name (str): Name of the table (e.g., 'CUSTOMERS', 'BOOKINGS', 'STYLES')
+                            Will be converted to procedure name SP_MERGE_STELLAR_{table_name}
+        
+        Returns:
+            dict: Merge statistics {'inserted': int, 'updated': int, 'output': str}
+        """
+        procedure_name = f'SP_MERGE_STELLAR_{table_name.upper()}'
+        
+        try:
+            # Enable DBMS_OUTPUT to capture procedure logging
+            self.cursor.callproc("dbms_output.enable")
+            
+            # Call the procedure (no OUT parameters, uses DBMS_OUTPUT instead)
+            self.cursor.callproc(procedure_name)
+            
+            # Fetch DBMS_OUTPUT lines
+            output_lines = []
+            line_var = self.cursor.var(str)
+            status_var = self.cursor.var(int)
+            
+            while True:
+                self.cursor.callproc("dbms_output.get_line", (line_var, status_var))
+                if status_var.getvalue() != 0:
+                    break
+                output_line = line_var.getvalue()
+                if output_line:
+                    output_lines.append(output_line)
+                    logger.info(f"  📋 {output_line}")
+            
+            self.connection.commit()
+            
+            # Parse the output to extract inserted/updated counts if present
+            result = {
+                'procedure': procedure_name,
+                'output': '\n'.join(output_lines),
+                'inserted': 0,
+                'updated': 0
+            }
+            
+            # Try to parse "X inserted, Y updated" format
+            for line in output_lines:
+                if 'inserted' in line.lower() and 'updated' in line.lower():
+                    try:
+                        parts = line.split(':')[-1].strip()  # Get after the colon
+                        nums = parts.split(',')
+                        if len(nums) >= 2:
+                            result['inserted'] = int(nums[0].split()[0])
+                            result['updated'] = int(nums[1].split()[0])
+                    except:
+                        pass
+            
+            logger.info(
+                f"✅ {procedure_name}: "
+                f"{result['inserted']} inserted, {result['updated']} updated"
+            )
+            
+            return result
+                
+        except Exception as e:
+            logger.error(f"❌ Error executing {procedure_name}: {e}")
+            self.connection.rollback()
+            raise
+    
     def close(self):
         """Close database cursor and connection."""
         if self.cursor:
@@ -266,6 +334,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Inserted {len(data_rows)} customer records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for CUSTOMERS...")
+            self.merge_single_table('CUSTOMERS')
+            
         except Exception as e:
             self.connection.rollback()
             logger.exception(f"❌ Error merging customer data: {e}")
@@ -290,6 +363,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Inserted {len(data_rows)} booking records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for BOOKINGS...")
+            self.merge_single_table('BOOKINGS')
+            
         except Exception as e:
             self.connection.rollback()
             logger.exception(f"❌ Error merging booking data: {e}")
@@ -326,6 +404,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Inserted {len(data_rows)} booking boat records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for BOOKING_BOATS...")
+            self.merge_single_table('BOOKING_BOATS')
+            
         except Exception as e:
             self.connection.rollback()
             logger.exception(f"❌ Error merging booking boat data: {e}")
@@ -361,6 +444,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Inserted {len(data_rows)} booking payment records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for BOOKING_PAYMENTS...")
+            self.merge_single_table('BOOKING_PAYMENTS')
+            
         except Exception as e:
             self.connection.rollback()
             logger.exception(f"❌ Error merging booking payment data: {e}")
@@ -439,6 +527,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Inserted {len(data_rows)} style records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for STYLES...")
+            self.merge_single_table('STYLES')
+            
         except Exception as e:
             self.connection.rollback()
             logger.exception(f"❌ Error merging style data: {e}")
@@ -474,6 +567,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Inserted {len(data_rows)} style boat records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for STYLE_BOATS...")
+            self.merge_single_table('STYLE_BOATS')
+            
         except Exception as e:
             self.connection.rollback()
             logger.exception(f"❌ Error merging style boat data: {e}")
@@ -584,6 +682,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Inserted {len(data_rows)} style hourly price records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for STYLE_HOURLY_PRICES...")
+            self.merge_single_table('STYLE_HOURLY_PRICES')
+            
         except Exception as e:
             self.connection.rollback()
             logger.exception(f"❌ Error merging style hourly price data: {e}")
@@ -613,12 +716,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Inserted {len(data_rows)} style time records")
-        except Exception as e:
-            self.connection.rollback()
-            logger.exception(f"❌ Error merging style time data: {e}")
-            raise
-            self.connection.commit()
-            logger.info(f"✅ Inserted {len(data_rows)} style time records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for STYLE_TIMES...")
+            self.merge_single_table('STYLE_TIMES')
+            
         except Exception as e:
             self.connection.rollback()
             logger.exception(f"❌ Error merging style time data: {e}")
@@ -645,6 +747,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Inserted {len(data_rows)} style price records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for STYLE_PRICES...")
+            self.merge_single_table('STYLE_PRICES')
+            
         except Exception as e:
             self.connection.rollback()
             logger.exception(f"❌ Error merging style price data: {e}")
@@ -842,6 +949,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Inserted {len(data_rows)} POS item records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for POS_ITEMS...")
+            self.merge_single_table('POS_ITEMS')
+            
         except Exception as e:
             self.connection.rollback()
             logger.exception(f"❌ Error merging POS item data: {e}")
@@ -868,6 +980,11 @@ class OracleConnector:
             self.cursor.executemany(insert_sql, data_rows)
             self.connection.commit()
             logger.info(f"✅ Inserted {len(data_rows)} POS sale records")
+            
+            # Execute merge procedure immediately after insert
+            logger.info("Executing merge for POS_SALES...")
+            self.merge_single_table('POS_SALES')
+            
         except Exception as e:
             self.connection.rollback()
             logger.exception(f"❌ Error merging POS sale data: {e}")
