@@ -43,6 +43,14 @@ from botocore.exceptions import NoCredentialsError, ClientError
 from molo_db_functions import OracleConnector
 from dotenv import load_dotenv
 
+# Optional validation imports
+try:
+    from data_validator import DataValidator
+    VALIDATION_AVAILABLE = True
+except ImportError:
+    VALIDATION_AVAILABLE = False
+    logger.warning("DataValidator not available - validation disabled")
+
 # =============================================================================
 # GLOBAL CONFIGURATION
 # =============================================================================
@@ -2875,6 +2883,103 @@ def find_latest_zip_in_s3(s3_client, bucket, prefix=None):
 
 
 # =============================================================================
+# VALIDATION HELPER FUNCTION
+# =============================================================================
+
+def perform_table_validation(
+    validator,
+    csv_content,
+    table_name,
+    staging_table,
+    dw_table,
+    id_column,
+    key_columns,
+    validate_fields,
+    validate_merge_changes,
+    validation_sample_size,
+    record_count=None
+):
+    """
+    Perform field-level validation on imported table data.
+    
+    Args:
+        validator: DataValidator instance
+        csv_content: Raw CSV content
+        table_name: Display name for logging
+        staging_table: Staging table name (STG_MOLO_*)
+        dw_table: Data warehouse table name (DW_MOLO_*)
+        id_column: Primary key column name
+        key_columns: List of important columns to validate
+        validate_fields: Enable CSV vs DB validation
+        validate_merge_changes: Enable staging vs DW validation
+        validation_sample_size: Number of records to sample
+        record_count: Number of records inserted (optional)
+    """
+    if not validator:
+        return
+    
+    validation_issues = []
+    
+    # Log staging insert summary
+    if record_count:
+        try:
+            # Get staging table count
+            staging_count = validator._get_row_count(staging_table)
+            logger.info(
+                f"   📥 Staging: {record_count} records inserted "
+                f"({staging_count} total in {staging_table})"
+            )
+        except Exception as e:
+            logger.debug(f"Could not get staging count for {table_name}: {e}")
+    
+    # Validate CSV vs Database field values
+    if validate_fields:
+        try:
+            passed, issues = validator.validate_field_values(
+                csv_content=csv_content,
+                dw_table=dw_table,
+                id_column=id_column,
+                columns_to_check=key_columns,
+                sample_size=validation_sample_size
+            )
+            if not passed:
+                logger.warning(f"⚠️  Field validation issues in {table_name}:")
+                for issue in issues[:5]:  # Show first 5 issues
+                    logger.warning(f"    {issue}")
+                if len(issues) > 5:
+                    logger.warning(f"    ... and {len(issues) - 5} more issues")
+                validation_issues.extend(issues)
+        except Exception as e:
+            logger.warning(f"Field validation failed for {table_name}: {e}")
+    
+    # Validate staging vs DW after merge
+    if validate_merge_changes:
+        try:
+            passed, issues, stats = validator.validate_field_changes(
+                staging_table=staging_table,
+                dw_table=dw_table,
+                id_column=id_column,
+                columns_to_check=key_columns,
+                sample_size=validation_sample_size
+            )
+            if not passed:
+                logger.warning(
+                    f"⚠️  Merge validation for {table_name}: "
+                    f"{stats['records_with_changes']} records changed, "
+                    f"{stats['fields_changed']} fields modified"
+                )
+                for issue in issues[:3]:  # Show first 3 issues
+                    logger.warning(f"    {issue}")
+                if len(issues) > 3:
+                    logger.warning(f"    ... and {len(issues) - 3} more issues")
+                validation_issues.extend(issues)
+        except Exception as e:
+            logger.warning(f"Merge validation failed for {table_name}: {e}")
+    
+    return len(validation_issues) == 0
+
+
+# =============================================================================
 # MAIN PROCESSING FUNCTION
 # =============================================================================
 
@@ -2886,7 +2991,10 @@ def read_s3_zip_and_insert_to_db(
     db_password,
     db_dsn,
     aws_access_key_id=None,
-    aws_secret_access_key=None
+    aws_secret_access_key=None,
+    validate_fields=False,
+    validate_merge_changes=False,
+    validation_sample_size=10
 ):
     """
     Main processing function: Download latest ZIP from S3, extract target CSVs,
@@ -2897,6 +3005,7 @@ def read_s3_zip_and_insert_to_db(
     2. Extracts only the target CSV files (marina-related data)
     3. Parses each CSV file into database-ready format
     4. Uses INSERT operations into staging tables to synchronize data without duplication
+    5. Optionally validates field-level data integrity (if enabled)
     
     Args:
         bucket (str): S3 bucket name
@@ -2907,6 +3016,9 @@ def read_s3_zip_and_insert_to_db(
         db_dsn (str): Oracle database DSN
         aws_access_key_id (str, optional): AWS access key
         aws_secret_access_key (str, optional): AWS secret key
+        validate_fields (bool): Enable CSV vs DB field validation
+        validate_merge_changes (bool): Enable staging vs DW merge validation
+        validation_sample_size (int): Number of records to sample for validation
     """
     latest_zip_key = None
     
@@ -2983,6 +3095,14 @@ def read_s3_zip_and_insert_to_db(
         # Connect to Oracle database for all operations
         db = OracleConnector(db_user, db_password, db_dsn)
         
+        # Initialize validator if validation is enabled
+        validator = None
+        if (validate_fields or validate_merge_changes) and VALIDATION_AVAILABLE:
+            validator = DataValidator(db, logger)
+            logger.info(f"✅ DataValidator initialized (sample size: {validation_sample_size})")
+        elif (validate_fields or validate_merge_changes) and not VALIDATION_AVAILABLE:
+            logger.warning("⚠️  Validation requested but DataValidator not available")
+        
         # STEP 1: Truncate all staging tables before loading new data
         logger.info("\n" + "="*70)
         logger.info("STEP 1: TRUNCATING STAGING TABLES")
@@ -3051,6 +3171,16 @@ def read_s3_zip_and_insert_to_db(
                     db.insert_boats(parsed_data)
                     logger.info(f"✅ Processed {len(parsed_data)} boat records")
                     
+                    # Validate boats data if enabled
+                    if validator:
+                        perform_table_validation(
+                            validator, csv_content, 'BOATS',
+                            'STG_MOLO_BOATS', 'DW_MOLO_BOATS', 'BOAT_ID',
+                            ['BOAT_NAME', 'LENGTH', 'WIDTH', 'BOAT_TYPE_ID'],
+                            validate_fields, validate_merge_changes,
+                            validation_sample_size, len(parsed_data)
+                        )
+                    
                     processed_count += 1
                 elif csv_name == 'Accounts':
                     parsed_data = parse_accounts_data(csv_content)
@@ -3062,6 +3192,18 @@ def read_s3_zip_and_insert_to_db(
                     parsed_data = parse_invoices_data(csv_content)
                     db.insert_invoices(parsed_data)
                     logger.info(f"✅ Processed {len(parsed_data)} invoice records")
+                    
+                    # Validate invoices data
+                    if validator:
+                        perform_table_validation(
+                            validator, csv_content, 'INVOICES',
+                            'STG_MOLO_INVOICES', 'DW_MOLO_INVOICES',
+                            'INVOICE_ID',
+                            ['INVOICE_NUMBER', 'TOTAL_AMOUNT', 'INVOICE_DATE',
+                             'INVOICE_STATUS_ID'],
+                            validate_fields, validate_merge_changes,
+                            validation_sample_size, len(parsed_data)
+                        )
                     
                     processed_count += 1
                 elif csv_name == 'InvoiceItemSet':
@@ -3080,6 +3222,18 @@ def read_s3_zip_and_insert_to_db(
                     parsed_data = parse_item_masters_data(csv_content)
                     db.insert_item_masters(parsed_data)
                     logger.info(f"✅ Processed {len(parsed_data)} item master records")
+                    
+                    # Validate item masters data (especially datetime fields)
+                    if validator:
+                        perform_table_validation(
+                            validator, csv_content, 'ITEM_MASTERS',
+                            'STG_MOLO_ITEM_MASTERS', 'DW_MOLO_ITEM_MASTERS',
+                            'ITEM_MASTER_ID',
+                            ['DESCRIPTION', 'ITEM_TYPE', 'UNIT_PRICE',
+                             'CREATION_DATE_TIME'],
+                            validate_fields, validate_merge_changes,
+                            validation_sample_size, len(parsed_data)
+                        )
                     
                     processed_count += 1
                 elif csv_name == 'SeasonalPrices':
@@ -3319,8 +3473,46 @@ def read_s3_zip_and_insert_to_db(
         logger.info("STEP 3: MERGING STAGING DATA TO DATA WAREHOUSE")
         logger.info("="*70)
         logger.info("Calling stored procedures to merge STG_MOLO_* → DW_MOLO_*...")
-        db.run_all_merges()
-        logger.info("✅ All merge stored procedures completed successfully\n")
+        
+        # Run all merge procedures
+        merge_stats = db.run_all_merges()
+        logger.info("✅ All merge stored procedures completed successfully")
+        
+        # Log merge statistics (inserts vs updates)
+        if merge_stats:
+            logger.info("\n📊 Data Warehouse Merge Summary:")
+            logger.info("   (Showing results from stored procedures with OUT parameters)")
+            for table in sorted(merge_stats.keys()):
+                try:
+                    stats = merge_stats[table]
+                    inserted = stats['inserted']
+                    updated = stats['updated']
+                    
+                    # Build clear message
+                    if inserted > 0 and updated > 0:
+                        logger.info(
+                            f"   ✓ {table}: "
+                            f"{inserted:,} new record(s) inserted, "
+                            f"{updated:,} existing record(s) updated"
+                        )
+                    elif inserted > 0:
+                        logger.info(
+                            f"   ✓ {table}: "
+                            f"{inserted:,} new record(s) inserted"
+                        )
+                    elif updated > 0:
+                        logger.info(
+                            f"   ✓ {table}: "
+                            f"{updated:,} existing record(s) updated"
+                        )
+                    else:
+                        logger.info(
+                            f"   • {table}: No changes (data already up to date)"
+                        )
+                except Exception as e:
+                    logger.warning(f"   ⚠ {table}: Could not retrieve statistics - {e}")
+        
+        logger.info("")  # Blank line for readability
         
         # Clean up database connection
         db.close()
@@ -3431,6 +3623,24 @@ if __name__ == "__main__":
         default=os.getenv("STELLAR_S3_BUCKET", "resilient-ims-backups"),
         help="S3 bucket for Stellar data (Env: STELLAR_S3_BUCKET)"
     )
+    parser.add_argument(
+        "--validate-fields",
+        action="store_true",
+        default=False,
+        help="Enable field-level validation (CSV vs DB comparison)"
+    )
+    parser.add_argument(
+        "--validate-merge-changes",
+        action="store_true",
+        default=False,
+        help="Validate merge operations don't modify data unexpectedly"
+    )
+    parser.add_argument(
+        "--validation-sample-size",
+        type=int,
+        default=10,
+        help="Number of records to sample for field validation (default: 10)"
+    )
 
     args = parser.parse_args()
 
@@ -3507,6 +3717,12 @@ if __name__ == "__main__":
     logger.info("=" * 80)
     logger.info(f"MOLO Processing: {'ENABLED' if args.process_molo else 'DISABLED'}")
     logger.info(f"Stellar Processing: {'ENABLED' if args.process_stellar else 'DISABLED'}")
+    logger.info("")
+    logger.info("Validation Options:")
+    logger.info(f"  Field-level validation: {'ENABLED' if args.validate_fields else 'DISABLED'}")
+    logger.info(f"  Merge change validation: {'ENABLED' if args.validate_merge_changes else 'DISABLED'}")
+    if args.validate_fields or args.validate_merge_changes:
+        logger.info(f"  Sample size: {args.validation_sample_size} records")
     logger.info("=" * 80)
     
     # Execute MOLO processing (ZIP files from main bucket)
@@ -3523,7 +3739,10 @@ if __name__ == "__main__":
                 db_password,
                 db_dsn,
                 aws_access_key_id=aws_access_key,
-                aws_secret_access_key=aws_secret_key
+                aws_secret_access_key=aws_secret_key,
+                validate_fields=args.validate_fields,
+                validate_merge_changes=args.validate_merge_changes,
+                validation_sample_size=args.validation_sample_size
             )
             logger.info("✅ MOLO data processing completed successfully")
         except Exception as e:

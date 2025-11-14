@@ -159,6 +159,13 @@ class OracleConnector:
         """
         Execute the master stored procedure that merges all staging tables to data warehouse.
         
+        Returns a dictionary of merge statistics for key tables:
+        {
+            'DW_MOLO_BOATS': {'inserted': 10, 'updated': 783},
+            'DW_MOLO_CONTACTS': {'inserted': 5, 'updated': 1234},
+            ...
+        }
+        
         This calls SP_RUN_ALL_MOLO_STELLAR_MERGES which internally calls all individual
         merge procedures for MOLO and Stellar systems. The stored procedures handle:
         - MERGE logic (UPDATE existing, INSERT new)
@@ -167,9 +174,38 @@ class OracleConnector:
         """
         logger.info("Executing stored procedure to merge all MOLO staging data to data warehouse...")
         try:
-            self.cursor.execute("BEGIN SP_RUN_ALL_MOLO_STELLAR_MERGES; END;")
+            # Create cursor variable for OUT parameter
+            stats_cursor = self.cursor.var(oracledb.DB_TYPE_CURSOR)
+            
+            # Call procedure with OUT parameter
+            self.cursor.callproc('SP_RUN_ALL_MOLO_STELLAR_MERGES', [stats_cursor])
+            
+            # Fetch merge statistics from cursor
+            merge_stats = {}
+            result_cursor = stats_cursor.getvalue()
+            if result_cursor:
+                for row in result_cursor:
+                    table_name, inserted_count, updated_count = row
+                    merge_stats[table_name] = {
+                        'inserted': inserted_count,
+                        'updated': updated_count
+                    }
+                result_cursor.close()
+            
             self.connection.commit()
             logger.info("✅ Successfully completed all MOLO merge operations")
+            
+            # Log summary of tracked tables
+            if merge_stats:
+                logger.info(f"📊 Captured statistics for {len(merge_stats)} key tables")
+                for table in sorted(merge_stats.keys()):
+                    stats = merge_stats[table]
+                    logger.debug(
+                        f"   {table}: {stats['inserted']} inserted, {stats['updated']} updated"
+                    )
+            
+            return merge_stats
+            
         except Exception as e:
             logger.warning(
                 f"⚠️  Stored procedure SP_RUN_ALL_MOLO_STELLAR_MERGES not found or failed: {e}"

@@ -2,10 +2,19 @@
 -- ============================================================================
 -- Merge STG_MOLO_RESERVATIONS to DW_MOLO_RESERVATIONS
 -- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_RESERVATIONS
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_RESERVATIONS(
+    p_inserted_count OUT NUMBER,
+    p_updated_count OUT NUMBER
+)
 IS
-    v_merged NUMBER := 0;
+    v_pre_count NUMBER;
+    v_post_count NUMBER;
+    v_staging_count NUMBER;
 BEGIN
+    -- Get counts before merge
+    SELECT COUNT(*) INTO v_pre_count FROM DW_MOLO_RESERVATIONS;
+    SELECT COUNT(*) INTO v_staging_count FROM STG_MOLO_RESERVATIONS;
+    
     MERGE INTO DW_MOLO_RESERVATIONS tgt
     USING STG_MOLO_RESERVATIONS src
     ON (tgt.ID = src.ID)
@@ -78,7 +87,7 @@ BEGIN
             OR NVL(tgt.CREATION_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.CREATION_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
             OR NVL(tgt.RESERVATION_STATUS_ID, -1) != NVL(src.RESERVATION_STATUS_ID, -1)
             OR NVL(tgt.RESERVATION_TYPE_ID, -1) != NVL(src.RESERVATION_TYPE_ID, -1)
-            OR NVL(tgt.ASPNET_USER_ID, -1) != NVL(src.ASPNET_USER_ID, -1)
+            OR NVL(tgt.ASPNET_USER_ID, '~') != NVL(src.ASPNET_USER_ID, '~')
             OR NVL(tgt.CONTACT_ID, -1) != NVL(src.CONTACT_ID, -1)
             OR NVL(tgt.BOAT_ID, -1) != NVL(src.BOAT_ID, -1)
             OR NVL(tgt.SCHEDULED_ARRIVAL_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.SCHEDULED_ARRIVAL_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
@@ -86,15 +95,15 @@ BEGIN
             OR NVL(tgt.CANCELLATION_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.CANCELLATION_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
             OR NVL(tgt.ACCOUNT_ID, -1) != NVL(src.ACCOUNT_ID, -1)
             OR NVL(tgt.SLIP_ID, -1) != NVL(src.SLIP_ID, -1)
-            OR NVL(tgt.SLIP_SLOT_INDEX, '~') != NVL(src.SLIP_SLOT_INDEX, '~')
-            OR NVL(tgt.DISTANCE_FROM_THE_START, '~') != NVL(src.DISTANCE_FROM_THE_START, '~')
+            OR NVL(tgt.SLIP_SLOT_INDEX, -1) != NVL(src.SLIP_SLOT_INDEX, -1)
+            OR NVL(tgt.DISTANCE_FROM_THE_START, -9999999) != NVL(src.DISTANCE_FROM_THE_START, -9999999)
             OR NVL(tgt.RATE, -1) != NVL(src.RATE, -1)
             OR NVL(tgt.NAME, '~') != NVL(src.NAME, '~')
-            OR NVL(tgt.HAS_INSTALLMENTS, '~') != NVL(src.HAS_INSTALLMENTS, '~')
-            OR NVL(tgt.INSTALLMENT_FREQUENCY, '~') != NVL(src.INSTALLMENT_FREQUENCY, '~')
+            OR NVL(tgt.HAS_INSTALLMENTS, -1) != NVL(src.HAS_INSTALLMENTS, -1)
+            OR NVL(tgt.INSTALLMENT_FREQUENCY, -1) != NVL(src.INSTALLMENT_FREQUENCY, -1)
             OR NVL(tgt.INSTALLMENT_NUMBER, -1) != NVL(src.INSTALLMENT_NUMBER, -1)
             OR NVL(tgt.INSTALLMENT_PAYMENT_METHOD, '~') != NVL(src.INSTALLMENT_PAYMENT_METHOD, '~')
-            OR NVL(tgt.ONLY_RESERVATION_INSTALLMENTS, '~') != NVL(src.ONLY_RESERVATION_INSTALLMENTS, '~')
+            OR NVL(tgt.ONLY_RESERVATION_INSTALLMENTS, -1) != NVL(src.ONLY_RESERVATION_INSTALLMENTS, -1)
             OR NVL(tgt.NOTES, '~') != NVL(src.NOTES, '~')
             OR NVL(tgt.ACTUAL_ARRIVAL_DATE_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.ACTUAL_ARRIVAL_DATE_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
             OR NVL(tgt.ACTUAL_DEPARTURE_DATE_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.ACTUAL_DEPARTURE_DATE_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
@@ -103,15 +112,15 @@ BEGIN
             OR NVL(tgt.TERMS_ACCEPTED_LOCATION, '~') != NVL(src.TERMS_ACCEPTED_LOCATION, '~')
             OR NVL(tgt.CUSTOMER_IP_ADDRESS, '~') != NVL(src.CUSTOMER_IP_ADDRESS, '~')
             OR NVL(tgt.CUSTOMER_DEVICE, '~') != NVL(src.CUSTOMER_DEVICE, '~')
-            OR NVL(tgt.CONFIRMATION_EMAIL_ASP_USER_ID, -1) != NVL(src.CONFIRMATION_EMAIL_ASP_USER_ID, -1)
+            OR NVL(tgt.CONFIRMATION_EMAIL_ASP_USER_ID, '~') != NVL(src.CONFIRMATION_EMAIL_ASP_USER_ID, '~')
             OR NVL(tgt.RATE_PRICE_OVERRIDE, -1) != NVL(src.RATE_PRICE_OVERRIDE, -1)
-            OR NVL(tgt.HASH_ID, -1) != NVL(src.HASH_ID, -1)
+            OR NVL(tgt.HASH_ID, '~') != NVL(src.HASH_ID, '~')
             OR NVL(tgt.RESERVATION_SOURCE, '~') != NVL(src.RESERVATION_SOURCE, '~')
             OR NVL(tgt.RESERVATION_MEDIUM_ID, -1) != NVL(src.RESERVATION_MEDIUM_ID, -1)
             OR NVL(tgt.RESERVATION_CAMPAIGN_ID, -1) != NVL(src.RESERVATION_CAMPAIGN_ID, -1)
             OR NVL(tgt.MOLO_API_PARTNER_ID, -1) != NVL(src.MOLO_API_PARTNER_ID, -1)
-            OR NVL(tgt.CANCELATION_USER_ID, -1) != NVL(src.CANCELATION_USER_ID, -1)
-            OR NVL(tgt.CONTACT_MERGED, '~') != NVL(src.CONTACT_MERGED, '~')
+            OR NVL(tgt.CANCELATION_USER_ID, '~') != NVL(src.CANCELATION_USER_ID, '~')
+            OR NVL(tgt.CONTACT_MERGED, -1) != NVL(src.CONTACT_MERGED, -1)
             OR NVL(tgt.TRANSIENT_PRICE_ID, -1) != NVL(src.TRANSIENT_PRICE_ID, -1)
             OR NVL(tgt.SEASONAL_PRICE_ID, -1) != NVL(src.SEASONAL_PRICE_ID, -1)
             OR NVL(tgt.PRINTED_TERMS, '~') != NVL(src.PRINTED_TERMS, '~')
@@ -119,18 +128,18 @@ BEGIN
             OR NVL(tgt.CHECK_IN_TERMS, '~') != NVL(src.CHECK_IN_TERMS, '~')
             OR NVL(tgt.CHECK_OUT_TERMS, '~') != NVL(src.CHECK_OUT_TERMS, '~')
             OR NVL(tgt.ONLINE_PAYMENT_COMPLETION, '~') != NVL(src.ONLINE_PAYMENT_COMPLETION, '~')
-            OR NVL(tgt.MOLO_ONLINE_BOOKING, '~') != NVL(src.MOLO_ONLINE_BOOKING, '~')
-            OR NVL(tgt.BOOKING_CONTACT_MERGED, '~') != NVL(src.BOOKING_CONTACT_MERGED, '~')
+            OR NVL(tgt.MOLO_ONLINE_BOOKING, -1) != NVL(src.MOLO_ONLINE_BOOKING, -1)
+            OR NVL(tgt.BOOKING_CONTACT_MERGED, -1) != NVL(src.BOOKING_CONTACT_MERGED, -1)
             OR NVL(tgt.SLIP_BLOCK_SET_ID, -1) != NVL(src.SLIP_BLOCK_SET_ID, -1)
             OR NVL(tgt.OFFERS_ID, -1) != NVL(src.OFFERS_ID, -1)
-            OR NVL(tgt.RECURRING_INVOICE_DAY, '~') != NVL(src.RECURRING_INVOICE_DAY, '~')
+            OR NVL(tgt.RECURRING_INVOICE_DAY, -1) != NVL(src.RECURRING_INVOICE_DAY, -1)
             OR NVL(tgt.ALTERNATE_RESERVATION_NAME, '~') != NVL(src.ALTERNATE_RESERVATION_NAME, '~')
             OR NVL(tgt.RECURRING_DISCOUNT_PERCENT, -1) != NVL(src.RECURRING_DISCOUNT_PERCENT, -1)
             OR NVL(tgt.RECURRING_RATE_OVERRIDE, -1) != NVL(src.RECURRING_RATE_OVERRIDE, -1)
             OR NVL(tgt.ONLINE_BOOKING_NOTES, '~') != NVL(src.ONLINE_BOOKING_NOTES, '~')
-            OR NVL(tgt.ORIGINAL_OFFER_HOLD_ID, -1) != NVL(src.ORIGINAL_OFFER_HOLD_ID, -1)
+            OR NVL(tgt.ORIGINAL_OFFER_HOLD_ID, '~') != NVL(src.ORIGINAL_OFFER_HOLD_ID, '~')
             OR NVL(tgt.SCHEDULED_FOR_STATUS_CHANGE, '~') != NVL(src.SCHEDULED_FOR_STATUS_CHANGE, '~')
-            OR NVL(tgt.TERMS_OFFLINE, '~') != NVL(src.TERMS_OFFLINE, '~')
+            OR NVL(tgt.TERMS_OFFLINE, -1) != NVL(src.TERMS_OFFLINE, -1)
             OR NVL(tgt.TERMS_USER, '~') != NVL(src.TERMS_USER, '~')
             OR NVL(tgt.ORIGINAL_START_DATE, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.ORIGINAL_START_DATE, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
             OR NVL(tgt.ORIGINAL_END_DATE, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.ORIGINAL_END_DATE, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
@@ -146,10 +155,14 @@ BEGIN
             SYSTIMESTAMP
         );
     
-    v_merged := SQL%ROWCOUNT;
+    -- Get count after merge and calculate inserts/updates
+    SELECT COUNT(*) INTO v_post_count FROM DW_MOLO_RESERVATIONS;
+    p_inserted_count := v_post_count - v_pre_count;
+    p_updated_count := v_staging_count - p_inserted_count;
+    
     COMMIT;
     
-    DBMS_OUTPUT.PUT_LINE('DW_MOLO_RESERVATIONS: Merged ' || v_merged || ' records');
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_RESERVATIONS: Inserted ' || p_inserted_count || ', Updated ' || p_updated_count || ' records');
     
 EXCEPTION
     WHEN OTHERS THEN
@@ -157,4 +170,3 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_RESERVATIONS: ' || SQLERRM);
         RAISE;
 END SP_MERGE_MOLO_RESERVATIONS;
-/

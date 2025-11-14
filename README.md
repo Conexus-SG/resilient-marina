@@ -151,11 +151,28 @@ DB_DSN=oax4504110443_low
 python3 download_csv_from_s3.py
 
 # MOLO only
-python3 download_csv_from_s3.py --molo-only
+python3 download_csv_from_s3.py --process-molo
 
-# Stellar only
-python3 download_csv_from_s3.py --stellar-only
+# Stellar only  
+python3 download_csv_from_s3.py --process-stellar
+
+# Enable field-level validation (CSV vs DB comparison)
+python3 download_csv_from_s3.py --validate-fields
+
+# Enable merge change validation (Staging vs DW comparison)
+python3 download_csv_from_s3.py --validate-merge-changes
+
+# Full validation with custom sample size
+python3 download_csv_from_s3.py \
+    --validate-fields \
+    --validate-merge-changes \
+    --validation-sample-size 20
 ```
+
+**Validation Options** (see `FIELD_VALIDATION_GUIDE.md` for details):
+- `--validate-fields` - Compare CSV values with database values to detect corruption
+- `--validate-merge-changes` - Verify merge operations don't modify data unexpectedly
+- `--validation-sample-size N` - Number of records to sample per table (default: 10)
 
 **Output**:
 - Inserts into 47 STG_MOLO_* staging tables

@@ -2,10 +2,19 @@
 -- ============================================================================
 -- Merge STG_MOLO_CONTACTS to DW_MOLO_CONTACTS
 -- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_CONTACTS
+CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_CONTACTS(
+    p_inserted_count OUT NUMBER,
+    p_updated_count OUT NUMBER
+)
 IS
-    v_merged NUMBER := 0;
+    v_pre_count NUMBER;
+    v_post_count NUMBER;
+    v_staging_count NUMBER;
 BEGIN
+    -- Get counts before merge
+    SELECT COUNT(*) INTO v_pre_count FROM DW_MOLO_CONTACTS;
+    SELECT COUNT(*) INTO v_staging_count FROM STG_MOLO_CONTACTS;
+    
     MERGE INTO DW_MOLO_CONTACTS tgt
     USING STG_MOLO_CONTACTS src
     ON (tgt.ID = src.ID)
@@ -63,9 +72,9 @@ BEGIN
             OR NVL(tgt.MARINA_LOCATION_ID, -1) != NVL(src.MARINA_LOCATION_ID, -1)
             OR NVL(tgt.NOTES, '~') != NVL(src.NOTES, '~')
             OR NVL(tgt.RECORD_STATUS_ID, -1) != NVL(src.RECORD_STATUS_ID, -1)
-            OR NVL(tgt.IS_SUPPLIER, '~') != NVL(src.IS_SUPPLIER, '~')
-            OR NVL(tgt.IS_CUSTOMER, '~') != NVL(src.IS_CUSTOMER, '~')
-            OR NVL(tgt.XERO_ID, -1) != NVL(src.XERO_ID, -1)
+            OR NVL(tgt.IS_SUPPLIER, -1) != NVL(src.IS_SUPPLIER, -1)
+            OR NVL(tgt.IS_CUSTOMER, -1) != NVL(src.IS_CUSTOMER, -1)
+            OR NVL(tgt.XERO_ID, '~') != NVL(src.XERO_ID, '~')
             OR NVL(tgt.COMPANY_CONTACT_NAME, '~') != NVL(src.COMPANY_CONTACT_NAME, '~')
             OR NVL(tgt.CREATION_USER, '~') != NVL(src.CREATION_USER, '~')
             OR NVL(tgt.CREATION_DATE_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.CREATION_DATE_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
@@ -73,30 +82,30 @@ BEGIN
             OR NVL(tgt.MARINA_LOCATION1_ID, -1) != NVL(src.MARINA_LOCATION1_ID, -1)
             OR NVL(tgt.QB_CUSTOMER_ID, -1) != NVL(src.QB_CUSTOMER_ID, -1)
             OR NVL(tgt.STATEMENTS_PREFERENCE_ID, -1) != NVL(src.STATEMENTS_PREFERENCE_ID, -1)
-            OR NVL(tgt.HASH_ID, -1) != NVL(src.HASH_ID, -1)
+            OR NVL(tgt.HASH_ID, '~') != NVL(src.HASH_ID, '~')
             OR NVL(tgt.MOLO_API_PARTNER_ID, -1) != NVL(src.MOLO_API_PARTNER_ID, -1)
             OR NVL(tgt.TAX_EXEMPT_STATUS, -1) != NVL(src.TAX_EXEMPT_STATUS, -1)
             OR NVL(tgt.AUTOMATIC_DISCOUNT_PERCENT, -1) != NVL(src.AUTOMATIC_DISCOUNT_PERCENT, -1)
             OR NVL(tgt.COST_PLUS_DISCOUNT, -1) != NVL(src.COST_PLUS_DISCOUNT, -1)
-            OR NVL(tgt.LINKED_PARENT_CONTACT, '~') != NVL(src.LINKED_PARENT_CONTACT, '~')
+            OR NVL(tgt.LINKED_PARENT_CONTACT, -1) != NVL(src.LINKED_PARENT_CONTACT, -1)
             OR NVL(tgt.CONTACT_AUTO_CHARGE_ID, -1) != NVL(src.CONTACT_AUTO_CHARGE_ID, -1)
             OR NVL(tgt.LAST_EDITED_DATE_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.LAST_EDITED_DATE_TIME, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
-            OR NVL(tgt.LAST_EDITED_USER_ID, -1) != NVL(src.LAST_EDITED_USER_ID, -1)
+            OR NVL(tgt.LAST_EDITED_USER_ID, '~') != NVL(src.LAST_EDITED_USER_ID, '~')
             OR NVL(tgt.LAST_EDITED_MOLO_API_PARTNER_ID, -1) != NVL(src.LAST_EDITED_MOLO_API_PARTNER_ID, -1)
             OR NVL(tgt.STRIPE_CUSTOMER_ID, -1) != NVL(src.STRIPE_CUSTOMER_ID, -1)
             OR NVL(tgt.ACCOUNT_LIMIT, -1) != NVL(src.ACCOUNT_LIMIT, -1)
             OR NVL(tgt.FILESTACK_ID, -1) != NVL(src.FILESTACK_ID, -1)
-            OR NVL(tgt.SHOW_COMPANY_NAME_PRINTED, '~') != NVL(src.SHOW_COMPANY_NAME_PRINTED, '~')
-            OR NVL(tgt.BOOKING_MERGING_DONE, '~') != NVL(src.BOOKING_MERGING_DONE, '~')
+            OR NVL(tgt.SHOW_COMPANY_NAME_PRINTED, -1) != NVL(src.SHOW_COMPANY_NAME_PRINTED, -1)
+            OR NVL(tgt.BOOKING_MERGING_DONE, -1) != NVL(src.BOOKING_MERGING_DONE, -1)
             OR NVL(tgt.DATE_OF_BIRTH, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD')) != NVL(src.DATE_OF_BIRTH, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'))
-            OR NVL(tgt.IDS_CUSTOMER_ID, -1) != NVL(src.IDS_CUSTOMER_ID, -1)
-            OR NVL(tgt.DO_NOT_LAUNCH, '~') != NVL(src.DO_NOT_LAUNCH, '~')
+            OR NVL(tgt.IDS_CUSTOMER_ID, '~') != NVL(src.IDS_CUSTOMER_ID, '~')
+            OR NVL(tgt.DO_NOT_LAUNCH, -1) != NVL(src.DO_NOT_LAUNCH, -1)
             OR NVL(tgt.DO_NOT_LAUNCH_REASON, '~') != NVL(src.DO_NOT_LAUNCH_REASON, '~')
-            OR NVL(tgt.DRIVER_LICENSE_ID, -1) != NVL(src.DRIVER_LICENSE_ID, -1)
-            OR NVL(tgt.QUICKBOOKS_ID, -1) != NVL(src.QUICKBOOKS_ID, -1)
+            OR NVL(tgt.DRIVER_LICENSE_ID, '~') != NVL(src.DRIVER_LICENSE_ID, '~')
+            OR NVL(tgt.QUICKBOOKS_ID, '~') != NVL(src.QUICKBOOKS_ID, '~')
             OR NVL(tgt.QUICKBOOKS_NAME, '~') != NVL(src.QUICKBOOKS_NAME, '~')
-            OR NVL(tgt.QBO_VENDOR_ID, -1) != NVL(src.QBO_VENDOR_ID, -1)
-            OR NVL(tgt.SKIP_FOR_FINANCE_CHARGES, '~') != NVL(src.SKIP_FOR_FINANCE_CHARGES, '~')
+            OR NVL(tgt.QBO_VENDOR_ID, '~') != NVL(src.QBO_VENDOR_ID, '~')
+            OR NVL(tgt.SKIP_FOR_FINANCE_CHARGES, -1) != NVL(src.SKIP_FOR_FINANCE_CHARGES, -1)
             OR NVL(tgt.MAIN_CONTACT_ID, -1) != NVL(src.MAIN_CONTACT_ID, -1)
     WHEN NOT MATCHED THEN
         INSERT (
@@ -110,10 +119,14 @@ BEGIN
             SYSTIMESTAMP
         );
     
-    v_merged := SQL%ROWCOUNT;
+    -- Get count after merge and calculate inserts/updates
+    SELECT COUNT(*) INTO v_post_count FROM DW_MOLO_CONTACTS;
+    p_inserted_count := v_post_count - v_pre_count;
+    p_updated_count := v_staging_count - p_inserted_count;
+    
     COMMIT;
     
-    DBMS_OUTPUT.PUT_LINE('DW_MOLO_CONTACTS: Merged ' || v_merged || ' records');
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_CONTACTS: Inserted ' || p_inserted_count || ', Updated ' || p_updated_count || ' records');
     
 EXCEPTION
     WHEN OTHERS THEN
@@ -121,4 +134,3 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_CONTACTS: ' || SQLERRM);
         RAISE;
 END SP_MERGE_MOLO_CONTACTS;
-/
