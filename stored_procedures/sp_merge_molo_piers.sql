@@ -4,8 +4,12 @@
 -- ============================================================================
 CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_PIERS
 IS
-    v_merged NUMBER := 0;
+    v_inserted NUMBER := 0;
+    v_updated NUMBER := 0;
+    v_timestamp TIMESTAMP := SYSTIMESTAMP;
 BEGIN
+    v_timestamp := SYSTIMESTAMP;
+    
     MERGE INTO DW_MOLO_PIERS tgt
     USING STG_MOLO_PIERS src
     ON (tgt.ID = src.ID)
@@ -13,7 +17,12 @@ BEGIN
         UPDATE SET
             tgt.NAME = src.NAME,
             tgt.MARINA_LOCATION_ID = src.MARINA_LOCATION_ID,
-            tgt.DW_LAST_UPDATED = SYSTIMESTAMP
+            tgt.DW_LAST_UPDATED = v_timestamp
+        WHERE (
+            NVL(tgt.ID, -999) <> NVL(src.ID, -999) OR
+            NVL(tgt.NAME, '~NULL~') <> NVL(src.NAME, '~NULL~') OR
+            NVL(tgt.MARINA_LOCATION_ID, -999) <> NVL(src.MARINA_LOCATION_ID, -999)
+        )
     WHEN NOT MATCHED THEN
         INSERT (
             ID, NAME, MARINA_LOCATION_ID,
@@ -22,14 +31,24 @@ BEGIN
         )
         VALUES (
             src.ID, src.NAME, src.MARINA_LOCATION_ID,
-            SYSTIMESTAMP,
-            SYSTIMESTAMP
+            v_timestamp,
+            v_timestamp
         );
     
-    v_merged := SQL%ROWCOUNT;
+    -- Count updated records
+    SELECT COUNT(*) INTO v_updated
+    FROM DW_MOLO_PIERS
+    WHERE DW_LAST_UPDATED = v_timestamp
+    AND DW_LAST_UPDATED > DW_LAST_INSERTED;
+    
+    -- Count inserted records
+    SELECT COUNT(*) INTO v_inserted
+    FROM DW_MOLO_PIERS
+    WHERE DW_LAST_INSERTED = v_timestamp;
+    
     COMMIT;
     
-    DBMS_OUTPUT.PUT_LINE('DW_MOLO_PIERS: Merged ' || v_merged || ' records');
+    DBMS_OUTPUT.PUT_LINE('DW_MOLO_PIERS: ' || v_inserted || ' inserted, ' || v_updated || ' updated');
     
 EXCEPTION
     WHEN OTHERS THEN
