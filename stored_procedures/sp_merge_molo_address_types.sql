@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_ADDRESS_TYPES to DW_MOLO_ADDRESS_TYPES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_ADDRESS_TYPES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_ADDRESS_TYPES" 
 IS
     v_merged NUMBER := 0;
 BEGIN
@@ -14,7 +11,6 @@ BEGIN
             tgt.NAME = src.NAME,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
         WHERE 
-            -- Only update if data has actually changed
             NVL(tgt.NAME, '~') != NVL(src.NAME, '~')
     WHEN NOT MATCHED THEN
         INSERT (

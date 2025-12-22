@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_CURRENCIES to DW_MOLO_CURRENCIES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_CURRENCIES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_CURRENCIES" 
 IS
     v_merged NUMBER := 0;
 BEGIN
@@ -16,7 +13,6 @@ BEGIN
             tgt.SYMBOL = src.SYMBOL,
             tgt.DW_LAST_UPDATED = SYSTIMESTAMP
         WHERE 
-            -- Only update if data has actually changed
             NVL(tgt.NAME, '~') != NVL(src.NAME, '~')
             OR NVL(tgt.CODE, '~') != NVL(src.CODE, '~')
             OR NVL(tgt.SYMBOL, '~') != NVL(src.SYMBOL, '~')

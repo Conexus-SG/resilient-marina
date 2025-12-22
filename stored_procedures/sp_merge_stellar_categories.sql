@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_STELLAR_CATEGORIES to DW_STELLAR_CATEGORIES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_CATEGORIES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_STELLAR_CATEGORIES" 
 IS
     v_merged NUMBER := 0;
 BEGIN

@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_STELLAR_STYLE_TIMES to DW_STELLAR_STYLE_TIMES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_STYLE_TIMES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_STELLAR_STYLE_TIMES" 
 IS
     v_inserted NUMBER := 0;
     v_updated NUMBER := 0;

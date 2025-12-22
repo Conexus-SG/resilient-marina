@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_INVOICES to DW_MOLO_INVOICES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_INVOICES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_INVOICES" 
 IS
     v_inserted NUMBER := 0;
     v_updated NUMBER := 0;

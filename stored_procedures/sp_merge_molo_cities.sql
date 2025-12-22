@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_CITIES to DW_MOLO_CITIES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_CITIES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_CITIES" 
 IS
     v_merged NUMBER := 0;
 BEGIN

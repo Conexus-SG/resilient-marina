@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_PIERS to DW_MOLO_PIERS
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_PIERS
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_PIERS" 
 IS
     v_inserted NUMBER := 0;
     v_updated NUMBER := 0;

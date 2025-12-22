@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_MARINA_LOCATIONS to DW_MOLO_MARINA_LOCATIONS
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_MARINA_LOCATIONS
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_MARINA_LOCATIONS" 
 IS
     v_merged NUMBER := 0;
 BEGIN

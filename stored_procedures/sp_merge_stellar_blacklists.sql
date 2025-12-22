@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_STELLAR_BLACKLISTS to DW_STELLAR_BLACKLISTS
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_BLACKLISTS
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_STELLAR_BLACKLISTS" 
 IS
     v_merged NUMBER := 0;
 BEGIN

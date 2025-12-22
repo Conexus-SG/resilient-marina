@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_RECORD_STATUS to DW_MOLO_RECORD_STATUS
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_RECORD_STATUS
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_RECORD_STATUS" 
 IS
     v_merged NUMBER := 0;
 BEGIN

@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_STELLAR_COUPONS to DW_STELLAR_COUPONS
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_COUPONS
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_STELLAR_COUPONS" 
 IS
     v_merged NUMBER := 0;
 BEGIN

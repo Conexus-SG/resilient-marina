@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_COMPANIES to DW_MOLO_COMPANIES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_COMPANIES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_COMPANIES" 
 IS
     v_merged NUMBER := 0;
 BEGIN

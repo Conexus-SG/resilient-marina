@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_STELLAR_LOCATIONS to DW_STELLAR_LOCATIONS
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_LOCATIONS
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_STELLAR_LOCATIONS" 
 IS
     v_merged NUMBER := 0;
 BEGIN

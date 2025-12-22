@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_ITEM_CHARGE_METHODS to DW_MOLO_ITEM_CHARGE_METHODS
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_ITEM_CHARGE_METHODS
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_ITEM_CHARGE_METHODS" 
 IS
     v_merged NUMBER := 0;
 BEGIN

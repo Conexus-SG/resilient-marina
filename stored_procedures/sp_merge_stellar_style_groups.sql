@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_STELLAR_STYLE_GROUPS to DW_STELLAR_STYLE_GROUPS
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_STYLE_GROUPS
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_STELLAR_STYLE_GROUPS" 
 IS
     v_merged NUMBER := 0;
 BEGIN

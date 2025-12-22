@@ -1,9 +1,9 @@
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_VESSEL_ENGINE_CLASS AS
+
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_VESSEL_ENGINE_CLASS" AS
     v_merged_count NUMBER := 0;
     v_inserted_count NUMBER := 0;
     v_updated_count NUMBER := 0;
 BEGIN
-    -- Merge data from staging to data warehouse
     MERGE INTO DW_MOLO_VESSEL_ENGINE_CLASS tgt
     USING STG_MOLO_VESSEL_ENGINE_CLASS src
     ON (tgt.ID = src.ID)
@@ -30,7 +30,6 @@ BEGIN
     v_merged_count := SQL%ROWCOUNT;
     COMMIT;
     
-    -- Get counts for reporting
     SELECT COUNT(*) INTO v_inserted_count
     FROM DW_MOLO_VESSEL_ENGINE_CLASS
     WHERE DW_LAST_INSERTED = DW_LAST_UPDATED;

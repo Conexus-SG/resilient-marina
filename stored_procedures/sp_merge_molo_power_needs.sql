@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_POWER_NEEDS to DW_MOLO_POWER_NEEDS
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_POWER_NEEDS
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_POWER_NEEDS" 
 IS
     v_merged NUMBER := 0;
 BEGIN

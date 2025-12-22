@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_STELLAR_ACCESSORIES to DW_STELLAR_ACCESSORIES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_ACCESSORIES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_STELLAR_ACCESSORIES" 
 IS
     v_merged NUMBER := 0;
 BEGIN

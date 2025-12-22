@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_COUNTRIES to DW_MOLO_COUNTRIES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_COUNTRIES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_COUNTRIES" 
 IS
     v_merged NUMBER := 0;
 BEGIN

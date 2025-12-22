@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_CONTACT_AUTO_CHARGE to DW_MOLO_CONTACT_AUTO_CHARGE
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_CONTACT_AUTO_CHARGE
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_CONTACT_AUTO_CHARGE" 
 IS
     v_merged NUMBER := 0;
 BEGIN

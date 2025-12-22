@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_ITEM_MASTERS to DW_MOLO_ITEM_MASTERS
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_ITEM_MASTERS
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_ITEM_MASTERS" 
 IS
     v_merged NUMBER := 0;
 BEGIN

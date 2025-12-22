@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_STELLAR_AMENITIES to DW_STELLAR_AMENITIES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_AMENITIES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_STELLAR_AMENITIES" 
 IS
     v_merged NUMBER := 0;
 BEGIN

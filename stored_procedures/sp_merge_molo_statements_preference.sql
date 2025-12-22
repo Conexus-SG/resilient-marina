@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_STATEMENTS_PREFERENCE to DW_MOLO_STATEMENTS_PREFERENCE
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_STATEMENTS_PREFERENCE
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_STATEMENTS_PREFERENCE" 
 IS
     v_merged NUMBER := 0;
 BEGIN

@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_STELLAR_CLOSED_DATES to DW_STELLAR_CLOSED_DATES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_CLOSED_DATES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_STELLAR_CLOSED_DATES" 
 IS
     v_merged NUMBER := 0;
 BEGIN

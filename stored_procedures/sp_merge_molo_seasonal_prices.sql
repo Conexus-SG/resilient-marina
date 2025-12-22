@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_SEASONAL_PRICES to DW_MOLO_SEASONAL_PRICES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_SEASONAL_PRICES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_SEASONAL_PRICES" 
 IS
     v_merged NUMBER := 0;
 BEGIN

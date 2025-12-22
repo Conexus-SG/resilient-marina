@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_CONTACTS to DW_MOLO_CONTACTS
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_CONTACTS
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_CONTACTS" 
 IS
     v_inserted NUMBER := 0;
     v_updated NUMBER := 0;

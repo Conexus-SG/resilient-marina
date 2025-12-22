@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_SLIPS to DW_MOLO_SLIPS
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_SLIPS
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_SLIPS" 
 IS
     v_inserted NUMBER := 0;
     v_updated NUMBER := 0;
@@ -129,3 +126,4 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error in SP_MERGE_MOLO_SLIPS: ' || SQLERRM);
         RAISE;
 END SP_MERGE_MOLO_SLIPS;
+/

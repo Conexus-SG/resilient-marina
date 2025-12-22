@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_STELLAR_FUEL_SALES to DW_STELLAR_FUEL_SALES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_FUEL_SALES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_STELLAR_FUEL_SALES" 
 IS
     v_merged NUMBER := 0;
 BEGIN

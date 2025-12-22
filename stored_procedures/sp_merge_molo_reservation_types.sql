@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_RESERVATION_TYPES to DW_MOLO_RESERVATION_TYPES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_RESERVATION_TYPES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_RESERVATION_TYPES" 
 IS
     v_merged NUMBER := 0;
 BEGIN

@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_MOLO_PHONE_TYPES to DW_MOLO_PHONE_TYPES
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_MOLO_PHONE_TYPES
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_MOLO_PHONE_TYPES" 
 IS
     v_merged NUMBER := 0;
 BEGIN

@@ -1,8 +1,5 @@
 
--- ============================================================================
--- Merge STG_STELLAR_BOOKING_BOATS to DW_STELLAR_BOOKING_BOATS
--- ============================================================================
-CREATE OR REPLACE PROCEDURE SP_MERGE_STELLAR_BOOKING_BOATS
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "API_USER"."SP_MERGE_STELLAR_BOOKING_BOATS" 
 IS
     v_inserted NUMBER := 0;
     v_updated NUMBER := 0;
@@ -76,7 +73,7 @@ BEGIN
             NVL(tgt.ID, -999) <> NVL(src.ID, -999) OR
             NVL(tgt.BOOKING_ID, -999) <> NVL(src.BOOKING_ID, -999) OR
             NVL(tgt.STYLE_ID, -999) <> NVL(src.STYLE_ID, -999) OR
-            NVL(tgt.BOAT_ID, '~NULL~') <> NVL(src.BOAT_ID, '~NULL~') OR
+            NVL(tgt.BOAT_ID, -999) <> NVL(src.BOAT_ID, -999) OR
             NVL(tgt.TIME_ID, '~NULL~') <> NVL(src.TIME_ID, '~NULL~') OR
             NVL(tgt.TIMEFRAME_ID, -999) <> NVL(src.TIMEFRAME_ID, -999) OR
             NVL(tgt.MAIN_BOAT, -999) <> NVL(src.MAIN_BOAT, -999) OR
