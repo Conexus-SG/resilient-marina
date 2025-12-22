@@ -27,11 +27,11 @@ services:
       
       # Application Configuration
       - PYTHONUNBUFFERED=1
-      - TNS_ADMIN=/app/wallet_demo
+      - TNS_ADMIN=/app/wallet
     
     volumes:
       # Mount wallet directory if you want to use external wallet
-      # - ./wallet_demo:/app/wallet_demo:ro
+      # - ./wallet:/app/wallet:ro
       
       # Mount logs directory for persistent logging
       - ./logs:/app/logs

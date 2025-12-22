@@ -99,7 +99,7 @@ The pipeline downloads data from **AWS S3 buckets**, processes it, and loads it 
 
 **Security**: Never commit to version control. Use `config.json.template` as reference.
 
-#### `wallet_demo/`
+#### `wallet/`
 **Purpose**: Oracle Autonomous Database connection wallet
 
 **Contains**:
@@ -297,7 +297,7 @@ python3 download_stellar_from_s3.py
 
 **Database Setup**:
 - Oracle Instant Client: `/opt/oracle/instantclient`
-- Wallet Location: `./wallet_demo`
+- Wallet Location: `./wallet`
 - Connection String: `oax4504110443_low` (Chicago low-latency)
 
 ---
@@ -643,7 +643,7 @@ WHEN NOT MATCHED THEN
 
 #### 3. Wallet Not Found
 **Error**: `TNS:could not resolve the connect identifier specified`
-**Solution**: Ensure `wallet_demo/` directory exists with wallet files
+**Solution**: Ensure `wallet/` directory exists with wallet files
 
 #### 4. Column Mismatch
 **Error**: `ORA-00904: invalid identifier`
@@ -660,7 +660,7 @@ WHEN NOT MATCHED THEN
 ### Prerequisites
 - [ ] Python 3.8+
 - [ ] Oracle Instant Client 21.x
-- [ ] Oracle wallet files in `wallet_demo/`
+- [ ] Oracle wallet files in `wallet/`
 - [ ] AWS credentials with S3 read access
 - [ ] Oracle database credentials with DDL/DML permissions
 

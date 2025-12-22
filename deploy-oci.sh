@@ -229,7 +229,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
             \"environmentVariables\": {
                 \"ENVIRONMENT\": \"production\",
                 \"PYTHONUNBUFFERED\": \"1\",
-                \"TNS_ADMIN\": \"/app/wallet_demo\",
+                \"TNS_ADMIN\": \"/app/wallet\",
                 \"VAULT_OCID\": \"${VAULT_OCID}\",
                 \"OCI_LOG_OCID\": \"${OCI_LOG_OCID}\",
                 \"OCI_COMPARTMENT_ID\": \"${OCI_COMPARTMENT_ID}\",

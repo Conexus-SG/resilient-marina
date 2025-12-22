@@ -39,16 +39,16 @@ COPY molo_db_functions.py .
 COPY stellar_db_functions.py .
 COPY data_validator.py .
 COPY config.json .
-COPY wallet_demo/ ./wallet_demo/
+COPY wallet/ ./wallet/
 
 # Copy wallet files to Oracle Instant Client network/admin directory (like rosnet does)
-COPY wallet_demo/tnsnames.ora /opt/oracle/instantclient/network/admin/tnsnames.ora
-COPY wallet_demo/sqlnet.ora /opt/oracle/instantclient/network/admin/sqlnet.ora
-COPY wallet_demo/cwallet.sso /opt/oracle/instantclient/network/admin/cwallet.sso
-COPY wallet_demo/ewallet.p12 /opt/oracle/instantclient/network/admin/ewallet.p12
+COPY wallet/tnsnames.ora /opt/oracle/instantclient/network/admin/tnsnames.ora
+COPY wallet/sqlnet.ora /opt/oracle/instantclient/network/admin/sqlnet.ora
+COPY wallet/cwallet.sso /opt/oracle/instantclient/network/admin/cwallet.sso
+COPY wallet/ewallet.p12 /opt/oracle/instantclient/network/admin/ewallet.p12
 
 # Also keep wallet in app directory for backward compatibility
-COPY wallet_demo/sqlnet.ora ./wallet_demo/sqlnet.ora
+COPY wallet/sqlnet.ora ./wallet/sqlnet.ora
 
 # Set environment variables for containerized operation BEFORE user switch
 ENV PYTHONUNBUFFERED=1
@@ -57,7 +57,7 @@ ENV TNS_ADMIN=/opt/oracle/instantclient/network/admin
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash appuser && \
     chown -R appuser:appuser /app && \
-    chmod -R 755 /app/wallet_demo && \
+    chmod -R 755 /app/wallet && \
     chmod 644 /opt/oracle/instantclient/network/admin/* && \
     ls -la /opt/oracle/instantclient/network/admin/
 

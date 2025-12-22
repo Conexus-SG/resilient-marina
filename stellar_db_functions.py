@@ -90,7 +90,7 @@ class OracleConnector:
         else:
             # Get absolute path to wallet directory (for local development)
             script_dir = os.path.dirname(os.path.abspath(__file__))
-            wallet_dir = os.path.join(script_dir, "wallet_demo")
+            wallet_dir = os.path.join(script_dir, "wallet")
             wallet_dir = os.path.abspath(wallet_dir)
             os.environ['TNS_ADMIN'] = wallet_dir
             logger.info(f"✅ TNS_ADMIN set to: {wallet_dir}")
