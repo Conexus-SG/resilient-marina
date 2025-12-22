@@ -69,6 +69,17 @@ class OracleConnector:
         )
         logger.info("✅ Oracle database connection successful!")
         self.cursor = self.connection.cursor()
+        
+        # Set session parameters for reliable timestamp handling
+        try:
+            # Set NLS_DATE_FORMAT and NLS_TIMESTAMP_FORMAT for explicit datetime parsing
+            self.cursor.execute("ALTER SESSION SET NLS_DATE_FORMAT='DD/MM/YYYY HH24:MI:SS'")
+            self.cursor.execute("ALTER SESSION SET NLS_TIMESTAMP_FORMAT='DD/MM/YYYY HH24:MI:SS'")
+            self.cursor.execute("ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT='DD/MM/YYYY HH24:MI:SS TZR'")
+            self.connection.commit()
+            logger.info("✅ NLS session parameters set for DD/MM/YYYY HH24:MI:SS format")
+        except Exception as e:
+            logger.warning(f"⚠️ Could not set NLS parameters: {e}")
     
     def _setup_oracle_wallet(self):
         """Set up Oracle wallet environment for Autonomous Database."""
@@ -715,13 +726,13 @@ class OracleConnector:
             )
             VALUES (
                 :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14,
-                :15, :16, :17, :18, :19, :20, :21, :22, :23, :24, :25, :26,
-                :27, :28, :29, :30, :31, :32, :33, :34, :35, :36, :37, :38,
-                :39, :40, :41, :42, :43, :44, :45, :46, :47, :48, :49, :50,
-                :51, :52, :53, :54, :55, :56, :57, :58, :59, :60, :61, :62,
-                :63, :64, :65, :66, :67, :68, :69, :70, :71, :72, :73, :74,
-                :75, :76, :77, :78, :79, :80, :81, :82, :83, :84, :85, :86,
-                :87, :88, :89, :90, :91, :92, :93, :94, :95, :96
+                :15, :16, :17, :18, :19, :20, :21, :22, 
+                :23, :24, :25, :26, :27, :28, :29, :30, :31, :32, :33, :34, :35,
+                :36, :37, :38, :39, :40, :41, :42, :43, :44, :45, :46, :47, :48,
+                :49, :50, :51, :52, :53, :54, :55, :56, :57, :58, :59, :60, :61,
+                :62, :63, :64, :65, :66, :67, :68, :69, :70, :71, :72, :73, :74,
+                :75, :76, :77, :78, :79, :80, :81, :82, :83, :84, :85, :86, :87,
+                :88, :89, :90, :91, :92, :93, :94, :95, :96
             )
         """
         
@@ -731,25 +742,47 @@ class OracleConnector:
             total_rows = len(data_rows)
             
             logger.info(f"  Inserting {total_rows:,} invoice items in batches of {batch_size:,}...")
+            if data_rows:
+                logger.info(f"  Sample row has {len(data_rows[0])} items")
             sys.stdout.flush()
             
-            # Set input sizes for all 96 columns to avoid type detection issues
-            # Positions 23, 26, 32, 35, 49, 53, 54, 95, 96 are TIMESTAMP columns
-            input_sizes = [None] * 96  # Start with all None (auto-detect for non-datetime)
+            # Convert datetime objects to strings ONLY for VARCHAR datetime columns
+            # These columns are defined as VARCHAR in the database, not TIMESTAMP
+            # Datetime positions (0-indexed): 22, 25, 31, 34, 48, 52, 53, 94, 95
+            varchar_datetime_positions = {22, 25, 31, 34, 48, 52, 53, 94, 95}
             
-            # Mark datetime columns as TIMESTAMP type to prevent misdetection as VARCHAR
-            for pos in [22, 25, 31, 34, 48, 52, 53, 94, 95]:  # 0-indexed positions
-                input_sizes[pos] = oracledb.DB_TYPE_TIMESTAMP
+            converted_data = []
+            for row_idx, row in enumerate(data_rows):
+                converted_row = list(row)
+                
+                # Convert ONLY the VARCHAR datetime columns to strings
+                for pos in varchar_datetime_positions:
+                    val = converted_row[pos]
+                    if val is not None and hasattr(val, 'strftime'):
+                        try:
+                            converted_row[pos] = val.strftime('%d/%m/%Y %H:%M:%S')
+                        except Exception as e:
+                            logger.warning(f"Failed to convert datetime at position {pos+1} in row {row_idx}: {e}")
+                
+                converted_data.append(tuple(converted_row))
             
-            self.cursor.setinputsizes(input_sizes)
+            # Verify data structure
+            if converted_data:
+                logger.info(f"  Data row has {len(converted_data[0])} items")
             
             for i in range(0, total_rows, batch_size):
-                batch = data_rows[i:i + batch_size]
+                batch = converted_data[i:i + batch_size]
                 batch_num = (i // batch_size) + 1
                 total_batches = (total_rows + batch_size - 1) // batch_size
                 
                 logger.info(f"  Inserting batch {batch_num}/{total_batches} ({len(batch):,} records)...")
                 sys.stdout.flush()
+                
+                # Validate batch structure
+                if batch and len(batch[0]) != 96:
+                    logger.error(f"❌ VALIDATION ERROR: Expected 96 columns, but got {len(batch[0])} in first row")
+                    logger.error(f"   First row: {batch[0]}")
+                    raise ValueError(f"Invalid tuple size: expected 96 columns, got {len(batch[0])}")
                 
                 try:
                     self.cursor.executemany(insert_sql, batch)
@@ -757,11 +790,15 @@ class OracleConnector:
                 except Exception as e:
                     # Analyze the failing batch to find datetime values
                     if batch:
-                        logger.error(f"Batch {batch_num} failed. Checking for datetime values...")
+                        logger.error(f"Batch {batch_num} failed. Analyzing first row...")
                         first_row = batch[0]
+                        logger.error(f"Total items in row: {len(first_row)}")
                         for idx, val in enumerate(first_row, 1):
-                            if isinstance(val, datetime):
-                                logger.error(f"  ❌ Position {idx}: datetime = {val}")
+                            val_type = type(val).__name__
+                            if isinstance(val, datetime) or (isinstance(val, str) and len(str(val)) > 50):
+                                logger.error(f"  Position {idx}: type={val_type}, value={repr(val)[:100]}")
+                            elif idx in [23, 26, 32, 35, 49, 53, 54, 95, 96]:  # datetime column positions
+                                logger.error(f"  Position {idx} (datetime): type={val_type}, value={repr(val)[:100]}")
                     raise
                 
                 logger.info(f"  ✅ Batch {batch_num}/{total_batches} committed")
