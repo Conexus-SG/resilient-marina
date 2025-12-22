@@ -523,11 +523,29 @@ def parse_booking_boats_data(csv_content):
     data_rows = []
     
     for row in reader:
+        # Strip non-numeric characters from boat_id (e.g., "BOAT-123" -> "123")
+        boat_id_raw = row.get('boat_id')
+        
+        if not boat_id_raw or boat_id_raw.strip() == '':
+            # If boat_id is completely empty, use 0
+            boat_id_parsed = 0
+        else:
+            # Strip non-numeric characters (keep underscores for parse_int to handle)
+            boat_id_numeric = ''.join(c for c in boat_id_raw if c.isdigit() or c == '_')
+            
+            # If after stripping we have no digits, use 0
+            if not boat_id_numeric or boat_id_numeric.replace('_', '') == '':
+                boat_id_parsed = 0
+            else:
+                boat_id_parsed = parse_int(boat_id_numeric)
+                if boat_id_parsed is None:
+                    boat_id_parsed = 0
+        
         data_rows.append((
             parse_int(row.get('id')),
             parse_int(row.get('booking_id')),
             parse_int(row.get('style_id')),
-            row.get('boat_id'),
+            boat_id_parsed,
             row.get('time_id'),
             parse_int(row.get('timeframe_id')),
             parse_int(row.get('main_boat')),
