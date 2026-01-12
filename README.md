@@ -15,11 +15,9 @@ The pipeline downloads data from **AWS S3 buckets**, processes it, and loads it 
 
 ```
 aws-retrieve-csv/
-├── Configuration & Environment
+├── Configuration
 │   ├── config.json                 - Database and S3 credentials (DO NOT COMMIT)
 │   ├── config.json.template        - Template for config.json
-│   ├── .env                        - Environment variables (DO NOT COMMIT)
-│   ├── .env.template               - Template for .env
 │   ├── .gitignore                  - Git ignore rules
 │   └── .dockerignore               - Docker build ignore rules
 │
@@ -221,13 +219,6 @@ aws-retrieve-csv/
 
 - **logging**: Application logging configuration
   - `level` - Log level (DEBUG, INFO, WARNING, ERROR)
-
-#### `.env` and `.env.template`
-**Purpose**: Environment variables for containerized deployments and system configuration
-
-**Usage**: For Docker containers and OCI deployments. Template provided for reference.
-
-**Security**: Never commit `.env` to version control.
 
 #### `wallet/`
 **Purpose**: Oracle Autonomous Database connection wallet

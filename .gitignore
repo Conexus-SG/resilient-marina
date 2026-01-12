@@ -1,5 +1,4 @@
-# Environment variables and configuration
-.env
+# Configuration
 config.json
 
 # Downloaded data
