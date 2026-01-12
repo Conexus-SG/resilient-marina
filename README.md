@@ -150,24 +150,77 @@ aws-retrieve-csv/
 **Contains**:
 ```json
 {
+  "_comment": "Marina Data Processing Pipeline - Configuration File",
+  "_warning": "This file contains sensitive credentials. Keep it secure and never commit to version control!",
+  "_instructions": [
+    "1. Copy this file to 'config.json' (without .template)",
+    "2. Fill in your actual credentials below",
+    "3. Add 'config.json' to your .gitignore file",
+    "4. Set appropriate file permissions (chmod 600 config.json on Linux/Mac)"
+  ],
+
   "aws": {
     "access_key_id": "AKIA...",
     "secret_access_key": "secret...",
     "region": "us-east-1"
   },
+
   "database": {
     "user": "API_USER",
     "password": "<password>",
     "dsn": "oax4504110443_low"
   },
+
   "s3": {
-    "molo_bucket": "cnxtestbucket",
+    "molo_bucket": "resilient-molo-backups",
     "stellar_bucket": "resilient-ims-backups"
+  },
+
+  "email": {
+    "enabled": true,
+    "smtp_server": "smtp.office365.com",
+    "smtp_port": 587,
+    "from_email": "sholodnick@conexussg.com",
+    "to_emails": ["sholodnick@conexussg.com", "sankenagare@conexussg.com"],
+    "username": "sholodnick@conexussg.com",
+    "password": "<email_password>",
+    "subject_prefix": "[Resilient Marina ETL]"
+  },
+
+  "logging": {
+    "level": "INFO"
   }
 }
 ```
 
-**Security**: Never commit to version control. Use `config.json.template` as reference.
+**Configuration Sections**:
+
+- **aws**: AWS credentials for S3 access
+  - `access_key_id` - AWS IAM access key
+  - `secret_access_key` - AWS IAM secret key
+  - `region` - AWS region (default: us-east-1)
+
+- **database**: Oracle database connection details
+  - `user` - Database user (API_USER)
+  - `password` - Database password
+  - `dsn` - Oracle TNS connection string
+
+- **s3**: S3 bucket names for each system
+  - `molo_bucket` - MOLO system bucket (resilient-molo-backups)
+  - `stellar_bucket` - Stellar system bucket (resilient-ims-backups)
+
+- **email**: Email notification configuration
+  - `enabled` - Toggle email notifications on/off
+  - `smtp_server` - SMTP server address
+  - `smtp_port` - SMTP port (typically 587 for TLS)
+  - `from_email` - Sender email address
+  - `to_emails` - List of recipient email addresses
+  - `username` - SMTP authentication username
+  - `password` - SMTP authentication password
+  - `subject_prefix` - Prefix for email subject lines
+
+- **logging**: Application logging configuration
+  - `level` - Log level (DEBUG, INFO, WARNING, ERROR)
 
 #### `.env` and `.env.template`
 **Purpose**: Environment variables for containerized deployments and system configuration
